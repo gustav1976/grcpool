@@ -1,0 +1,35 @@
+@-webkit-viewport   { width: device-width; }
+@-moz-viewport      { width: device-width; }
+@-ms-viewport       { width: device-width; }
+@-o-viewport        { width: device-width; }
+@viewport           { width: device-width; }
+body {margin-top:10px;}
+.rounded {-moz-border-radius: 5px;border-radius: 5px;}
+.boxrounded {-moz-border-radius: 5px;border-radius: 5px;border:1px solid #ddd;padding:10px;background-color:#fafafa;}
+.fotorama {background-color:black;}
+.rowpad {margin-bottom:20px;}
+.rowpadsmall {margin-bottom:10px;}
+.video-container {position: relative;padding-bottom: 56.25%;padding-top: 30px; height: 0; overflow: hidden;} 
+.video-container iframe,.video-container object,.video-container embed {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}
+.bs-callout {    padding: 20px;    margin: 20px 0;    border: 1px solid #eee;    border-left-width: 5px;    border-radius: 3px;}
+.bs-callout-small {    padding: 0px; padding-left:20px;padding-right:20px;    margin: 20px 0;    border: 1px solid #eee;    border-left-width: 5px;    border-radius: 3px;}
+.bs-callout h4 {    margin-top: 0;    margin-bottom: 5px;}
+.bs-callout p:last-child {    margin-bottom: 0;}
+.bs-callout code {    border-radius: 3px;}
+.bs-callout+.bs-callout {    margin-top: -5px;}
+.bs-callout-default {    border-left-color: #777;}
+.bs-callout-default h4 {    color: #777;}
+.bs-callout-primary {    border-left-color: #428bca;}
+.bs-callout-primary h4 {    color: #428bca;}
+.bs-callout-success {    border-left-color: #5cb85c;}
+.bs-callout-success h4 {    color: #5cb85c;}
+.bs-callout-danger {    border-left-color: #d9534f;}
+.bs-callout-danger h4 {    color: #d9534f;}
+.bs-callout-warning {    border-left-color: #f0ad4e;}
+.bs-callout-warning h4 {    color: #f0ad4e;}
+.bs-callout-info {    border-left-color: #5bc0de;}
+.bs-callout-info h4 {    color: #5bc0de;}
+.inputWrapper {text-align:center;height: 30px;width: 200px;overflow: hidden;position: relative;border:1px outset silver;padding-top:5px;cursor: pointer;}
+.fileInput {cursor: pointer;height: 100%;position:absolute;top: 0;right: 0;z-index: 99;font-size:50px;opacity: 0;-moz-opacity: 0;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0)}
+.row.no-gutter { margin-left: 0; margin-right: 0;}
+.row.no-gutter [class*='col-']:not(:first-child),.row.no-gutter [class*='col-']:not(:last-child) { padding-right: 0; padding-left: 0;}
