@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<acct_mgr_request>
+   <name>bryhardt-101</name>
+   <password_hash></password_hash>
+   <host_cpid>f1fa920df893f4f1e4e7cfd248a5f522</host_cpid>
+   <domain_name>bgb-101</domain_name>
+   <client_version>7.2.42</client_version>
+   <run_mode>auto</run_mode>
+   <previous_host_cpid>f1fa920df893f4f1e4e7cfd248a5f522</previous_host_cpid>
+<working_global_preferences>
+<global_preferences>
+   <source_project>https://www.grcpool.com/</source_project>
+   <mod_time>0.000000</mod_time>
+   <battery_charge_min_pct>90.000000</battery_charge_min_pct>
+   <battery_max_temperature>40.000000</battery_max_temperature>
+   <run_on_batteries>0</run_on_batteries>
+   <run_if_user_active>0</run_if_user_active>
+   <run_gpu_if_user_active>0</run_gpu_if_user_active>
+   <suspend_if_no_recent_input>0.000000</suspend_if_no_recent_input>
+   <suspend_cpu_usage>25.000000</suspend_cpu_usage>
+   <start_hour>0.000000</start_hour>
+   <end_hour>0.000000</end_hour>
+   <net_start_hour>0.000000</net_start_hour>
+   <net_end_hour>0.000000</net_end_hour>
+   <leave_apps_in_memory>0</leave_apps_in_memory>
+   <confirm_before_connecting>0</confirm_before_connecting>
+   <hangup_if_dialed>0</hangup_if_dialed>
+   <dont_verify_images>0</dont_verify_images>
+   <work_buf_min_days>0.100000</work_buf_min_days>
+   <work_buf_additional_days>0.500000</work_buf_additional_days>
+   <max_ncpus_pct>0.000000</max_ncpus_pct>
+   <cpu_scheduling_period_minutes>60.000000</cpu_scheduling_period_minutes>
+   <disk_interval>60.000000</disk_interval>
+   <disk_max_used_gb>0.000000</disk_max_used_gb>
+   <disk_max_used_pct>90.000000</disk_max_used_pct>
+   <disk_min_free_gb>0.100000</disk_min_free_gb>
+   <vm_max_used_pct>75.000000</vm_max_used_pct>
+   <ram_max_used_busy_pct>50.000000</ram_max_used_busy_pct>
+   <ram_max_used_idle_pct>90.000000</ram_max_used_idle_pct>
+   <idle_time_to_run>3.000000</idle_time_to_run>
+   <max_bytes_sec_up>0.000000</max_bytes_sec_up>
+   <max_bytes_sec_down>0.000000</max_bytes_sec_down>
+   <cpu_usage_limit>100.000000</cpu_usage_limit>
+   <daily_xfer_limit_mb>0.000000</daily_xfer_limit_mb>
+   <daily_xfer_period_days>0</daily_xfer_period_days>
+   <override_file_present>0</override_file_present>
+   <network_wifi_only>1</network_wifi_only>
+</global_preferences>
+</working_global_preferences>
+<global_preferences>
+    <source_project>https://www.grcpool.com/</source_project>
+    <source_scheduler>https://www.grcpool.com/</source_scheduler>
+</global_preferences>
+<host_info>
+    <timezone>-21600</timezone>
+    <domain_name>bgb-101</domain_name>
+    <ip_addr>198.105.254.130</ip_addr>
+    <host_cpid>f1fa920df893f4f1e4e7cfd248a5f522</host_cpid>
+    <p_ncpus>24</p_ncpus>
+    <p_vendor>GenuineIntel</p_vendor>
+    <p_model>Intel(R) Xeon(R) CPU           L5640  @ 2.27GHz [Family 6 Model 44 Stepping 2]</p_model>
+    <p_features>fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid dca sse4_1 sse4_2 popcnt aes lahf_lm ida arat dtherm tpr_shadow vnmi flexpriority ept vpid</p_features>
+    <p_fpops>2258513306.657244</p_fpops>
+    <p_iops>7282317206.098682</p_iops>
+    <p_membw>1000000000.000000</p_membw>
+    <p_calculated>1485443707.196281</p_calculated>
+    <p_vm_extensions_disabled>1</p_vm_extensions_disabled>
+    <m_nbytes>16812421120.000000</m_nbytes>
+    <m_cache>12582912.000000</m_cache>
+    <m_swap>12869169152.000000</m_swap>
+    <d_total>131063304192.000000</d_total>
+    <d_free>117245800448.000000</d_free>
+    <os_name>Linux</os_name>
+    <os_version>3.13.0-91-generic</os_version>
+    <virtualbox_version>5.1.10r112026</virtualbox_version>
+    <coprocs>
+    </coprocs>
+</host_info>
+   <opaque>
+<hostId>2</hostId>
+   </opaque>
+<time_stats>
+    <on_frac>0.987636</on_frac>
+    <connected_frac>0.000000</connected_frac>
+    <cpu_and_network_available_frac>0.999826</cpu_and_network_available_frac>
+    <active_frac>0.999826</active_frac>
+    <gpu_active_frac>0.999826</gpu_active_frac>
+    <client_start_time>1485453098.444552</client_start_time>
+    <previous_uptime>53.474404</previous_uptime>
+    <now>1485453151.918956</now>
+</time_stats>
+<net_stats>
+    <bwup>98961.922061</bwup>
+    <avg_up>1355698.059324</avg_up>
+    <avg_time_up>1485452628.007562</avg_time_up>
+    <bwdown>1233347.897883</bwdown>
+    <avg_down>2909037.208174</avg_down>
+    <avg_time_down>1485453149.044239</avg_time_down>
+</net_stats>
+</acct_mgr_request>
