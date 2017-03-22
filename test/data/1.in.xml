@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <acct_mgr_request>
-   <name>bryhardt-101</name>
-   <password_hash></password_hash>
+   <name>phptest</name>
+   <password_hash>THISISATESTHASH</password_hash>
    <host_cpid>f1fa920df893f4f1e4e7cfd248a5f522</host_cpid>
    <domain_name>bgb-101</domain_name>
    <client_version>7.2.42</client_version>

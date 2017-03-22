@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<acct_mgr_request>
+   <name>phptest</name>
+   <password_hash>THISISATESTHASH</password_hash>
+   <host_cpid>f1fa920df893f4f1e4e7cfd248a5f522</host_cpid>
+   <domain_name></domain_name>
+   <client_version>7.6.33</client_version>
+   <run_mode>always</run_mode>
+   <previous_host_cpid>271356086dea148059c731463f9cc06c</previous_host_cpid>
+   <project>
+      <url>http://www.bitcoinutopia.net/bitcoinutopia/</url>
+      <project_name>Bitcoin Utopia</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>f8505b537ab0c533d506c2a540f1e2ca</account_key>
+      <hostid>16320</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://csgrid.org/csg/</url>
+      <project_name>Citizen Science Grid</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>7ce8c0f1a37c83a0e847f558457bce15</account_key>
+      <hostid>27943</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://climateprediction.net/</url>
+      <project_name>climateprediction.net</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>0439abe92ec1876534aeb79651a1c8c1</account_key>
+      <hostid>1297862</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>https://boinc.thesonntags.com/collatz/</url>
+      <project_name>Collatz Conjecture</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>4552c834a2f967b77bacb44a759aad0d</account_key>
+      <hostid>665728</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://aerospaceresearch.net/constellation/</url>
+      <project_name>Constellation</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>931efed6f665611adfc67b220f43766a</account_key>
+      <hostid>13706</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://www.cosmologyathome.org/</url>
+      <project_name>Cosmology@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>65dffda5f91b20bec815fd348b8d4278</account_key>
+      <hostid>144374</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>121635.627189</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>0</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://denis.usj.es/denisathome/</url>
+      <project_name>DENIS@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>7cb726ab6e0ee94b2ccf1b0b2d0e88f4</account_key>
+      <hostid>51197</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>80.000000</resource_share>
+   </project>
+   <project>
+      <url>http://einstein.phys.uwm.edu/</url>
+      <project_name>Einstein@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>f4ad7ed12801af9d7f554b666597a055</account_key>
+      <hostid>9211499</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://www.enigmaathome.net/</url>
+      <project_name>Enigma@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>296f14aada186f7b0005edab5b6130d9</account_key>
+      <hostid>111930</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://www.gpugrid.net/</url>
+      <project_name>GPUGRID</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>5c3e1fe6d5dee79e540cc9c799ee3f72</account_key>
+      <hostid>284034</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://milkyway.cs.rpi.edu/milkyway/</url>
+      <project_name>Milkyway@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>f5ba01eabfb02b23964768ddd4331d77</account_key>
+      <hostid>508197</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://escatter11.fullerton.edu/nfs/</url>
+      <project_name>NFS@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>08cad572f20e25c7c31fdd30f1e75f45</account_key>
+      <hostid>345883</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://numberfields.asu.edu/NumberFields/</url>
+      <project_name>NumberFields@home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>55ec8e02d73f354496f48ea1fa54a5c6</account_key>
+      <hostid>16048</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://boinc.fzk.de/poem/</url>
+      <project_name>Poem@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>136ea7d034c55b294b706780877dddc4</account_key>
+      <hostid>96852</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>0</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>1</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://www.primegrid.com/</url>
+      <project_name>PrimeGrid</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>0e2fa3e23a8fc5b55b1af0210a34696a</account_key>
+      <hostid>212629</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://qmcathome.org/</url>
+      <project_name>QMC@HOME</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>2f889380cfc0fefc2b4bc0fb644e5fa2</account_key>
+      <hostid>219520</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://radioactiveathome.org/boinc/</url>
+      <project_name>Radioactive@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>be80cc43f693ad87c250c9180b8ba49e</account_key>
+      <hostid>19923</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://www.rnaworld.de/rnaworld/</url>
+      <project_name>RNA World</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>63ef987781b78f06ac4788cc2bcda472</account_key>
+      <hostid>29363</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://boinc.bakerlab.org/rosetta/</url>
+      <project_name>rosetta@home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>0a36566a9f2347724a9d315b7a424417</account_key>
+      <hostid>1464191</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://setiathome.berkeley.edu/</url>
+      <project_name>SETI@home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>4c970a04c6cc1cfc57d76fa9c0e19a7b</account_key>
+      <hostid>6114086</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://universeathome.pl/universe/</url>
+      <project_name>Universe@Home</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>3c31e44ba4fc575334d8c193d6e1f3b3</account_key>
+      <hostid>29278</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+   <project>
+      <url>http://www.worldcommunitygrid.org/</url>
+      <project_name>World Community Grid</project_name>
+      <suspended_via_gui>0</suspended_via_gui>
+      <account_key>656ed51b6075200e1c87d8fc6ba6857f</account_key>
+      <hostid>1655986</hostid>
+      <not_started_dur>0.000000</not_started_dur>
+      <in_progress_dur>0.000000</in_progress_dur>
+      <attached_via_acct_mgr>0</attached_via_acct_mgr>
+      <dont_request_more_work>1</dont_request_more_work>
+      <detach_when_done>0</detach_when_done>
+      <ended>0</ended>
+      <resource_share>100.000000</resource_share>
+   </project>
+<working_global_preferences>
+<global_preferences>
+   <source_project>http://sat.isa.ru/pdsat/</source_project>
+   <mod_time>1487812276.000000</mod_time>
+   <battery_charge_min_pct>90.000000</battery_charge_min_pct>
+   <battery_max_temperature>40.000000</battery_max_temperature>
+   <run_on_batteries>1</run_on_batteries>
+   <run_if_user_active>1</run_if_user_active>
+   <run_gpu_if_user_active>0</run_gpu_if_user_active>
+   <suspend_if_no_recent_input>5.000000</suspend_if_no_recent_input>
+   <suspend_cpu_usage>25.000000</suspend_cpu_usage>
+   <start_hour>0.000000</start_hour>
+   <end_hour>0.000000</end_hour>
+   <net_start_hour>0.000000</net_start_hour>
+   <net_end_hour>0.000000</net_end_hour>
+   <leave_apps_in_memory>1</leave_apps_in_memory>
+   <confirm_before_connecting>1</confirm_before_connecting>
+   <hangup_if_dialed>1</hangup_if_dialed>
+   <dont_verify_images>1</dont_verify_images>
+   <work_buf_min_days>0.100000</work_buf_min_days>
+   <work_buf_additional_days>0.250000</work_buf_additional_days>
+   <max_ncpus_pct>100.000000</max_ncpus_pct>
+   <cpu_scheduling_period_minutes>60.000000</cpu_scheduling_period_minutes>
+   <disk_interval>60.000000</disk_interval>
+   <disk_max_used_gb>100.000000</disk_max_used_gb>
+   <disk_max_used_pct>50.000000</disk_max_used_pct>
+   <disk_min_free_gb>0.100000</disk_min_free_gb>
+   <vm_max_used_pct>75.000000</vm_max_used_pct>
+   <ram_max_used_busy_pct>50.000000</ram_max_used_busy_pct>
+   <ram_max_used_idle_pct>90.000000</ram_max_used_idle_pct>
+   <idle_time_to_run>3.000000</idle_time_to_run>
+   <max_bytes_sec_up>0.000000</max_bytes_sec_up>
+   <max_bytes_sec_down>0.000000</max_bytes_sec_down>
+   <cpu_usage_limit>100.000000</cpu_usage_limit>
+   <daily_xfer_limit_mb>0.000000</daily_xfer_limit_mb>
+   <daily_xfer_period_days>0</daily_xfer_period_days>
+   <override_file_present>1</override_file_present>
+   <network_wifi_only>1</network_wifi_only>
+</global_preferences>
+</working_global_preferences>
+<global_preferences>
+
+<source_project>http://sat.isa.ru/pdsat/</source_project>
+    <source_scheduler>http://sat.isa.ru/pdsat_cgi/cgi</source_scheduler>
+
+<mod_time>1487812276</mod_time>
+<run_on_batteries>0</run_on_batteries>
+<run_if_user_active>1</run_if_user_active>
+<run_gpu_if_user_active>0</run_gpu_if_user_active>
+<idle_time_to_run>3</idle_time_to_run>
+<suspend_if_no_recent_input>0</suspend_if_no_recent_input>
+<leave_apps_in_memory/>
+<cpu_scheduling_period_minutes>20</cpu_scheduling_period_minutes>
+<confirm_before_connecting/>
+<hangup_if_dialed>1</hangup_if_dialed>
+<work_buf_min_days>0</work_buf_min_days>
+<work_buf_additional_days>0.75</work_buf_additional_days>
+<max_cpus>16</max_cpus>
+<max_ncpus_pct>100</max_ncpus_pct>
+<cpu_usage_limit>75</cpu_usage_limit>
+<disk_interval>60</disk_interval>
+<disk_max_used_gb>100</disk_max_used_gb>
+<disk_max_used_pct>50</disk_max_used_pct>
+<disk_min_free_gb>0.001</disk_min_free_gb>
+<vm_max_used_pct>100</vm_max_used_pct>
+<ram_max_used_busy_pct>100</ram_max_used_busy_pct>
+<ram_max_used_idle_pct>100</ram_max_used_idle_pct>
+<max_bytes_sec_down>0</max_bytes_sec_down>
+<max_bytes_sec_up>0</max_bytes_sec_up>
+<dont_verify_images>0</dont_verify_images>
+<venue name="home">
+<run_on_batteries>1</run_on_batteries>
+<run_if_user_active>1</run_if_user_active>
+<run_gpu_if_user_active>1</run_gpu_if_user_active>
+<idle_time_to_run>3</idle_time_to_run>
+<suspend_if_no_recent_input>5</suspend_if_no_recent_input>
+<leave_apps_in_memory/>
+<cpu_scheduling_period_minutes>60</cpu_scheduling_period_minutes>
+<confirm_before_connecting/>
+<hangup_if_dialed>0</hangup_if_dialed>
+<work_buf_min_days>0.1</work_buf_min_days>
+<work_buf_additional_days>0.5</work_buf_additional_days>
+<max_cpus>0</max_cpus>
+<max_ncpus_pct>100</max_ncpus_pct>
+<cpu_usage_limit>100</cpu_usage_limit>
+<disk_interval>60</disk_interval>
+<disk_max_used_gb>0</disk_max_used_gb>
+<disk_max_used_pct>100</disk_max_used_pct>
+<disk_min_free_gb>2</disk_min_free_gb>
+<vm_max_used_pct>50</vm_max_used_pct>
+<ram_max_used_busy_pct>100</ram_max_used_busy_pct>
+<ram_max_used_idle_pct>100</ram_max_used_idle_pct>
+<max_bytes_sec_down>0</max_bytes_sec_down>
+</global_preferences>
+<host_info>
+    <timezone>-21600</timezone>
+    <domain_name>Rimfire</domain_name>
+    <ip_addr>192.168.0.107</ip_addr>
+    <host_cpid>271356086dea148059c731463f9cc06c</host_cpid>
+    <p_ncpus>4</p_ncpus>
+    <p_vendor>GenuineIntel</p_vendor>
+    <p_model>        Intel(R) Core(TM) i3-2100 CPU @ 3.10GHz [Family 6 Model 42 Stepping 7]</p_model>
+    <p_features>fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss htt tm pni ssse3 cx16 sse4_1 sse4_2 popcnt syscall nx lm avx vmx tm2 pbe</p_features>
+    <p_fpops>3275183055.962808</p_fpops>
+    <p_iops>8007792416.145581</p_iops>
+    <p_membw>250000000.000000</p_membw>
+    <p_calculated>1487432534.552773</p_calculated>
+    <p_vm_extensions_disabled>0</p_vm_extensions_disabled>
+    <m_nbytes>8430993408.000000</m_nbytes>
+    <m_cache>262144.000000</m_cache>
+    <m_swap>17020928000.000000</m_swap>
+    <d_total>972703137792.000000</d_total>
+    <d_free>714136879104.000000</d_free>
+    <os_name>Microsoft Windows 10</os_name>
+    <os_version>Core x64 Edition, (10.00.14393.00)</os_version>
+    <coprocs>
+    </coprocs>
+</host_info>
+   <opaque>
+<hostId>93</hostId>
+   </opaque>
+<time_stats>
+    <on_frac>0.930931</on_frac>
+    <connected_frac>0.999882</connected_frac>
+    <cpu_and_network_available_frac>0.999876</cpu_and_network_available_frac>
+    <active_frac>0.999994</active_frac>
+    <gpu_active_frac>0.999994</gpu_active_frac>
+    <client_start_time>1488897841.204722</client_start_time>
+    <total_start_time>1415930785.243776</total_start_time>
+    <total_duration>67418956.913019</total_duration>
+    <total_active_duration>67412897.365027</total_active_duration>
+    <total_gpu_active_duration>67412897.365027</total_gpu_active_duration>
+    <now>1488905179.509230</now>
+    <previous_uptime>86253.091801</previous_uptime>
+    <session_active_duration>7315.235769</session_active_duration>
+    <session_gpu_active_duration>7315.235769</session_gpu_active_duration>
+</time_stats>
+<net_stats>
+    <bwup>33931.824340</bwup>
+    <avg_up>623433.148169</avg_up>
+    <avg_time_up>1488902937.010723</avg_time_up>
+    <bwdown>220467.004688</bwdown>
+    <avg_down>1316475.359179</avg_down>
+    <avg_time_down>1488897887.401859</avg_time_down>
+</net_stats>
+</acct_mgr_request>

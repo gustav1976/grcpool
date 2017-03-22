@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 		    },
 		    options: {
 		        bin: '../composer/vendor/bin/phpunit',
-		        bootstrap: '../autoload.php',
+		        bootstrap: '../test/bootstrap.php',
 		        colors: true
 		    }
 		},
@@ -27,7 +27,8 @@ module.exports = function(grunt) {
 				files: ['../**/*.php','!../node/**','!../assets/**','!../composer/**'],
 				tasks: ['phpunit'],
 				options: {
-					spawn: true,
+					atBegin: true,
+					spawn: true
 				},
 			},
 		},  	

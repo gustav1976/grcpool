@@ -13,6 +13,10 @@ abstract class GrcPool_Member_MODEL {
 	private $_grcAddress = '';
 	private $_donation = 0.00;
 	private $_verifyKey = '';
+	private $_twoFactor = 0;
+	private $_twoFactorKey = '';
+	private $_apiKey = '';
+	private $_apiSecret = '';
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setEmail(string $string) {$this->_email=$string;}
@@ -33,6 +37,14 @@ abstract class GrcPool_Member_MODEL {
 	public function getDonation():float {return $this->_donation;}
 	public function setVerifyKey(string $string) {$this->_verifyKey=$string;}
 	public function getVerifyKey():string {return $this->_verifyKey;}
+	public function setTwoFactor(int $int) {$this->_twoFactor=$int;}
+	public function getTwoFactor():int {return $this->_twoFactor;}
+	public function setTwoFactorKey(string $string) {$this->_twoFactorKey=$string;}
+	public function getTwoFactorKey():string {return $this->_twoFactorKey;}
+	public function setApiKey(string $string) {$this->_apiKey=$string;}
+	public function getApiKey():string {return $this->_apiKey;}
+	public function setApiSecret(string $string) {$this->_apiSecret=$string;}
+	public function getApiSecret():string {return $this->_apiSecret;}
 }
 
 abstract class GrcPool_Member_MODELDAO extends TableDAO {
@@ -51,5 +63,9 @@ abstract class GrcPool_Member_MODELDAO extends TableDAO {
 		'grcAddress' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'donation' => array('type'=>'FLOAT','dbType'=>'decimal(5,2)'),
 		'verifyKey' => array('type'=>'STRING','dbType'=>'varchar(100)'),
+		'twoFactor' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'twoFactorKey' => array('type'=>'STRING','dbType'=>'varchar(40)'),
+		'apiKey' => array('type'=>'STRING','dbType'=>'varchar(32)'),
+		'apiSecret' => array('type'=>'STRING','dbType'=>'varchar(88)'),
 	);
 }
