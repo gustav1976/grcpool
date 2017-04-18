@@ -68,30 +68,21 @@ class Utils {
 		}
 		return $isValid;
 	}
-	static function truncate($number,$places) {
+	static function truncate($number,$places=0) {
 		if (strlen($number) == 0) return '';
 		if (strstr($number,'.')) {
-			$a = explode('.',$number);
-			$number = $a[0];
-			if ($places != 0) {
-				$number .= '.';
+
+			$factor = '1';
+			for ($i = 1; $i <= $places; $i++) {
+				$factor .= '0';
 			}
-			if (strlen($a[1]) >= $places) {
-				$number .= substr($a[1],0,$places);
-			} else {
-				$number .= $a[1];
-				for ($i = strlen($a[1]); $i < $places; $i++) {
-					$number .= '0';
-				}
-			}
+			$number = floor($number * $factor) / $factor;
 		} else {
 			if ($places != 0) {
 				$number .= '.';
 				for ($i = 0; $i < $places; $i++) {
 					$number .= '0';
 				}
-			} else {
-	
 			}
 		}
 		return $number;

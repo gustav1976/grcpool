@@ -45,7 +45,7 @@ class GrcPool_WebPage {
 		return '
 			<div class="container" style="padding-top:20px;">
 				<div class="pull-right rowpadsmall">
-<div class="fb-like" data-href="https://www.facebook.com/gridcoinpool/" data-layout="button_count" data-action="like" data-size="small" data-show-faces="false" data-share="false"></div>
+					<div class="fb-follow" data-href="https://www.facebook.com/gridcoinpool" data-layout="button_count" data-size="small" data-show-faces="false"></div>
 						&nbsp;|&nbsp;
 				'.($USER->getId() == 0?'
 						<a href="/login"><i class="fa fa-power-off"></i> login</a>
@@ -125,8 +125,7 @@ class GrcPool_WebPage {
   js = d.createElement(s); js.id = id;
   js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1836912156576334";
   fjs.parentNode.insertBefore(js, fjs);
-}(document, \'script\', \'facebook-jssdk\'));</script>
- 			
+}(document, \'script\', \'facebook-jssdk\'));</script> 			
 				'.($this->isHome?'<div style="background-repeat:no-repeat;background-image:url(/assets/images/pool.jpg)">':'').'
 	 				'.$this->getUserBar().'
 		 			<div class="container">

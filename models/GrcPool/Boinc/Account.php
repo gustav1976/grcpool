@@ -19,6 +19,7 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	private $_lastSeen = 0;
 	private $_secure = 0;
 	private $_whiteListCount = 0;
+	private $_minRac = 0.00;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setName(string $string) {$this->_name=$string;}
@@ -51,6 +52,8 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	public function getSecure():int {return $this->_secure;}
 	public function setWhiteListCount(int $int) {$this->_whiteListCount=$int;}
 	public function getWhiteListCount():int {return $this->_whiteListCount;}
+	public function setMinRac(float $float) {$this->_minRac=$float;}
+	public function getMinRac():float {return $this->_minRac;}
 }
 
 abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
@@ -75,5 +78,6 @@ abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
 		'lastSeen' => array('type'=>'INT','dbType'=>'int(11)'),
 		'secure' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 		'whiteListCount' => array('type'=>'INT','dbType'=>'smallint(3)'),
+		'minRac' => array('type'=>'FLOAT','dbType'=>'decimal(9,2)'),
 	);
 }

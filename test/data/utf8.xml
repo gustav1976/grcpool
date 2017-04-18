@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<acct_mgr_request>
+   <name>phptest</name>
+   <password_hash>THISISATESTHASH</password_hash>
+   <host_cpid>72b728a8824e5ed7089fcab10819de77</host_cpid>
+   <domain_name>���������-suvvin9</domain_name>
+   <client_version>7.6.33</client_version>
+   <run_mode>auto</run_mode>
+<working_global_preferences>
+<global_preferences>
+   <source_project></source_project>
+   <mod_time>0.000000</mod_time>
+   <battery_charge_min_pct>90.000000</battery_charge_min_pct>
+   <battery_max_temperature>40.000000</battery_max_temperature>
+   <run_on_batteries>0</run_on_batteries>
+   <run_if_user_active>1</run_if_user_active>
+   <run_gpu_if_user_active>0</run_gpu_if_user_active>
+   <suspend_if_no_recent_input>0.000000</suspend_if_no_recent_input>
+   <suspend_cpu_usage>25.000000</suspend_cpu_usage>
+   <start_hour>0.000000</start_hour>
+   <end_hour>0.000000</end_hour>
+   <net_start_hour>0.000000</net_start_hour>
+   <net_end_hour>0.000000</net_end_hour>
+   <leave_apps_in_memory>1</leave_apps_in_memory>
+   <confirm_before_connecting>0</confirm_before_connecting>
+   <hangup_if_dialed>0</hangup_if_dialed>
+   <dont_verify_images>0</dont_verify_images>
+   <work_buf_min_days>2.000000</work_buf_min_days>
+   <work_buf_additional_days>1.000000</work_buf_additional_days>
+   <max_ncpus_pct>100.000000</max_ncpus_pct>
+   <cpu_scheduling_period_minutes>60.000000</cpu_scheduling_period_minutes>
+   <disk_interval>60.000000</disk_interval>
+   <disk_max_used_gb>2.000000</disk_max_used_gb>
+   <disk_max_used_pct>90.000000</disk_max_used_pct>
+   <disk_min_free_gb>5.000000</disk_min_free_gb>
+   <vm_max_used_pct>75.000000</vm_max_used_pct>
+   <ram_max_used_busy_pct>50.000000</ram_max_used_busy_pct>
+   <ram_max_used_idle_pct>90.000000</ram_max_used_idle_pct>
+   <idle_time_to_run>3.000000</idle_time_to_run>
+   <max_bytes_sec_up>0.000000</max_bytes_sec_up>
+   <max_bytes_sec_down>0.000000</max_bytes_sec_down>
+   <cpu_usage_limit>100.000000</cpu_usage_limit>
+   <daily_xfer_limit_mb>0.000000</daily_xfer_limit_mb>
+   <daily_xfer_period_days>0</daily_xfer_period_days>
+   <override_file_present>1</override_file_present>
+   <network_wifi_only>0</network_wifi_only>
+</global_preferences>
+</working_global_preferences>
+<host_info>
+    <timezone>14400</timezone>
+    <domain_name>���������-suvvin9</domain_name>
+    <ip_addr>192.168.1.102</ip_addr>
+    <host_cpid>72b728a8824e5ed7089fcab10819de77</host_cpid>
+    <p_ncpus>2</p_ncpus>
+    <p_vendor>AuthenticAMD</p_vendor>
+    <p_model>AMD E-450 APU with Radeon(tm) HD Graphics [Family 20 Model 2 Stepping 0]</p_model>
+    <p_features>fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 htt pni ssse3 cx16 popcnt syscall nx lm svm sse4a ibs skinit wdt page1gb rdtscp</p_features>
+    <p_fpops>1000000000.000000</p_fpops>
+    <p_iops>1000000000.000000</p_iops>
+    <p_membw>1000000000.000000</p_membw>
+    <p_calculated>1489914582.999727</p_calculated>
+    <p_vm_extensions_disabled>0</p_vm_extensions_disabled>
+    <m_nbytes>3870982144.000000</m_nbytes>
+    <m_cache>524288.000000</m_cache>
+    <m_swap>7740067840.000000</m_swap>
+    <d_total>53325332480.000000</d_total>
+    <d_free>20402143232.000000</d_free>
+    <os_name>Microsoft Windows 7</os_name>
+    <os_version>Professional x64 Edition, Service Pack 1, (06.01.7601.00)</os_version>
+    <coprocs>
+<coproc_ati>
+   <count>1</count>
+   <name>AMD Radeon HD 6350/6450/7450/7470/R5 230 series (Caicos)</name>
+   <available_ram>1039138816.000000</available_ram>
+   <have_cal>1</have_cal>
+   <have_opencl>0</have_opencl>
+   <peak_flops>324480000000.000000</peak_flops>
+   <CALVersion>1.4.1848</CALVersion>
+   <target>19</target>
+   <localRAM>1024</localRAM>
+   <uncachedRemoteRAM>1653</uncachedRemoteRAM>
+   <cachedRemoteRAM>1653</cachedRemoteRAM>
+   <engineClock>507</engineClock>
+   <memoryClock>667</memoryClock>
+   <wavefrontSize>64</wavefrontSize>
+   <numberOfSIMD>2</numberOfSIMD>
+   <doublePrecision>0</doublePrecision>
+   <pitch_alignment>256</pitch_alignment>
+   <surface_alignment>4096</surface_alignment>
+   <maxResource1DWidth>16384</maxResource1DWidth>
+   <maxResource2DWidth>16384</maxResource2DWidth>
+   <maxResource2DHeight>16384</maxResource2DHeight>
+    <atirt_detected/>
+</coproc_ati>
+    </coprocs>
+</host_info>
+<time_stats>
+    <on_frac>0.950033</on_frac>
+    <connected_frac>1.000000</connected_frac>
+    <cpu_and_network_available_frac>0.991036</cpu_and_network_available_frac>
+    <active_frac>0.991036</active_frac>
+    <gpu_active_frac>0.989939</gpu_active_frac>
+    <client_start_time>1489914131.423502</client_start_time>
+    <total_start_time>1489861343.812817</total_start_time>
+    <total_duration>9119.721012</total_duration>
+    <total_active_duration>1334.945303</total_active_duration>
+    <total_gpu_active_duration>380.125858</total_gpu_active_duration>
+    <now>1489914786.625374</now>
+    <previous_uptime>8622.595608</previous_uptime>
+    <session_active_duration>112.642443</session_active_duration>
+    <session_gpu_active_duration>0.000000</session_gpu_active_duration>
+</time_stats>
+<net_stats>
+    <bwup>43536.341758</bwup>
+    <avg_up>3564305473.482483</avg_up>
+    <avg_time_up>1489914508.465466</avg_time_up>
+    <bwdown>81044.725952</bwdown>
+    <avg_down>6717168386.172240</avg_down>
+    <avg_time_down>1489914280.642237</avg_time_down>
+</net_stats>
+</acct_mgr_request>

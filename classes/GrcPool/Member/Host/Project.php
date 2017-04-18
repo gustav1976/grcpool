@@ -46,5 +46,8 @@ class GrcPool_Member_Host_Project_DAO extends GrcPool_Member_Host_Project_MODELD
 		return $this->fetchAll(array($this->where('hostDbid',$hostDbId),$this->where('projectUrl',$url)));
 	}
 	
-	
+	public function deleteWithMemberIdAndHostId($memberId,$hostId) {
+		$sql = 'delete from '.$this->getFullTableName().' where hostId = '.addslashes($hostId).' and memberId = '.addslashes($memberId).'';
+		$this->executeQuery($sql);
+	}
 }

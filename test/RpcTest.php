@@ -159,8 +159,18 @@ final class RpcTest extends TestCase {
 		$rpc->process(false);
 		$xml = simplexml_load_string($rpc->getResponseXml());
 		$this->assertEquals('grcpool.com',(String)$xml->name);
+		$this->assertEquals('',(String)$xml->message);
 	}
 	
+	public function testUtf8Xml() {
+		$this->baseData();
+		$inXml = file_get_contents(dirname(__FILE__).'/data/utf8.xml');
+		$rpc = new BoincApi_Rpc($inXml);
+		$rpc->process(false);
+		$xml = simplexml_load_string($rpc->getResponseXml());
+		$this->assertEquals('grcpool.com',(String)$xml->name);
+		$this->assertEquals('',(String)$xml->message);
+	}
 	
 	
 }

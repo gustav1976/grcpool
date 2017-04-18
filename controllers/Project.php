@@ -6,6 +6,12 @@ class GrcPool_Controller_Project extends GrcPool_Controller {
 	}
 	
 	public function indexAction() {
+		
+		$cache = new Cache();
+		$superBlock = $cache->get(Constants::CACHE_SUPERBLOCK_DATA);
+		$superBlock = json_decode($superBlock,true);
+		$this->view->numberOfProjects = $superBlock['whiteListCount'];
+		
 		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$accounts = $accountDao->fetchAll(array(),array('name'=>'asc'));
 
@@ -17,7 +23,7 @@ class GrcPool_Controller_Project extends GrcPool_Controller {
 	
 		$projStats = $hostCreditDao->getProjectStats();
 		$this->view->projStats = $projStats;
-	
 	}
+	
 	
 }

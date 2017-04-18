@@ -48,13 +48,17 @@ class BoincApi_Rpc {
 				$newXml .= substr($xml,$endPos+21);
  				$this->xml = simplexml_load_string($newXml);
  				if ($this->xml === false) {
- 					$error = '';
- 					foreach (libxml_get_errors() as $err) {
- 						$error .= $err->message."\n";
- 					}
- 					$this->error = 'BOINC may be submitting invalid data. [1]';
- 					if ($log) {
- 	    				file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.error.in.xml',$error."\n\n".'----------------------------'.$xml.'-------------------------------');
+ 					$newXml = utf8_encode($xml);
+ 					$this->xml = simplexml_load_string($newXml);
+ 					if ($this->xml === false) {
+	 					$error = '';
+	 					foreach (libxml_get_errors() as $err) {
+	 						$error .= $err->message."\n";
+	 					}
+	 					$this->error = 'BOINC may be submitting invalid data. [1]';
+	 					if ($log) {
+	 	    				file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.error.in.xml',$error."\n\n".'----------------------------'.$xml.'-------------------------------');
+	 					}
  					}
  				}
 			}

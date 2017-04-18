@@ -8,6 +8,7 @@ class Constants {
 	const CACHE_SUPERBLOCK_DATA = "CACHE_SUPERBLOCK_DATA";
 	
 	const GRC_MAG_MULTIPLIER = 115000;
+	const MIN_MAG_MAG_FOR_MIN_RAC = .01;
 	
 	const COIN = 100000000;
 	
@@ -18,6 +19,7 @@ class Constants {
 	const SETTINGS_MIN_OWE_PAYOUT = 'MIN_OWE_PAYOUT';
 	const SETTINGS_PAYOUT_FEE = 'PAYOUT_FEE';
 	const SETTINGS_SEED = 'SEED';
+	const SETTINGS_GRC_CLIENT_ONLINE = 'GRC_CLIENT_ONLINE';
 	
 	const PAYOUT_ERROR_NO_GRC_ADDR = 'No GRC Address';
 	const PAYOUT_ERROR_MIN_NOT_MET = 'Minimum owed payout not met';

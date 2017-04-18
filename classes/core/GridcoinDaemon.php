@@ -94,15 +94,25 @@ class GridcoinDaemon {
 		return trim($balance);
 	}
 	
+	public function getVersion() {
+		$data = $this->executeDaemon('getinfo');
+		$json = json_decode($data,true);
+		$version = $json['version'];
+		return trim($version);
+	}
+	
 	public function getMagnitude() {
-		$data = GridcoinDaemon::executeDaemon('list mymagnitude');
+		$data = $this->executeDaemon('list mymagnitude');
 		$json = json_decode($data,true);
 		$mag = $json[1]['Magnitude (Last Superblock)'];
 		return trim($mag);
 	}
 	
 	public function getWhitelistedProjects() {
-		$data = GridcoinDaemon::executeDaemon('list projects');
+		$data = $this->executeDaemon('list projects');
+		if ($data == '') {
+			return array();
+		}
 		$json = json_decode($data,true);
 		$projects = array();
 		foreach ($json as $project) {
@@ -114,7 +124,7 @@ class GridcoinDaemon {
 	}
 	
 	public function getNumberOfProjects() {
-		$data = GridcoinDaemon::executeDaemon('list projects');
+		$data = $this->executeDaemon('list projects');
 		$json = json_decode($data,true);
 		$numberOfProjects = 0;
 		foreach ($json as $project) {

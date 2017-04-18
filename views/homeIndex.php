@@ -10,7 +10,9 @@ $projects = '
 ';
 
 $webPage->appendHomeBody('
-		
+	'.($this->view->online != '1'?'
+		'.Bootstrap_Callout::error('The pool wallet is currently offline, please check the facebook page for status updates.').'		
+	':'').'
 	<div class="row rowpad" style="display:flex;align-items: center;font-family: \'Exo 2\', sans-serif;">
 		<div style="font-size:1.5em;" class="col-sm-5 col-xs-6 text-right">
 			<a href="https://www.facebook.com/gridcoinpool/">
@@ -44,8 +46,9 @@ $webPage->append('
 	<div class="row rowpad">
 		<div class="col-sm-6">
 			'.Bootstrap_Callout::info('
-				<h3>Gridcoin Superblock</h3>
+				<h3>Gridcoin Client</h3>
 				<table class="table table-striped table-hover table-condensed">
+					<tr><td>Version</td><td style="text-align:right;" id="version"></td></tr>
 					<tr><td>Last Superblock</td><td style="text-align:right;" id="lastSuperblock"></td></tr>
 					<tr><td>Superblock Age</td><td style="text-align:right;" id="superblockAge"></td></tr>
 					<tr><td>Pending Superblock</td><td style="text-align:right;" id="pendingSuperblock">---</td></tr>
@@ -80,6 +83,7 @@ $webPage->append('
 $webPage->appendScript('
 	<script>
 		$.get( "/api/superBlockAge", function( data ) {
+			$("#version").html(data.version);
 			$("#lastSuperblock").html(data.block);
 			$("#superblockAge").html(data.ageText);
 			$("#poolMag").html(data.mag);

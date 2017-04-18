@@ -2,6 +2,16 @@
 
 $webPage->setPageTitle('My Host');
 
+$webPage->appendHead('
+	<script>
+		function confirmDelete(projectId) {
+			if (confirm("Are you sure you want to delete this project?")) {
+				location.href="/account/host/'.$this->view->host->getId().'/delete/"+projectId;
+			}
+		}
+	</script>
+');
+
 $webPage->append('
 	<h3>Details</h3>
 	<table class="table table-striped table-hover table-condensed">
@@ -39,7 +49,11 @@ foreach ($this->view->projects as $p) {
 		$html .= '
 			<tr>
 				<td>
-					<input type="hidden" id="project_'.$id.'" name="ids[]" value="'.$id.'"/>'.$p->getName().'
+					'.($this->view->hasDeleteNotice?'
+						<button type="button" onclick="confirmDelete('.$host->getId().')" class="btn btn-danger btn-xs">X</button>
+					':'').'
+					<input type="hidden" id="project_'.$id.'" name="ids[]" value="'.$id.'"/>
+					'.$p->getName().'
 					'.($p->getAttachable()?'':'<small><br/><span class="text-danger"><i class="fa fa-warning"></i> <a href="/project/#'.$p->getId().'">check project status</a></span></small>').'
 					'.($host->getHostDbId()==0?'<small><br/><span class="text-danger"><i class="fa fa-warning"></i> <a href="/help/topics/1">This project may not be attached correctly, or needs sync.</a>':'').'
 				</td>

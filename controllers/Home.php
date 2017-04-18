@@ -20,6 +20,7 @@ class GrcPool_Controller_Home extends GrcPool_Controller {
 		$this->view->minStake = $settingsDao->getValueWithName(SETTINGS_MIN_STAKE_BALANCE);
 		$this->view->totalPaidOut = $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT);
 		$this->view->cpid = $settingsDao->getValueWithName(Constants::SETTINGS_CPID);
+		$this->view->online = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE);
 		
 	}
 	
