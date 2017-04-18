@@ -1,0 +1,79 @@
+<?php
+abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
+
+	public function __construct() { }
+
+	private $_id = 0;
+	private $_email = '';
+	private $_username = '';
+	private $_verified = 0;
+	private $_grcAddress = '';
+	private $_donation = 0.00;
+	private $_hostDbid = 0;
+	private $_projectUrl = '';
+	private $_hostId = 0;
+	private $_creditId = 0;
+	private $_totalCredit = 0;
+	private $_avgCredit = 0;
+	private $_mag = 0;
+	private $_owed = 0.00000000;
+	private $_owedCalc = '';
+	private $_hostName = '';
+	public function setId(int $int) {$this->_id=$int;}
+	public function getId():int {return $this->_id;}
+	public function setEmail(string $string) {$this->_email=$string;}
+	public function getEmail():string {return $this->_email;}
+	public function setUsername(string $string) {$this->_username=$string;}
+	public function getUsername():string {return $this->_username;}
+	public function setVerified(int $int) {$this->_verified=$int;}
+	public function getVerified():int {return $this->_verified;}
+	public function setGrcAddress(string $string) {$this->_grcAddress=$string;}
+	public function getGrcAddress():string {return $this->_grcAddress;}
+	public function setDonation(float $float) {$this->_donation=$float;}
+	public function getDonation():float {return $this->_donation;}
+	public function setHostDbid(int $int) {$this->_hostDbid=$int;}
+	public function getHostDbid():int {return $this->_hostDbid;}
+	public function setProjectUrl(string $string) {$this->_projectUrl=$string;}
+	public function getProjectUrl():string {return $this->_projectUrl;}
+	public function setHostId(int $int) {$this->_hostId=$int;}
+	public function getHostId():int {return $this->_hostId;}
+	public function setCreditId(int $int) {$this->_creditId=$int;}
+	public function getCreditId():int {return $this->_creditId;}
+	public function setTotalCredit(float $float) {$this->_totalCredit=$float;}
+	public function getTotalCredit():float {return $this->_totalCredit;}
+	public function setAvgCredit(float $float) {$this->_avgCredit=$float;}
+	public function getAvgCredit():float {return $this->_avgCredit;}
+	public function setMag(float $float) {$this->_mag=$float;}
+	public function getMag():float {return $this->_mag;}
+	public function setOwed(float $float) {$this->_owed=$float;}
+	public function getOwed():float {return $this->_owed;}
+	public function setOwedCalc(string $string) {$this->_owedCalc=$string;}
+	public function getOwedCalc():string {return $this->_owedCalc;}
+	public function setHostName(string $string) {$this->_hostName=$string;}
+	public function getHostName():string {return $this->_hostName;}
+}
+
+abstract class GrcPool_View_Member_Host_Project_Credit_MODELDAO extends TableDAO {
+	protected $_database = 'grcpool';
+	protected $_table = 'view_member_host_project_credit';
+	protected $_model = 'GrcPool_View_Member_Host_Project_Credit_OBJ';
+	protected $_primaryKey = '';
+	protected $_fields = array(
+		'id' => array('type'=>'INT','dbType'=>'int(11)'),
+		'email' => array('type'=>'STRING','dbType'=>'varchar(200)'),
+		'username' => array('type'=>'STRING','dbType'=>'varchar(25)'),
+		'verified' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'grcAddress' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'donation' => array('type'=>'FLOAT','dbType'=>'decimal(5,2)'),
+		'hostDbid' => array('type'=>'INT','dbType'=>'int(11)'),
+		'projectUrl' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'hostId' => array('type'=>'INT','dbType'=>'int(11)'),
+		'creditId' => array('type'=>'INT','dbType'=>'int(11)'),
+		'totalCredit' => array('type'=>'FLOAT','dbType'=>'decimal(22,6)'),
+		'avgCredit' => array('type'=>'FLOAT','dbType'=>'decimal(22,6)'),
+		'mag' => array('type'=>'FLOAT','dbType'=>'decimal(9,2)'),
+		'owed' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
+		'owedCalc' => array('type'=>'STRING','dbType'=>'varchar(4000)'),
+		'hostName' => array('type'=>'STRING','dbType'=>'varchar(100)'),
+	);
+}

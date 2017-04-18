@@ -1,0 +1,19 @@
+{
+  "name": "grcpool",
+  "version": "1.0.0",
+  "description": "node",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "grunt": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-phpunit": "^0.3.6",
+    "socket.io": "^1.7.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
