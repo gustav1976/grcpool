@@ -22,6 +22,7 @@ class SuperBlockData {
 	public $grcOwnerUnknown;
 	public $magUnit;
 	public $version;
+	public $projects;
 	
 	public function __construct($json = null) {
 		if ($json) {
@@ -47,6 +48,7 @@ class SuperBlockData {
 			$this->fulfillment = $data['fulfillment'];
 			$this->grcOwnerUnknown = $data['grcOwnerUnknown'];
 			$this->magUnit = $data['magUnit'];
+			$this->projects = $data['projects'];
 		}
 	}
 	
@@ -73,6 +75,7 @@ class SuperBlockData {
 		$json['fulfillment'] = $this->fulfillment;
 		$json['grcOwnerUnknown'] = $this->grcOwnerUnknown;
 		$json['magUnit'] = $this->magUnit;
+		$json['projects'] = $this->projects;
 		return json_encode($json);
 	}
 	

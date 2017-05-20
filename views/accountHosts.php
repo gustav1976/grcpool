@@ -1,5 +1,7 @@
 <?php
 
+$webPage->addBreadcrumb('account','user','/account');
+
 $webPage->appendHead('
 	<script>
 		function confirmDelete(hostId) {
@@ -10,7 +12,7 @@ $webPage->appendHead('
 	</script>
 ');
 
-$webPage->setPageTitle('Hosts');
+$content = '';
 
 if ($this->view->memHosts) {
 	$hosts = array();
@@ -21,7 +23,8 @@ if ($this->view->memHosts) {
 		array_push($hosts[$host->getId()],$host);
 	}
 	
-	$webPage->append('
+	$content .= '
+
 		<div class="rowpad"><i>Host Mag Calculation Definition: MAG = '.Constants::GRC_MAG_MULTIPLIER.' * ( ( HRAC / TRAC ) / W )</i></div>
 		<div class="rowpad"><i>Est. Daily GRC Calculation Definition: GRC = MAG * '.$this->view->magUnit.'</i></div>
 		<table class="table table-striped table-hover">
@@ -36,7 +39,7 @@ if ($this->view->memHosts) {
 				</tr>
 			</thead>
 			<tbody>
-	');
+	';
 	$hostCount = 0;
 	$totalAllMag = 0;
 	$totalAllGrc = 0;
@@ -54,16 +57,24 @@ if ($this->view->memHosts) {
 				}
 			}
 		}
-		$webPage->append('
+		$hostName = 'unknown';
+		if ($host[0]->getCustomName() != '') {
+			$hostName = $host[0]->getCustomName();
+		} else {
+			if ($host[0]->getHostName() != '') {
+				$hostName = $host[0]->getHostName();
+			}
+		}
+		$content .= '
 			<tr>
 				<td rowspan="'.($rows+1).'">
 					'.($this->view->hasDeleteNotice?'
 						<button onclick="confirmDelete('.$hostId.')" type="button" class="btn btn-danger btn-xs">X</button>&nbsp;&nbsp;
 					':'').'
-					<a href="/account/host/'.$hostId.'">'.($host[0]->getHostName()!=''?$host[0]->getHostName():'unknown').'</a>
+					<a href="/account/host/'.$hostId.'">'.$hostName.'</a>
 				</td>
 			</tr>
-		');
+		';
 		$totalMag = 0;
 		$totalGrc = 0;
 		foreach ($host as $h) {
@@ -75,20 +86,20 @@ if ($this->view->memHosts) {
 					$totalGrc += Utils::truncate($a->getMag()*$this->view->magUnit,8);
 					$totalAllGrc += Utils::truncate($a->getMag()*$this->view->magUnit,8);
 					$magCalc = Constants::GRC_MAG_MULTIPLIER.' * ( ( '.$a->getAvgCredit().' / '.$this->view->accounts[$a->getProjectUrl()]->getRac().' ) / '.$this->view->accounts[$a->getProjectUrl()]->getWhiteListCount().' )';
-					$webPage->append('
+					$content .= '
 						<tr>
 							<td>'.$a->getProjectUrl().'</td>
 							<td><small>'.$magCalc.'</small></td>
 							<td class="text-right">'.$a->getAvgCredit().'</td>							
 							<td class="text-right">'.$a->getMag().'</td>
-							<td class="text-right">'.(Utils::truncate($a->getMag()*$this->view->magUnit,8)).'</td>
+							<td class="text-right">'.(Utils::truncate($a->getMag()*$this->view->magUnit,3)).'</td>
 						</tr>
-					');
+					';
 				}
 			}
 		}
 		if ($rows > 1) {
-			$webPage->append('
+			$content .= '
 				<tr style="background-color:#BBBBBB;">
 					<td><strong>Host Total</strong></td>
 					<td></td><td></td>
@@ -96,11 +107,11 @@ if ($this->view->memHosts) {
 					<td class="text-right"><strong>'.$totalMag.'</strong></td>
 					<td class="text-right"><strong>'.number_format($totalGrc,8).'</strong></td>
 				</tr>
-			');
+			';
 		}				
 	}
 	if ($hostCount > 1) {
-		$webPage->append('
+		$content .= '
 			<tr style="background-color:#BBBBBB;">
 				<td><strong>Hosts Total</strong></td>
 				<td></td><td></td>
@@ -108,9 +119,9 @@ if ($this->view->memHosts) {
 				<td class="text-right"><strong>'.$totalAllMag.'</strong></td>
 				<td class="text-right"><strong>'.number_format($totalAllGrc,8).'</strong></td>
 			</tr>
-		');
+		';
 	}
-	$webPage->append('</tbody></table>
+	$content .= '</tbody></table>
 		'.($haveProjs?'':Bootstrap_Callout::info('Please allow at least 24 hours after you have completed tasks for credit to appear. After tasks are completed, the project site needs to validate and update its statistics. The pool checks with projects several times per day to get credit.')).'	
 		'.($this->view->hasDeleteNotice?'':Bootstrap_Callout::error('
 			<b>Project and Host Deletion is Disabled</b><br/>
@@ -118,7 +129,14 @@ if ($this->view->memHosts) {
 			Also you may want to double check your BOINC client to be sure any projects being deleted are detached.<br/><br/>
 			<div class=""><a href="/account/hosts/enableDelete" class="btn btn-danger">I understand, enable delete options please...</a></div>
 		')).'						
-	');
+	';
 } else {
-	$webPage->append('You have not attached any hosts to grcpool.com');
+	$content .= 'You have not attached any hosts to grcpool.com';
 }
+
+
+$panel = new Bootstrap_Panel();
+$panel->setContext('info');
+$panel->setHeader('Hosts');
+$panel->setContent($content);
+$webPage->append($panel->render());

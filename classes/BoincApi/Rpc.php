@@ -11,6 +11,7 @@ class BoincApi_Rpc {
 	private $error;
 	private $rawName;
 	private $log;
+	private $attachedProjects;
 
 	public function getRawName() {
 		$pos1 = strpos($this->rawXml,'<name>');
@@ -33,6 +34,7 @@ class BoincApi_Rpc {
 		$this->log = $log;
 		$this->error = '';
 		$this->rawName = $this->getRawName();
+		$this->attachedProjects = array();
 		try {
 			libxml_use_internal_errors(true);	
 			$this->xml = simplexml_load_string($xml);
@@ -207,6 +209,7 @@ class BoincApi_Rpc {
 	 						if ($echo) echo "FOUND PROJECT WITH CPID\n";
 	 					}
 	 				} else {
+	 					$this->attachedProjects[$projectUrl] = 1;
 	 					if ($echo) echo "FOUND PROJECT WITH DBID\n";
 	 				}
 	 				if ($obj->getHostDbid() != $dbid) {
@@ -262,7 +265,9 @@ class BoincApi_Rpc {
 		$xml .= '<acct_mgr_reply>
 			<name>'.$config->getName().'</name>
 			<signing_key>'.URL_SIGNING_KEY.'</signing_key>
-			<global_preferences></global_preferences>
+			<global_preferences>
+				<mod_time>0.000000</mod_time>
+			</global_preferences>
 		';
 		if ($this->host) {
 			$xml .= '<opaque><hostId>'.$this->host->getId().'</hostId></opaque>';
@@ -273,24 +278,33 @@ class BoincApi_Rpc {
 			$hostProjects = $hostProjectDao->getWithMemberIdAndHostCpid($this->member->getId(),$this->xml->host_cpid);
 			foreach ($hostProjects as $hostProject) {
 				$account = $accountsDao->initWithUrl($hostProject->getProjectUrl());
-				$acct = new BoincApi_Account();
-				$acct->setUrl($hostProject->getProjectUrl());
-				$acct->setNo_ati($hostProject->getNoAtiGpu()|null);
-				$acct->setNo_cpu($hostProject->getNoCpu()|null);
-				$acct->setNo_cuda($hostProject->getNoNvidiaGpu()|null);
-				$acct->setNo_intel($hostProject->getNoIntelGpu()|null);
-				$acct->setResource_share($hostProject->getResourceShare());
-				$acct->setUrl_signature($account->getSignature());
-				$acct->setAuthenticator($account->getWeakKey());
-				if ($hostProject->getAttached()==0) {
-					$acct->setDetach(1);
+				if ($account) {
+					if ($hostProject->getAttached()==0 && !isset($this->attachedProjects[$hostProject->getProjectUrl()])) {
+						// if project detached in pool but isnt in boinc, skip it, might cause BIONC crashes
+						continue;
+					}
+					$acct = new BoincApi_Account();
+					$acct->setUrl($hostProject->getProjectUrl());
+					$acct->setNo_ati($hostProject->getNoAtiGpu()|null);
+					$acct->setNo_cpu($hostProject->getNoCpu()|null);
+					$acct->setNo_cuda($hostProject->getNoNvidiaGpu()|null);
+					$acct->setNo_intel($hostProject->getNoIntelGpu()|null);
+					$acct->setResource_share($hostProject->getResourceShare());
+					$acct->setUrl_signature($account->getSignature());
+					$acct->setAuthenticator($account->getWeakKey());
+					if ($hostProject->getAttached()==0) {
+						$acct->setDetach(1);
+					}
+					$xml .= $acct->toXml();
 				}
-				$xml .= $acct->toXml();
 			}
 		} else {
 			$xml .= '<message>Authorization Failed</message><error>Authorization Failed</error>';			
 		}
 		$xml .= '</acct_mgr_reply>';
+		
+		//$xml = file_get_contents(dirname(__FILE__).'/../../test/data/Exikutioner.1493218818.out.xml');
+		
 		if ($this->log) {
 			file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.out.xml',$xml);
 		}

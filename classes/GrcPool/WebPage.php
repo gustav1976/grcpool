@@ -11,6 +11,7 @@ class GrcPool_WebPage {
 	private $secondaryNav = '';
 	private $homeBody = '';
 	private $isHome = false;
+	private $breadcrumbs = array();
 
 	public function setHome($b) {$this->isHome = $b;}
 	public function appendHomeBody($str) {$this->homeBody .= $str;}
@@ -29,11 +30,24 @@ class GrcPool_WebPage {
 	public function setPageTitle($str) {
 		$this->pageTitle = $str;
 	}
-
+	public function addBreadcrumb($title,$icon = '',$href='') {
+		array_push($this->breadcrumbs,array('title'=>$title,'link'=>$href,'icon'=>$icon));
+	}
 	private function renderPageTitle() {
 		return $this->pageTitle?'<div class="page-header rowpad" style="margin-top:10px;"><h1>'.$this->pageTitle.'</h1></div>':'';
 	}
-
+	private function renderBreadcrumb() {
+		$result = '';
+		if ($this->breadcrumbs) {
+			$result .= '<ol class="rounded breadcrumb hidden-xs" style="margin-bottom:20px;">';
+			$result .= '<li><a href="/"><i class="fa fa-home"></i> Home</a></li>';
+			foreach ($this->breadcrumbs as $idx => $crumb) {
+				$result .= '<li style="'.($crumb['link']!=""?'':'color:gray;').'" class="'.($idx+1 == count($this->breadcrumbs)?'':'').'">'.($crumb['link']!=""?'<a href="'.$crumb['link'].'">':'').''.($crumb['icon']!=""?'<i class="fa fa-'.$crumb['icon'].'"></i> ':'').$crumb['title'].''.($crumb['link']!=""?'</a>':'').'</li>';
+			}
+			$result .= '</ol>';
+		}
+		return $result;
+	}
 	private function getUserBar() {
 		global $USER;
 		$cache = new Cache();
@@ -45,22 +59,31 @@ class GrcPool_WebPage {
 		return '
 			<div class="container" style="padding-top:20px;">
 				<div class="pull-right rowpadsmall">
-					<div class="fb-follow" data-href="https://www.facebook.com/gridcoinpool" data-layout="button_count" data-size="small" data-show-faces="false"></div>
+					<a style="color:black;" href="https://www.youtube.com/c/GridcoinPool">
+						<i class="fa fa-youtube"></i>
+					</a>			
+					&nbsp;|&nbsp;
+					<a style="color:black;" href="https://www.facebook.com/gridcoinpool/">
+				  		<i class="fa fa-facebook"></i>
+					</a>			
+					&nbsp;				
+					<div style="display:inline-block;" class="fb-follow" data-href="https://www.facebook.com/gridcoinpool" data-layout="button_count" data-size="small" data-show-faces="false"></div>
 						&nbsp;|&nbsp;
-				'.($USER->getId() == 0?'
-						<a href="/login"><i class="fa fa-power-off"></i> login</a>
-						&nbsp;|&nbsp;
-						<a href="/signup"><i class="fa fa-edit"></i> sign up</a>
-					':'
-						<a href="/logout"><i class="fa fa-power-off"></i> logout</a>
-						&nbsp;|&nbsp;
-						<a href="/account">
-						'.($USER->hasAlerts()?'
-							<i class="fa fa-warning text-danger"></i>
+						'.($USER->getId() == 0?'
+							<a href="/login"><i class="fa fa-power-off"></i> login</a>
+							&nbsp;|&nbsp;
+							<a href="/signup"><i class="fa fa-edit"></i> sign up</a>
 						':'
-							<i class="fa fa-user"></i>
-						').'
- 						'.($USER->getUsername()).'</a>
+							<a href="/logout"><i class="fa fa-power-off"></i> logout</a>
+							&nbsp;|&nbsp;
+							<a href="/account">
+							'.($USER->hasAlerts()?'
+								<i class="fa fa-warning text-danger"></i>
+							':'
+								<i class="fa fa-user"></i>
+							').'
+	 						'.($USER->getUsername()
+	 					).'</a>
 						|
 						Owed: <a href="/account/payouts">'.number_format($owed,3,'.','').'</a>
 					').'
@@ -98,7 +121,7 @@ class GrcPool_WebPage {
 				<link rel="icon" href="/favicon.ico?20170214" type="image/x-icon"> 
 				<link rel="stylesheet" href="/assets/libs/bootstrap/3.3.5/css/bootstrap.min.css"/>
 				<link rel="stylesheet" href="/assets/libs/fontAwesome/4.6.3/css/font-awesome.min.css"/>
-				<link rel="stylesheet" href="/assets/css/grcpool.css?20170207"/>	
+				<link rel="stylesheet" href="/assets/css/grcpool.css?20170515"/>	
 				<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 				<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
 				<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -116,7 +139,7 @@ class GrcPool_WebPage {
 				<meta property="og:image" content="https://www.grcpool.com/assets/images/gpLogo1200.png"/>
  				'.$this->head.'
  			</head>
- 			<body style="margin-top:0px;">
+ 			<body>
 				'.$this->getTestBanner().'
 <div id="fb-root"></div>
 <script>(function(d, s, id) {
@@ -128,7 +151,7 @@ class GrcPool_WebPage {
 }(document, \'script\', \'facebook-jssdk\'));</script> 			
 				'.($this->isHome?'<div style="background-repeat:no-repeat;background-image:url(/assets/images/pool.jpg)">':'').'
 	 				'.$this->getUserBar().'
-		 			<div class="container">
+		 			<div class="container" style="margin-bottom:20px;">
 						<nav class="navbar navbar-inverse" style="margin-bottom:10px;">
 			  				<div class="container-fluid">
 			    				<div class="navbar-header">
@@ -168,8 +191,8 @@ class GrcPool_WebPage {
 			  				</div>
 						</nav>
 		 			</div>
-	 	
 	 				<div class="container">
+						'.$this->renderBreadcrumb().'
 	 					'.$this->renderSecondaryNav().'
 	 					'.$this->renderPageTitle().'
 	 					'.($this->isHome?$this->homeBody:$this->body).'
@@ -179,15 +202,11 @@ class GrcPool_WebPage {
 	 			<div class="container">
 					'.($this->isHome?$this->body:'').'
 	 					<hr/>
-						<span>This project is currently in beta testing. Features may change frequently.
-							<a href="/content/devlog">View the development log.</a>
-						</span>
-	 					<div class="pull-right"><a href="mailto:admin@grcpool.com">admin@grcpool.com</a></div>
-	 					<br/><br/>
-	 					<a href="http://www.gridcoin.us/">Gridcoin Website</a> |
-	 					<a href="http://www.gridresearchcorp.com/gridcoin/">Gridcoin Block Explorer</a> |
-	 					<a href="https://kiwiirc.com/client/irc.freenode.net:6667/#gridcoin-help">Gridcoin Help Chat</a> |
-	 					<a href="http://cryptocointalk.com/topic/1331-new-coin-launch-announcement-grc-gridcoin/?view=getnewpost">Gridcoin Forum</a>
+	 					<div class="pull-right" style="margin-left:50px;"><a href="mailto:admin@grcpool.com">admin@grcpool.com</a></div>
+	 					<span style="white-space: nowrap;"><a href="http://www.gridcoin.us/">Gridcoin Website</a> |</span>
+	 					<span style="white-space: nowrap;"><a href="http://www.gridresearchcorp.com/gridcoin/">Gridcoin Block Explorer</a> |</span>
+	 					<span style="white-space: nowrap;"><a href="https://kiwiirc.com/client/irc.freenode.net:6667/#gridcoin-help">Gridcoin Help Chat</a> |</span>
+	 					<span style="white-space: nowrap;"><a href="http://cryptocointalk.com/topic/1331-new-coin-launch-announcement-grc-gridcoin/?view=getnewpost">Gridcoin Forum</a></span>
 	 					<br/><br/><br/><br/><br/><br/><br/><br/>
 	 				</div>
 	 	

@@ -7,16 +7,14 @@ final class RpcTest extends TestCase {
 
 	private function baseData() {
 		$dao = new GrcPool_Member_DAO();
+		$sql = 'delete from grcpool.member where id = 1 or username like \'phptest%\'';$dao->executeQuery($sql);
 		$sql = 'delete from grcpool.member_host where memberId = 1';$dao->executeQuery($sql);
 		$sql = 'delete from grcpool.member_host_project where memberId = 1';$dao->executeQuery($sql);
-		$member = new GrcPool_Member_OBJ();
-		$member->setId(1);
-		$member->setEmail('phptest@grcpool.com');
-		$member->setUsername('phptest');
-		$member->setPassword('');
-		$member->setpasswordHash('THISISATESTHASH');
-		$member->setGrcAddress('');
-		$dao->save($member);
+		$sql = 'insert into grcpool.member (
+			id,email,username,password,passwordHash,regtime,grcAddress,verifyKey,twoFactorKey,apiKey,apiSecret
+		) values (
+			1,\'phptest@grcpool.com\',\'phptest\',\'\',\'THISISATESTHASH\','.time().',\'\',\'\',\'\',\'\',\'\'
+		)';$dao->executeQuery($sql);
 	}
 	
 	public function setUp() {
@@ -170,7 +168,6 @@ final class RpcTest extends TestCase {
 		$xml = simplexml_load_string($rpc->getResponseXml());
 		$this->assertEquals('grcpool.com',(String)$xml->name);
 		$this->assertEquals('',(String)$xml->message);
-	}
-	
+	}	
 	
 }

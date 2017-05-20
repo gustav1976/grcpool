@@ -12,27 +12,7 @@ $projects = '
 $webPage->appendHomeBody('
 	'.($this->view->online != '1'?'
 		'.Bootstrap_Callout::error('The pool wallet is currently offline, please check the facebook page for status updates.').'		
-	':'').'
-	<div class="row rowpad" style="display:flex;align-items: center;font-family: \'Exo 2\', sans-serif;">
-		<div style="font-size:1.5em;" class="col-sm-5 col-xs-6 text-right">
-			<a href="https://www.facebook.com/gridcoinpool/">
-				<span class="fa-stack fa-lg">
-			  		<i style="color:black;" class="fa fa-circle fa-stack-2x"></i>
-			  		<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
-				</span>
-			</a>			
-		</div>
-		<div style="font-size:2em;" class="col-sm-2 hidden-xs text-center"><img class="img-responsive" src="/assets/images/gpLogo.png"/></div>
-		<div style="font-size:1.5em;" class="col-sm-5 col-xs-6">
-			<a href="https://www.youtube.com/c/GridcoinPool">
-				<span class="fa-stack fa-lg">
-			  		<i style="color:black;" class="fa fa-circle fa-stack-2x"></i>
-			  		<i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-				</span>
-			</a>			
-		</div>
-	</div>
-		
+	':'').'		
 	<div class="row">
 		<div class="col-sm-6 rowpad">
 			<div class="embed-responsive embed-responsive-16by9" style="border:1px solid #ccc;"><iframe class="embed-responsive-item" width="560" height="315" src="https://www.youtube.com/embed/79rTDNjdOf8" frameborder="0" allowfullscreen></iframe></div>

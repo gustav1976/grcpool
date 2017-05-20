@@ -14,6 +14,7 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 	private $_magTotalCredit = 0;
 	private $_owed = 0.00000000;
 	private $_owedCalc = '';
+	private $_memberId = 0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setHostDbid(int $int) {$this->_hostDbid=$int;}
@@ -36,6 +37,8 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 	public function getOwed():float {return $this->_owed;}
 	public function setOwedCalc(string $string) {$this->_owedCalc=$string;}
 	public function getOwedCalc():string {return $this->_owedCalc;}
+	public function setMemberId(int $int) {$this->_memberId=$int;}
+	public function getMemberId():int {return $this->_memberId;}
 }
 
 abstract class GrcPool_Member_Host_Credit_MODELDAO extends TableDAO {
@@ -55,5 +58,6 @@ abstract class GrcPool_Member_Host_Credit_MODELDAO extends TableDAO {
 		'magTotalCredit' => array('type'=>'FLOAT','dbType'=>'decimal(22,6)'),
 		'owed' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
 		'owedCalc' => array('type'=>'STRING','dbType'=>'varchar(4000)'),
+		'memberId' => array('type'=>'INT','dbType'=>'int(11)'),
 	);
 }

@@ -42,6 +42,7 @@ $daemon = GrcPool_Utils::getDaemonForEnvironment();
 $viewDao = new GrcPool_View_Member_Host_Project_Credit_DAO();
 $creditDao = new GrcPool_Member_Host_Credit_DAO();
 $payoutDao = new GrcPool_Member_Payout_DAO();
+$memberDao = new GrcPool_Member_DAO();
 
 // PROPERTIES OF PAYOUT
 $PAYOUTFEE = $settingsDao->getValueWithName(Constants::SETTINGS_PAYOUT_FEE);
@@ -84,7 +85,7 @@ $owe = null;
 
 echo "INFO: Total Owed: ".$totalAmountOwed."\n";
 if ($totalAmountOwed > $availablePOR) {
-	echo "CRITICAL: !!!!!!!!!! Trying to pay out to much\n";
+	echo "CRITICAL: !!!!!!!!!! Trying to pay out to much ".$totalAmountOwed." > ".$availablePOR."\n";
 	exit;
 }
 
@@ -97,7 +98,13 @@ foreach ($owedGroups as $owedGroup) {
 
 	echo '~~~~ PAYOUT FOR '.$owedGroup->getUsername()." Owed: ".$owedGroup->getOwed()."\n";
 	$payoutObj = new GrcPool_Payout();
-	$payoutObj->setMinOwePayout($MINOWEPAYOUT);
+	
+	$member = $memberDao->initWithKey($owedGroup->getId());
+	if ($member && $member->getId() && $member->getMinPayout()) {
+		$payoutObj->setMinOwePayout($member->getMinPayout());
+	} else {
+		$payoutObj->setMinOwePayout($MINOWEPAYOUT);
+	}
 	$payoutObj->setPayoutFee($PAYOUTFEE);
 
 	$payoutData = $payoutObj->process($owedGroup);
@@ -137,6 +144,7 @@ foreach ($owedGroups as $owedGroup) {
  			echo "SETTING TO ZERO ".$credit->getId()." from: ".$credit->getOwed()."\n";
  			$credit->setOwed(0);
  			$credit->setOwedCalc('');
+ 			$credit->setMemberId($owedGroup->getId());
  			if ($DEBUG) {
  				echo "Setting to zero\n";
  			} else {

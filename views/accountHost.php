@@ -1,6 +1,7 @@
 <?php
 
-$webPage->setPageTitle('My Host');
+$webPage->addBreadcrumb('account','user','/account');
+$webPage->addBreadcrumb('hosts','desktop','/account/hosts');
 
 $webPage->appendHead('
 	<script>
@@ -9,14 +10,52 @@ $webPage->appendHead('
 				location.href="/account/host/'.$this->view->host->getId().'/delete/"+projectId;
 			}
 		}
+		function updateCustomName() {
+			$.ajax({
+  				type: "POST",
+  				url: "/api/hostName/'.$this->view->host->getId().'",
+  				data: JSON.stringify({"customName":$("#customName").val()}),
+				success: function(data) { closeHostNameEdit(data.customName); },
+				error: function(data) { closeHostNameEdit(""); },
+				contentType: "application/json",
+  				dataType: "json"
+			});
+		}
+		function closeHostNameEdit(name) {
+			if (name != "") {
+				$("#hostName").html(name);
+			}
+			$("#hostName").show();
+			$("#customNameGroup").hide();
+		}
+		function editHostName() {
+			$("#customName").val($("#hostName").html());
+			$("#hostName").hide();
+			$("#customNameGroup").show();
+			$("#customName").focus();
+			$("#customName").select();
+		}
 	</script>
 ');
 
-$webPage->append('
-	<h3>Details</h3>
+$panel = new Bootstrap_Panel();
+$panel->setHeader('Host Details - '.$this->view->host->getHostName());
+$panel->setContext('info');
+$panel->setContent('
 	<table class="table table-striped table-hover table-condensed">
 		<tr><td>CPID</td><td>'.$this->view->host->getCpid().'</td></tr>
-		<tr><td>Host Name</td><td>'.$this->view->host->getHostName().'</td></tr>
+		<tr><td>Host Name</td><td>
+			<a id="hostName" href="javascript:editHostName();" title="'.$this->view->host->getHostName().'">'.($this->view->host->getCustomName()!=''?$this->view->host->getCustomName():$this->view->host->getHostName()).'</a>
+			<div id="customNameGroup" style="display:none;">
+				<div class="input-group col-xs-6 col-sm-5 col-md-4 col-mg-3">
+					<input class="form-control" maxlength="50" type="text" value="" id="customName"/>	
+		      		<span class="input-group-btn">
+	        			<button onclick="updateCustomName();" class="btn btn-default" type="button"><i class="fa fa-arrow-right"></i></button>
+      				</span>
+				</div>
+				<small>'.$this->view->host->getHostName().'</small>
+			</div>
+		</td></tr>
 		<tr><td>BOINC Version</td><td>'.$this->view->host->getClientVersion().'</td></tr>
 		<tr><td>Model</td><td>'.$this->view->host->getModel().'</td></tr>
 		<tr><td>OS</td><td>'.$this->view->host->getOsName().'</td></tr>
@@ -29,8 +68,8 @@ $webPage->append('
 		<tr><td>First Contact</td><td>'.Utils::getTimeAgo($this->view->host->getFirstContact()).'</td></tr>
 		<tr><td>Last Contact</td><td>'.Utils::getTimeAgo($this->view->host->getLastContact()).'</td></tr>		
 	</table>
-	<br/>
 ');
+$webPage->append($panel->render());
 
 $haveIds = array();
 $html = '';
@@ -56,6 +95,7 @@ foreach ($this->view->projects as $p) {
 					'.$p->getName().'
 					'.($p->getAttachable()?'':'<small><br/><span class="text-danger"><i class="fa fa-warning"></i> <a href="/project/#'.$p->getId().'">check project status</a></span></small>').'
 					'.($host->getHostDbId()==0?'<small><br/><span class="text-danger"><i class="fa fa-warning"></i> <a href="/help/topics/1">This project may not be attached correctly, or needs sync.</a>':'').'
+					<small><br/><a target="_blank" href="'.$p->getBaseUrl().'/show_host_detail.php?hostid='.$host->getHostDbid().'">host project details</a></small>
 				</td>
 				<td><input class="form-control" style="width:80px;" type="text" name="resourceShare_'.$id.'" value="'.$proj->getResourceShare().'"/></td>
 				<td style="text-align:center;"><input value="1" type="checkbox" name="nocpu_'.$id.'" '.($proj->getNoCpu()?'checked':'').'/></td>
@@ -74,42 +114,51 @@ foreach ($this->view->projects as $project) {
 		$options .= '<option value="'.$project->getId().'">'.$project->getName().'</opton>';
 	}
 }
-$webPage->append('<h3 class="pull-left">Host Projects</h3>');
+
+$panel = new Bootstrap_Panel();
+$panel->setHeader('Projects');
+$panel->setContext('info');
+$content = '';
+
 if ($options) {
-	$webPage->append('
-		<form class="form-inline pull-right rowpad">
+	$content .= '
+		<form class="form-inline rowpad">
 			<div class="form-group">
 				<select class="form-control" id="projects"><option value=""></option>'.$options.'</select>
 				<button type="button" id="chooseButton" class="btn btn-info">choose</button>
-				<p class="help-block"><small><a href="/help/chooseProject">project advice</a></small></p>
+				&nbsp;&nbsp;&nbsp;&nbsp;<small><a href="/help/chooseProject">project advice</a></small>
 			</div>
 		</form>
-	');
+	';
 }
 
 
-	$webPage->append('
-		<form method="post" action="/account/host/'.$this->view->host->getId().'">		
-			<table class="table table-striped table-hover">
-				<thead>
-					<tr>
-						<th>Project</th>
-						<th>Resource Share</th>
-						<th style="text-align:center;">No Cpu</th>
-						<th style="text-align:center;">No Nvidia GPU</th>
-						<th style="text-align:center;">No ATI Gpu</th>
-						<th style="text-align:center;">No Intel GPU</th>
-						<th style="text-align:center;">Detach</th>
-					</tr>
-				</thead>
-				<tbody id="projectTbody">
-					'.$html.'
-				</tbody>
-			</table>
-			<button type="submit" class="btn btn-primary">Save Project Settings</button>
-			<input type="hidden" name="cmd" value="saveSettings"/>
-		</form>
-	');
+$content .= '
+	<form method="post" action="/account/host/'.$this->view->host->getId().'">		
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th>Project</th>
+					<th>Resource Share</th>
+					<th style="text-align:center;">No Cpu</th>
+					<th style="text-align:center;">No Nvidia GPU</th>
+					<th style="text-align:center;">No ATI Gpu</th>
+					<th style="text-align:center;">No Intel GPU</th>
+					<th style="text-align:center;">Detach</th>
+				</tr>
+			</thead>
+			<tbody id="projectTbody">
+				'.$html.'
+			</tbody>
+		</table>
+		<button type="submit" class="btn btn-primary">Save Project Settings</button>
+		<input type="hidden" name="cmd" value="saveSettings"/>
+	</form>
+';
+$panel->setContent($content);
+$webPage->append($panel->render());
+
+
 $webPage->appendScript('
 	<script>
 		$("#chooseButton").click(function() {

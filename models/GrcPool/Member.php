@@ -17,6 +17,7 @@ abstract class GrcPool_Member_MODEL {
 	private $_twoFactorKey = '';
 	private $_apiKey = '';
 	private $_apiSecret = '';
+	private $_minPayout = 1.0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setEmail(string $string) {$this->_email=$string;}
@@ -45,6 +46,8 @@ abstract class GrcPool_Member_MODEL {
 	public function getApiKey():string {return $this->_apiKey;}
 	public function setApiSecret(string $string) {$this->_apiSecret=$string;}
 	public function getApiSecret():string {return $this->_apiSecret;}
+	public function setMinPayout(float $float) {$this->_minPayout=$float;}
+	public function getMinPayout():float {return $this->_minPayout;}
 }
 
 abstract class GrcPool_Member_MODELDAO extends TableDAO {
@@ -67,5 +70,6 @@ abstract class GrcPool_Member_MODELDAO extends TableDAO {
 		'twoFactorKey' => array('type'=>'STRING','dbType'=>'varchar(40)'),
 		'apiKey' => array('type'=>'STRING','dbType'=>'varchar(32)'),
 		'apiSecret' => array('type'=>'STRING','dbType'=>'varchar(88)'),
+		'minPayout' => array('type'=>'INT','dbType'=>'int(5)'),
 	);
 }

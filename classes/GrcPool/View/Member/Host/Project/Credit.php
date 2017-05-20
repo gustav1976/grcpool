@@ -32,7 +32,7 @@ class GrcPool_View_Member_Host_Project_Credit_DAO extends GrcPool_View_Member_Ho
 	}
 	
 	public function getTopHosts($limit) {
-		$sql = 'select username,hostId,sum(mag) as magTotal from '.$this->getFullTableName().' group by username,hostId order by magTotal desc limit '.$limit;
+		$sql = 'select id,username,hostId,sum(mag) as magTotal from '.$this->getFullTableName().' group by id,username,hostId order by magTotal desc limit '.$limit;
 		return $this->query($sql);
 	}
 	

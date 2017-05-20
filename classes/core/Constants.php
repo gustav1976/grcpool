@@ -26,6 +26,7 @@ class Constants {
 	const PAYOUT_ERROR_NO_MIN_AMOUNT = 'No minimum specified';
 	const PAYOUT_ERROR_MIN_CALC_AMOUNT_NOT_MET = 'Mimimum calculated amount to send not met';
 	
+	const API_ERROR_000 = 'Request not authorized.';
 	const API_ERROR_001 = 'Please provide a longer username, at least 6 characters';
 	const API_ERROR_002 = 'Username already exists';
 	const API_ERROR_003 = 'Email address is not valid';

@@ -50,13 +50,18 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 	}
 	
 	public function magHostAction() {
+		$projectDao = new GrcPool_Member_Host_Project_DAO();
 		$dao = new GrcPool_View_Member_Host_Project_Credit_DAO();
 		$this->view->hosts = $dao->getTopHosts(50);
 		$hostDao = new GrcPool_Member_Host_DAO();
 		$keys = array();
+		$projects = array();
 		foreach ($this->view->hosts as $host) {
+			//$projs = $projectDao->getWithMemberIdAndHostId($host['id'],$host['hostId']);
+			//$projects[$host['hostId']] = $projs;
 			$keys[$host['hostId']] = 1;
 		}
+		$this->view->projects = $projects;
 		$this->view->hostDetails = $hostDao->initWithKeys(array_keys($keys));
 	}
 	
