@@ -101,7 +101,7 @@ class GrcPool_WebPage {
 
 	private function getTestBanner() {
 		if (getenv("SERVER_NAME") == 'test.grcpool.com') {
-			$PROPERTY = new Property(dirname(__FILE__).'/../../../properties/grcpool.props.json');
+			$PROPERTY = new Property(Constants::PROPERTY_FILE);
 			if ($PROPERTY->get('test')) {
 				return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">This is the TEST System - All coins are testnet coins</div>';
 			}

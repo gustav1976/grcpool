@@ -45,7 +45,7 @@ $panel->setContent('
 	<table class="table table-striped table-hover table-condensed">
 		<tr><td>CPID</td><td>'.$this->view->host->getCpid().'</td></tr>
 		<tr><td>Host Name</td><td>
-			<a id="hostName" href="javascript:editHostName();" title="'.$this->view->host->getHostName().'">'.($this->view->host->getCustomName()!=''?$this->view->host->getCustomName():$this->view->host->getHostName()).'</a>
+			<a id="hostName" href="javascript:editHostName();" title="customize: '.$this->view->host->getHostName().'">'.($this->view->host->getCustomName()!=''?$this->view->host->getCustomName():$this->view->host->getHostName()).'</a>
 			<div id="customNameGroup" style="display:none;">
 				<div class="input-group col-xs-6 col-sm-5 col-md-4 col-mg-3">
 					<input class="form-control" maxlength="50" type="text" value="" id="customName"/>	
@@ -58,13 +58,13 @@ $panel->setContent('
 		</td></tr>
 		<tr><td>BOINC Version</td><td>'.$this->view->host->getClientVersion().'</td></tr>
 		<tr><td>Model</td><td>'.$this->view->host->getModel().'</td></tr>
-		<tr><td>OS</td><td>'.$this->view->host->getOsName().'</td></tr>
-		<tr><td>OS Version</td><td>'.$this->view->host->getOsVersion().'</td></tr>
-		<tr><td>Product</td><td>'.$this->view->host->getProductName().'</td></tr>
-		<tr><td>CPUs</td><td>'.$this->view->host->getNumberOfCpus().'</td></tr>
-		<tr><td>Intel GPU</td><td>'.$this->view->host->getNumberOfIntels().'</td></tr>
-		<tr><td>AMD GPU</td><td>'.$this->view->host->getNumberOfAmds().'</td></tr>
-		<tr><td>NVidia GPU</td><td>'.$this->view->host->getNumberOfCudas().'</td></tr>
+		<tr><td>OS</td><td>'.$this->view->host->getOsName().' '.$this->view->host->getOsVersion().' '.$this->view->host->getProductName().'</td></tr>
+		<tr><td>Capability</td><td>
+			CPUS: '.$this->view->host->getNumberOfCpus().',
+			Intel GPU: '.$this->view->host->getNumberOfIntels().',
+			AMD: '.$this->view->host->getNumberOfAmds().',
+			NVIDIA: '.$this->view->host->getNumberOfCudas().'
+		</td></tr>
 		<tr><td>First Contact</td><td>'.Utils::getTimeAgo($this->view->host->getFirstContact()).'</td></tr>
 		<tr><td>Last Contact</td><td>'.Utils::getTimeAgo($this->view->host->getLastContact()).'</td></tr>		
 	</table>
@@ -74,12 +74,17 @@ $webPage->append($panel->render());
 $haveIds = array();
 $html = '';
 
+$otherPoolHosts = array();
+
 foreach ($this->view->projects as $p) {
 	$host = null;
 	foreach ($this->view->hostProjects as $proj) {
 		if ($p->getUrl() == $proj->getProjectUrl()) {
-			$host = $proj;
-			break;			
+			if ($proj->getPoolId() == $this->getUser()->getPoolId() && $proj->getAttached() != 2) {
+				$host = $proj;
+			} else {
+				array_push($otherPoolHosts,$proj);				
+			}
 		}
 	}
 	if ($host) {
@@ -94,15 +99,18 @@ foreach ($this->view->projects as $p) {
 					<input type="hidden" id="project_'.$id.'" name="ids[]" value="'.$id.'"/>
 					'.$p->getName().'
 					'.($p->getAttachable()?'':'<small><br/><span class="text-danger"><i class="fa fa-warning"></i> <a href="/project/#'.$p->getId().'">check project status</a></span></small>').'
-					'.($host->getHostDbId()==0?'<small><br/><span class="text-danger"><i class="fa fa-warning"></i> <a href="/help/topics/1">This project may not be attached correctly, or needs sync.</a>':'').'
-					<small><br/><a target="_blank" href="'.$p->getBaseUrl().'/show_host_detail.php?hostid='.$host->getHostDbid().'">host project details</a></small>
+					'.($host->getHostDbId()==0?'
+						<small><br/><span class="text-danger"><i class="fa fa-warning"></i> <a href="/help/topics/1">This project may not be attached correctly, or needs sync.</a>
+					':'
+						<small><br/><a target="_blank" href="'.$p->getBaseUrl().'/show_host_detail.php?hostid='.$host->getHostDbid().'">host project details</a></small>
+					').'
 				</td>
-				<td><input class="form-control" style="width:80px;" type="text" name="resourceShare_'.$id.'" value="'.$proj->getResourceShare().'"/></td>
-				<td style="text-align:center;"><input value="1" type="checkbox" name="nocpu_'.$id.'" '.($proj->getNoCpu()?'checked':'').'/></td>
-				<td style="text-align:center;"><input value="1" type="checkbox" name="nonvidiagpu_'.$id.'" '.($proj->getNoNvidiaGpu()?'checked':'').'/></td>
-				<td style="text-align:center;"><input value="1" type="checkbox" name="noatigpu_'.$id.'" '.($proj->getNoAtiGpu()?'checked':'').'/></td>
-				<td style="text-align:center;"><input value="1" type="checkbox" name="nointelgpu_'.$id.'" '.($proj->getNoIntelGpu()?'checked':'').'/></td>
-				<td style="text-align:center;"><input '.($p->getWhiteList()?'':'checked disabled readonly').' value="1" type="checkbox" name="detach_'.$id.'" '.($proj->getAttached()==1&&$p->getWhiteList()?'':'checked').'/></td>					
+				<td><input class="form-control" style="width:80px;" type="text" name="resourceShare_'.$id.'" value="'.$host->getResourceShare().'"/></td>
+				<td style="text-align:center;"><input value="1" type="checkbox" name="nocpu_'.$id.'" '.($host->getNoCpu()?'checked':'').'/></td>
+				<td style="text-align:center;"><input value="1" type="checkbox" name="nonvidiagpu_'.$id.'" '.($host->getNoNvidiaGpu()?'checked':'').'/></td>
+				<td style="text-align:center;"><input value="1" type="checkbox" name="noatigpu_'.$id.'" '.($host->getNoAtiGpu()?'checked':'').'/></td>
+				<td style="text-align:center;"><input value="1" type="checkbox" name="nointelgpu_'.$id.'" '.($host->getNoIntelGpu()?'checked':'').'/></td>
+				<td style="text-align:center;"><input value="1" type="checkbox" name="detach_'.$id.'" '.($host->getAttached()==1?'':'checked').'/></td>					
 			</tr>
 		';
 	}
@@ -110,13 +118,15 @@ foreach ($this->view->projects as $p) {
 
 $options = '';
 foreach ($this->view->projects as $project) {
-	if ($project->getWhiteList() && $project->getAttachable() && !isset($haveIds[$project->getId()])) {
-		$options .= '<option value="'.$project->getId().'">'.$project->getName().'</opton>';
+	if (($this->getUser()->getPoolId() == 1 && $project->getWeakKey() != '') || ($this->getUser()->getPoolId() == 2 && $project->getWeakKey2() != '')) { 
+		if ($project->getWhiteList() && $project->getAttachable() && !isset($haveIds[$project->getId()])) {
+			$options .= '<option value="'.$project->getId().'">'.$project->getName().'</opton>';
+		}
 	}
 }
 
 $panel = new Bootstrap_Panel();
-$panel->setHeader('Projects');
+$panel->setHeader('Projects for Pool #'.$this->getUser()->getPoolId());
 $panel->setContext('info');
 $content = '';
 
@@ -158,6 +168,26 @@ $content .= '
 $panel->setContent($content);
 $webPage->append($panel->render());
 
+if ($otherPoolHosts) {
+	$panel = new Bootstrap_Panel();
+	$panel->setHeader('Unlinked Projects');
+	$panel->setContext('info');
+	$html = '<table class="table table-striped table-hover"><tr><th>Project</th><th class="text-center">Pool #</th></tr>';
+
+	foreach ($otherPoolHosts as $host) {
+		$html .= '
+			<tr>
+				<td>'.$this->view->projects[$host->getProjectUrl()]->getName().'</td>
+				<td class="text-center">'.$host->getPoolId().'</td>
+			</tr>
+		';
+	}
+	$html .= '</table>
+		<p><em>These projects are still linked to this host, but are not manageable.</em></p>
+	';
+	$panel->setContent($html);
+	$webPage->append($panel->render());
+}
 
 $webPage->appendScript('
 	<script>

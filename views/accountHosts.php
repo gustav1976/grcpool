@@ -24,18 +24,22 @@ if ($this->view->memHosts) {
 	}
 	
 	$content .= '
-
-		<div class="rowpad"><i>Host Mag Calculation Definition: MAG = '.Constants::GRC_MAG_MULTIPLIER.' * ( ( HRAC / TRAC ) / W )</i></div>
-		<div class="rowpad"><i>Est. Daily GRC Calculation Definition: GRC = MAG * '.$this->view->magUnit.'</i></div>
 		<table class="table table-striped table-hover">
 			<thead>
 				<tr>
 					<th>Host Name</th>
 					<th>Project</th>
-					<th>Mag Calculation</th>
+					<th>Pool</th>
+					<th>
+						Mag Calculation
+						<a href="#" data-toggle="tooltip" title="MAG = '.Constants::GRC_MAG_MULTIPLIER.' * ( ( HRAC / TRAC ) / W )"><i style="color:black;" class="fa fa-info-circle"></i></a>
+					</th>
 					<th class="text-right">RAC</th>
 					<th class="text-right">Mag</th>
-					<th class="text-right">Est. Daily GRC</th>
+					<th class="text-right">
+						Est. Daily GRC
+						<a href="#" data-toggle="tooltip" title="GRC = MAG * 0.225"><i style="color:black;" class="fa fa-info-circle"></i></a>
+					</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -67,11 +71,14 @@ if ($this->view->memHosts) {
 		}
 		$content .= '
 			<tr>
-				<td rowspan="'.($rows+1).'">
+				<td rowspan="'.($rows+1).'" style="background-color:#f0f0f0">
 					'.($this->view->hasDeleteNotice?'
-						<button onclick="confirmDelete('.$hostId.')" type="button" class="btn btn-danger btn-xs">X</button>&nbsp;&nbsp;
+						<button onclick="confirmDelete('.$hostId.')" type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>&nbsp;&nbsp;
 					':'').'
-					<a href="/account/host/'.$hostId.'">'.$hostName.'</a>
+					'.(isset($this->view->errorHosts[$hostId])?'
+						<small><span class="text-danger"><i title="this host possibly has an invalid project attached" class="fa fa-warning"></i></a></small>
+					':'').'
+					<a title="grcpool.com host details" href="/account/host/'.$hostId.'">'.$hostName.'</a>
 				</td>
 			</tr>
 		';
@@ -88,7 +95,8 @@ if ($this->view->memHosts) {
 					$magCalc = Constants::GRC_MAG_MULTIPLIER.' * ( ( '.$a->getAvgCredit().' / '.$this->view->accounts[$a->getProjectUrl()]->getRac().' ) / '.$this->view->accounts[$a->getProjectUrl()]->getWhiteListCount().' )';
 					$content .= '
 						<tr>
-							<td>'.$a->getProjectUrl().'</td>
+							<td><a title="go to your host details and tasks" target="_blank" href="'.$this->view->accounts[$a->getProjectUrl()]->getBaseUrl().'/show_host_detail.php?hostid='.$a->getHostDbid().'">'.$this->view->accounts[$a->getProjectUrl()]->getName().'</a>&nbsp;<small><i class="fa fa-external-link"></i></small></td>
+							<td class="text-center">'.$a->getProjectPoolId().'</td>
 							<td><small>'.$magCalc.'</small></td>
 							<td class="text-right">'.$a->getAvgCredit().'</td>							
 							<td class="text-right">'.$a->getMag().'</td>
@@ -98,26 +106,31 @@ if ($this->view->memHosts) {
 				}
 			}
 		}
-		if ($rows > 1) {
+		if (true || $rows > 1) {
 			$content .= '
-				<tr style="background-color:#BBBBBB;">
-					<td><strong>Host Total</strong></td>
-					<td></td><td></td>
-					<td class="text-right"></td>				
-					<td class="text-right"><strong>'.$totalMag.'</strong></td>
-					<td class="text-right"><strong>'.number_format($totalGrc,8).'</strong></td>
+				<tr style="background-color:#f0f0f0;border-top:2px solid #999;">
+					<td style="background-color:#f0f0f0;"><strong>Host Total</strong></td>
+					<td style="background-color:#f0f0f0;"></td>
+					<td style="background-color:#f0f0f0;"></td>
+					<td style="background-color:#f0f0f0;"></td>
+					<td style="background-color:#f0f0f0;" class="text-right"></td>				
+					<td style="background-color:#f0f0f0;" class="text-right"><strong>'.$totalMag.'</strong></td>
+					<td style="background-color:#f0f0f0;" class="text-right"><strong>'.number_format($totalGrc,8).'</strong></td>
 				</tr>
+				<tr style="background-color:transparent;"><td colspan="7"><div style="margin:20px;"></div></td></tr>
 			';
 		}				
 	}
-	if ($hostCount > 1) {
+	if (true || $hostCount > 1) {
 		$content .= '
-			<tr style="background-color:#BBBBBB;">
-				<td><strong>Hosts Total</strong></td>
-				<td></td><td></td>
-				<td class="text-right"></td>
-				<td class="text-right"><strong>'.$totalAllMag.'</strong></td>
-				<td class="text-right"><strong>'.number_format($totalAllGrc,8).'</strong></td>
+			<tr style="background-color:#ddd;border-top:4px solid #555;">
+				<td style="background-color:#ddd;"><strong>Hosts Total</strong></td>
+				<td style="background-color:#ddd;"></td>
+				<td style="background-color:#ddd;"></td>
+				<td style="background-color:#ddd;"></td>
+				<td style="background-color:#ddd;" class="text-right"></td>
+				<td style="background-color:#ddd;" class="text-right"><strong>'.$totalAllMag.'</strong></td>
+				<td style="background-color:#ddd;" class="text-right"><strong>'.number_format($totalAllGrc,8).'</strong></td>
 			</tr>
 		';
 	}

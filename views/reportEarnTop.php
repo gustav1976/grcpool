@@ -14,7 +14,7 @@ foreach ($this->view->members as $host) {
 	$webPage->append('		
 		<tr>
 			<td>'.$pos++.'</td>
-			<td>'.$host['username'].'</td>
+			<td><a href="/report/researcher/'.$host['id'].'">'.$host['username'].'</a></td>
 			<td class="text-right">'.$host['totalAmount'].'</td>
 		</tr>
 	');

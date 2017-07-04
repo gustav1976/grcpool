@@ -70,22 +70,34 @@ $projects = '
 			<tr>
 				<th>Project</th>
 				<th style="text-align:center;">White List</th>
-				<th style="text-align:center;">Attachable</th>
+				<th style="text-align:center;">Pool&nbsp;1</th>
+				<th style="text-align:center;">Pool&nbsp;2</th>
 				<th>Last Contact</th>
 				<th class="text-right">Avg Credit</th>
 				<th class="text-right">Min RAC</th>
-				<th class="text-right">Hosts</th>
-				<th class="text-right">Mag</th>
+				<th class="text-right">Hosts&nbsp;1</th>
+				<th class="text-right">Mag&nbsp;1</th>
+				<th class="text-right">Hosts&nbsp;2</th>
+				<th class="text-right">Mag&nbsp;2</th>
 			</tr>
 		</thead>
 		<tbody>
 ';
 foreach ($this->view->accounts as $account) {
-	$mag = 0;
-	$hostCount = 0;
+	$mag_1 = 0;
+	$hostCount_1 = 0;
+	$mag_2 = 0;
+	$hostCount_2 = 0;
 	if (isset($this->view->projStats[$account->getUrl()])) {
-		$hostCount = $this->view->projStats[$account->getUrl()]['hostCount'];
-		$mag = $this->view->projStats[$account->getUrl()]['mag'];
+		//echo '<pre>';print_r($this->view->projStats[$account->getUrl()]);exit;
+		if (isset($this->view->projStats[$account->getUrl()]['hostCount_1'])) {
+			$hostCount_1 = $this->view->projStats[$account->getUrl()]['hostCount_1'];
+			$mag_1 = $this->view->projStats[$account->getUrl()]['mag_1'];
+		}
+		if (isset($this->view->projStats[$account->getUrl()]['hostCount_2'])) {
+			$hostCount_2 = $this->view->projStats[$account->getUrl()]['hostCount_2'];
+			$mag_2 = $this->view->projStats[$account->getUrl()]['mag_2'];
+		}
 	}
 	$projects .= '
 		<tr>
@@ -94,12 +106,15 @@ foreach ($this->view->accounts as $account) {
 				'.($account->getMessage()?'<br/><i class="fa fa-warning text-danger"></i> '.$account->getMessage():'').'
 			</td>
 			<td style="text-align:center;">'.($account->getWhiteList()?'<i class="fa fa-thumbs-up text-success"></i>':'<i class="fa fa-thumbs-down text-danger"></i>').'</td>
-			<td style="text-align:center;">'.($account->getAttachable()?'<i class="fa fa-thumbs-up text-success"></i>':'<i class="fa fa-thumbs-down text-danger"></i>').'</td>
+			<td style="text-align:center;">'.($account->getAttachable()&&$account->getWeakKey()!=''?'<i class="fa fa-thumbs-up text-success"></i>':'<i class="fa fa-thumbs-down text-danger"></i>').'</td>
+			<td style="text-align:center;">'.($account->getAttachable()&&$account->getWeakKey2()!=''?'<i class="fa fa-thumbs-up text-success"></i>':'<i class="fa fa-thumbs-down text-danger"></i>').'</td>
 			<td>'.Utils::getTimeAgo($account->getLastSeen()).'</td>					
 			<td class="text-right">'.number_format($account->getRac(),2).'</td>
 			<td class="text-right">'.number_format($account->getMinRac(),2).'</td>
-			<td class="text-right">'.$hostCount.'</td>
-			<td class="text-right">'.number_format($mag,2).'</td>
+			<td class="text-right">'.$hostCount_1.'</td>
+			<td class="text-right">'.number_format($mag_1,2).'</td>
+			<td class="text-right">'.$hostCount_2.'</td>
+			<td class="text-right">'.number_format($mag_2,2).'</td>					
 		</tr>
 	';
 }

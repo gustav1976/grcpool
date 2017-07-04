@@ -6,10 +6,12 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 	private $_id = 0;
 	private $_email = '';
 	private $_username = '';
+	private $_poolId = 1;
 	private $_verified = 0;
 	private $_grcAddress = '';
 	private $_donation = 0.00;
 	private $_hostDbid = 0;
+	private $_projectPoolId = 1;
 	private $_projectUrl = '';
 	private $_hostId = 0;
 	private $_creditId = 0;
@@ -25,6 +27,8 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 	public function getEmail():string {return $this->_email;}
 	public function setUsername(string $string) {$this->_username=$string;}
 	public function getUsername():string {return $this->_username;}
+	public function setPoolId(int $int) {$this->_poolId=$int;}
+	public function getPoolId():int {return $this->_poolId;}
 	public function setVerified(int $int) {$this->_verified=$int;}
 	public function getVerified():int {return $this->_verified;}
 	public function setGrcAddress(string $string) {$this->_grcAddress=$string;}
@@ -33,6 +37,8 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 	public function getDonation():float {return $this->_donation;}
 	public function setHostDbid(int $int) {$this->_hostDbid=$int;}
 	public function getHostDbid():int {return $this->_hostDbid;}
+	public function setProjectPoolId(int $int) {$this->_projectPoolId=$int;}
+	public function getProjectPoolId():int {return $this->_projectPoolId;}
 	public function setProjectUrl(string $string) {$this->_projectUrl=$string;}
 	public function getProjectUrl():string {return $this->_projectUrl;}
 	public function setHostId(int $int) {$this->_hostId=$int;}
@@ -62,10 +68,12 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODELDAO extends TableDAO
 		'id' => array('type'=>'INT','dbType'=>'int(11)'),
 		'email' => array('type'=>'STRING','dbType'=>'varchar(200)'),
 		'username' => array('type'=>'STRING','dbType'=>'varchar(25)'),
+		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
 		'verified' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 		'grcAddress' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'donation' => array('type'=>'FLOAT','dbType'=>'decimal(5,2)'),
 		'hostDbid' => array('type'=>'INT','dbType'=>'int(11)'),
+		'projectPoolId' => array('type'=>'INT','dbType'=>'smallint(3)'),
 		'projectUrl' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'hostId' => array('type'=>'INT','dbType'=>'int(11)'),
 		'creditId' => array('type'=>'INT','dbType'=>'int(11)'),

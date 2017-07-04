@@ -1,10 +1,15 @@
 <?php
 require_once(dirname(__FILE__).'/../bootstrap.php');
 
+$FORCE =isset($argv[1]) && $argv[1] == 'FORCE';
+
+$idArg = 1;
+if ($FORCE) {$idArg++;}
+
 echo "############## GETHOSTDATA ".date("Y.m.d H.i.s")."\n";
 $settingsDao = new GrcPool_Settings_DAO();
-if ($settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE) != '1') {
-	echo "GRC CLIENT OFFLINE";
+if (!$FORCE && $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE) != '1') {
+	echo "GRC CLIENT OFFLINE\n\n";
 	exit;
 }
 
@@ -15,26 +20,33 @@ if (!flock($fp, LOCK_EX | LOCK_NB)) {
 	exit;
 }
 
-set_time_limit(120);
+set_time_limit(240);
 
 $id = 0;
-if (isset($argv[1])) {
-	$id = $argv[1];
+if (isset($argv[$idArg])) {
+	$id = $argv[$idArg];
 }
+//$id = 29; // !!!!!!!!!!!!!!!!!!!!!!!!! REMOVE THIS
 
-$daemon = GrcPool_Utils::getDaemonForEnvironment();
-
-$whiteListed = $daemon->getWhitelistedProjects();
-
-$numberOfProjects = count($whiteListed);
+$cache = new Cache();
+$superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
+$whiteListed = $superblockData->projects;
+if ($whiteListed == null) {
+	$whiteListed = array();
+}
+$numberOfProjects = $superblockData->whiteListCount;
 
 if ($numberOfProjects < 10) {
-	echo 'WHITE LISTED PROJECT COUNT LOW: '.$numberOfProjects;
-	exit;
+	$PROPERTY = new Property(Constants::PROPERTY_FILE);
+	if (!$PROPERTY->get('test')) {
+		echo 'WHITE LISTED PROJECT COUNT LOW: '.$numberOfProjects;
+		exit;
+	}
 }
  
 
 $projectDao = new GrcPool_Boinc_Account_DAO();
+$hostProjectDao = new GrcPool_Member_Host_Project_DAO();
 $hostDao = new GrcPool_Member_Host_Credit_DAO();
 $projects = $projectDao->fetchAll();
 
@@ -52,17 +64,20 @@ foreach ($projects as $project) {
 		continue;
 	}
 	if (array_search($project->getGrcName(),$whiteListed) === false) {
-		echo "!!!!!!!!!!! BLACK LISTED PROJECT ".$project->getGrcName().' '.$project->getUrl()."\n";
-		$hostDao->setMagToZeroForProjectUrl($project->getUrl());
-		$project->setWhitelist(0);
-		$projectDao->save($project);
-		continue;
+		$PROPERTY = new Property(Constants::PROPERTY_FILE);
+		if (!$PROPERTY->get('test')) {
+			echo "!!!!!!!!!!! BLACK LISTED PROJECT ".$project->getGrcName().' '.$project->getUrl()."\n";
+			$hostDao->setMagToZeroForProjectUrl($project->getUrl());
+			$project->setWhitelist(0);
+			$projectDao->save($project);
+			continue;
+		}
 	}
 	if (!$project->getWhiteList()) {
 		$project->setWhitelist(1);
 		$projectDao->save($project);
 	}
-	echo '~~~~~~~~~ '.$project->getName().' '.$project->getBaseUrl()."\n";
+	echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ '.$project->getName().' '.$project->getBaseUrl()."\n";
 		
 	$domain = $project->getBaseUrl();
 	if ($project->getSecure() && !strstr($domain,'https:')) {
@@ -82,67 +97,81 @@ foreach ($projects as $project) {
 		echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NO RAC DATA'."\n";
 		continue;
 	}
-	echo 'RAC '.$rac."   ";
+	echo 'RAC '.$rac."   \n";
 	$project->setRac($rac);
 	$project->setWhiteListCount($numberOfProjects);
 	$project->setMinRac(GrcPool_Utils::getMinRac($rac,$numberOfProjects));
 	$projectDao->save($project);
-	
-	// get host stuff
-	$file = 'show_user.php';
-	$query = '?auth='.$project->getStrongKey().'&format=xml';
-	$url = $domain.$file.$query;
-	//echo 'User Lookup: '.$url."\n";
-	$data = file_get_contents($url);
-	$xml = simplexml_load_string($data);
-	
-	if (!$xml->host) {
-		echo 'User Lookup: '.$url."\n";
-		echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NO HOST DATA'."\n";
-		continue;
-	} else {
-		$project->setLastSeen(time());
-		$projectDao->save($project);
-	}
-	
 	$hostCount = 0;
-	foreach ($xml->host as $host) {
-		$hostCount++;
-		$obj = $hostDao->initWithProjectUrlDbid($project->getUrl(),(String)$host->id);
+	for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
+		echo "%%%%%%%%%%%%%%%%%%% HOSTS FOR POOL #".$poolId."\n";
+		if ($project->getStrongKeyForPoolId($poolId) == '') {
+			echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NO STRONG KEY'."\n";
+			continue;
+		}
+		$hostCountPool = 0;
+		// get host stuff
+		$file = 'show_user.php';
+		$query = '?auth='.$project->getStrongKeyForPoolId($poolId).'&format=xml';
+		$url = $domain.$file.$query;
+		//echo 'User Lookup: '.$url."\n";
+		$data = file_get_contents($url);
+		$xml = simplexml_load_string($data);
 		
-		if ($obj == null) {
-			$obj = new GrcPool_Member_Host_Credit_OBJ();
-			$obj->setHostDbid((String)$host->id);
-			$obj->setHostCpid((String)$host->host_cpid);
-			$obj->setTotalCredit((String)$host->total_credit);
-			$obj->setAvgCredit((String)$host->expavg_credit);
-			$obj->setProjectUrl($project->getUrl());
-			$obj->setLastSeen(time());
+		if (!$xml->host) {
+			echo 'User Lookup: '.$url."\n";
+			echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NO HOST DATA'."\n";
+			continue;
 		} else {
-			$obj->setProjectUrl($project->getUrl());
-			$obj->setHostCpid((String)$host->host_cpid);
-			$obj->setTotalCredit((String)$host->total_credit);
-			$obj->setAvgCredit((String)$host->expavg_credit);
-			$obj->setLastSeen(time());
+			$project->setLastSeen(time());
+			$projectDao->save($project);
 		}
-		if ((String)$host->total_credit != $obj->getMagTotalCredit()) {
-			$obj->setMagTotalCredit((String)$host->total_credit);
+		
+		foreach ($xml->host as $host) {
+			$hostCount++;
+			$hostCountPool++;
+			$obj = $hostDao->initWithProjectUrlDbid($project->getUrl(),(String)$host->id);
+			
+			if ($obj == null) {
+				$obj = new GrcPool_Member_Host_Credit_OBJ();
+				$obj->setHostDbid((String)$host->id);
+				$obj->setHostCpid((String)$host->host_cpid);
+				$obj->setTotalCredit((String)$host->total_credit);
+				$obj->setAvgCredit((String)$host->expavg_credit);
+				$obj->setProjectUrl($project->getUrl());
+				$obj->setLastSeen(time());
+				$obj->setPoolId($poolId);
+			} else {
+				$obj->setProjectUrl($project->getUrl());
+				$obj->setHostCpid((String)$host->host_cpid);
+				$obj->setTotalCredit((String)$host->total_credit);
+				$obj->setAvgCredit((String)$host->expavg_credit);
+				$obj->setLastSeen(time());
+			}
+			if ((String)$host->total_credit != $obj->getMagTotalCredit()) {
+				$obj->setMagTotalCredit((String)$host->total_credit);
+			}
+			if ($obj->getAvgCredit() < $project->getMinRac() || $project->getMinRac() == 0) {
+				$mag = 0;
+			} else {
+				//$mag = Utils::truncate(Constants::GRC_MAG_MULTIPLIER*(($obj->getAvgCredit()/$project->getRac())/$numberOfProjects),2);
+				$mag = GrcPool_Utils::calculateMag($obj->getAvgCredit(),$project->getRac(),$numberOfProjects,2);
+			}
+			if ($obj->getMemberIdCredit() == 0) {
+				$hostObjs = $hostProjectDao->getWithHostDbIdAndProjectUrl($obj->getHostDbid(),$obj->getProjectUrl());
+				if ($hostObjs) {
+					$hostObj = array_pop($hostObjs);
+					$obj->setMemberIdCredit($hostObj->getMemberId());
+				}
+			}
+			$obj->setMag($mag);
+			$hostDao->save($obj);
 		}
-		if ($obj->getAvgCredit() < $project->getMinRac() || $project->getMinRac() == 0) {
-			$mag = 0;
-		} else {
-			//$mag = Utils::truncate(Constants::GRC_MAG_MULTIPLIER*(($obj->getAvgCredit()/$project->getRac())/$numberOfProjects),2);
-			$mag = GrcPool_Utils::calculateMag($obj->getAvgCredit(),$project->getRac(),$numberOfProjects,2);
-		}
-		$obj->setMag($mag);
-		$hostDao->save($obj);
+		echo 'Number of hosts for pool project: '.$hostCountPool."\n";
 	}
-	echo 'Number of hosts: '.$hostCount."\n";
+	echo 'Number of hosts for project: '.$hostCount."\n";
 }
 
-// cleanup rows with a long owedCalc
-$sql = 'update grcpool.member_host_credit set owedCalc = concat(\'+\',owed) where char_length(owedCalc) > 500';
-$hostDao->executeQuery($sql);
 
 /////////////////// SYNCH CPID UPDATES
 /*

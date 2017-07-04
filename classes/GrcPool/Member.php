@@ -28,6 +28,15 @@ class GrcPool_Member_DAO extends GrcPool_Member_MODELDAO {
 	
 	/**
 	 *
+	 * @return GrcPool_Member_OBJ[]
+	 */
+	public function getWithEmailLike($email) {
+		$sql = 'select * from '.$this->getFullTableName().' where email like \''.$email.'%\' order by email';
+		return $this->queryObjects($sql);		
+	}
+	
+	/**
+	 *
 	 * @param string $email
 	 * @return NULL|GrcPool_Member_OBJ
 	 */
@@ -50,10 +59,10 @@ class GrcPool_Member_DAO extends GrcPool_Member_MODELDAO {
 	 * @return GrcPool_Member_OBJ
 	 */
 	public function initWithSession() {
-		if (isset($_COOKIE[SESSION_COOKIE_NAME])) {
+		if (isset($_COOKIE[Constants::SESSION_COOKIE_NAME])) {
 			$sessionDao = new GrcPool_Session_DAO();
 			$session = $sessionDao->fetch(array(
-					$sessionDao->where('session',$_COOKIE[SESSION_COOKIE_NAME])
+					$sessionDao->where('session',$_COOKIE[Constants::SESSION_COOKIE_NAME])
 			));
 			if ($session) {
 				$session->setLastUsed(time());

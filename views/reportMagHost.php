@@ -31,7 +31,7 @@ foreach ($this->view->hosts as $host) {
 		$webPage->append('		
 			<tr>
 				<td>'.$pos++.'</td>
-				<td>'.$host['username'].'</td>
+				<td><a href="/report/researcher/'.$host['id'].'/'.$host['hostId'].'">'.$host['username'].'</a></td>
 				<td>'.$details.'</td>
 				<td class="text-right">'.number_format($host['magTotal'],2).'</td>
 			</tr>

@@ -16,12 +16,12 @@ class GrcPool_View_Member_Payout_DAO extends GrcPool_View_Member_Payout_MODELDAO
 	}
 	
 	public function getTopDonators($limit) {
-		$sql = 'select username,sum(donation) as totalAmount from '.$this->getFullTableName().' group by username order by totalAmount desc';
+		$sql = 'select id,username,sum(donation) as totalAmount from '.$this->getFullTableName().' group by id,username order by totalAmount desc limit '.$limit;
 		return $this->query($sql);
 	}
 	
 	public function getTopEarners($limit) {
-		$sql = 'select username,sum(amount) as totalAmount from '.$this->getFullTableName().' group by username order by totalAmount desc';
+		$sql = 'select id,username,sum(amount) as totalAmount from '.$this->getFullTableName().' group by id,username order by totalAmount desc limit '.$limit;
 		return $this->query($sql);
 	}
 	
@@ -30,6 +30,13 @@ class GrcPool_View_Member_Payout_DAO extends GrcPool_View_Member_Payout_MODELDAO
 		$result = $this->query($sql);
 		return $result[0]['totalAmount'];
 	}
+	
+	public function getTotalAmountForPool($poolId) {
+		$sql = 'select sum(amount) as totalAmount from '.$this->getFullTableName().' where poolId = '.$poolId;
+		$result = $this->query($sql);
+		return $result[0]['totalAmount'];
+	}
+	
 	
 	public function getCountForUser($id) {
 		return $this->getCount(array($this->where('id',$id)));

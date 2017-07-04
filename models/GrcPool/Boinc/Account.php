@@ -9,6 +9,8 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	private $_signature = '';
 	private $_weakKey = '';
 	private $_strongKey = '';
+	private $_weakKey2 = '';
+	private $_strongKey2 = '';
 	private $_whiteList = 0;
 	private $_rac = 0;
 	private $_baseUrl = '';
@@ -32,6 +34,10 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	public function getWeakKey():string {return $this->_weakKey;}
 	public function setStrongKey(string $string) {$this->_strongKey=$string;}
 	public function getStrongKey():string {return $this->_strongKey;}
+	public function setWeakKey2(string $string) {$this->_weakKey2=$string;}
+	public function getWeakKey2():string {return $this->_weakKey2;}
+	public function setStrongKey2(string $string) {$this->_strongKey2=$string;}
+	public function getStrongKey2():string {return $this->_strongKey2;}
 	public function setWhiteList(int $int) {$this->_whiteList=$int;}
 	public function getWhiteList():int {return $this->_whiteList;}
 	public function setRac(float $float) {$this->_rac=$float;}
@@ -68,6 +74,8 @@ abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
 		'signature' => array('type'=>'STRING','dbType'=>'varchar(500)'),
 		'weakKey' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'strongKey' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'weakKey2' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'strongKey2' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'whiteList' => array('type'=>'INT','dbType'=>'int(1)'),
 		'rac' => array('type'=>'FLOAT','dbType'=>'decimal(22,8)'),
 		'baseUrl' => array('type'=>'STRING','dbType'=>'varchar(100)'),

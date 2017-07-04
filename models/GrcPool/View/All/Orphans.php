@@ -1,5 +1,5 @@
 <?php
-abstract class GrcPool_Member_Host_Credit_MODEL {
+abstract class GrcPool_View_All_Orphans_MODEL {
 
 	public function __construct() { }
 
@@ -47,11 +47,11 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 	public function getMemberIdCredit():int {return $this->_memberIdCredit;}
 }
 
-abstract class GrcPool_Member_Host_Credit_MODELDAO extends TableDAO {
+abstract class GrcPool_View_All_Orphans_MODELDAO extends TableDAO {
 	protected $_database = 'grcpool';
-	protected $_table = 'member_host_credit';
-	protected $_model = 'GrcPool_Member_Host_Credit_OBJ';
-	protected $_primaryKey = 'id';
+	protected $_table = 'view_all_orphans';
+	protected $_model = 'GrcPool_View_All_Orphans_OBJ';
+	protected $_primaryKey = '';
 	protected $_fields = array(
 		'id' => array('type'=>'INT','dbType'=>'int(11)'),
 		'hostDbid' => array('type'=>'INT','dbType'=>'int(11)'),

@@ -18,4 +18,8 @@ class GrcPool_Session_DAO extends GrcPool_Session_MODELDAO {
 		$this->executeQuery($sql);
 	}
 	
+	public function getWithUserId($memberId) {
+		return $this->fetch(array($this->where('userid',$memberId)));
+	}
+	
 }

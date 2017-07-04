@@ -11,7 +11,7 @@ $projects = '
 
 $webPage->appendHomeBody('
 	'.($this->view->online != '1'?'
-		'.Bootstrap_Callout::error('The pool wallet is currently offline, please check the facebook page for status updates.').'		
+		'.Bootstrap_Callout::error($this->view->onlineMessage).'		
 	':'').'		
 	<div class="row">
 		<div class="col-sm-6 rowpad">
@@ -41,19 +41,29 @@ $webPage->append('
 			'.Bootstrap_Callout::info('		
 				<h3>Pool Details</h3>
 				<table class="table table-striped table-hover table-condensed rowpad">
-					<tr><td>Pool CPID</td><td style="text-align:right;">
-						'.$this->view->cpid.'<br/>
-						<i class="fa fa-external-link"></i> <a href="'.GrcPool_Utils::getCpidUrl($this->view->cpid).'">gridcoinstats.eu</a>
-						|
-						<i class="fa fa-external-link"></i> <a href="http://boinc.netsoft-online.com/e107_plugins/boinc/get_user.php?cpid='.$this->view->cpid.'&format=xml">Netsoft</a>
-					
+					<tr><td>Pool CPIDs</td><td style="text-align:right;">
+						'.implode('<br/>',array_map(function($arr,$key) {
+							return '#'.($key+1).' '.$arr.'<br/>
+								<i class="fa fa-external-link"></i> <a href="'.GrcPool_Utils::getCpidUrl($arr).'">stats</a>
+								|
+								<i class="fa fa-external-link"></i> <a href="http://boinc.netsoft-online.com/e107_plugins/boinc/get_user.php?cpid='.$arr.'&format=xml">Netsoft</a>
+							';
+						},$this->view->cpids,array_keys($this->view->cpids))).'						
 					</td></tr>					
-					<tr><td>Hosts Total Magnitude</td><td style="text-align:right;">'.$this->view->totalMag.'</td></tr>					
+					<tr><td>Magnitudes</td><td style="text-align:right;">
+						'.implode('<br/>',array_map(function($arr,$key) {
+							return '#'.($key).' '.$arr.'';
+						},$this->view->mags,array_keys($this->view->mags))).'
+						<div style="border-top:1px solid black;"><strong>'.array_sum($this->view->mags).'</strong></div>
+					</td></tr>					
 					<tr><td>Total Paid Out</td><td class="text-right">'.$this->view->totalPaidOut.' GRC</td></tr>
 					<tr><td>Pool Fee</td><td style="text-align:right;">'.$this->view->txFee.' GRC per payout</td></tr>
 					<tr><td>Min Pool Payout</td><td style="text-align:right;">'.$this->view->minPayout.' GRC</td></tr>
 					<tr><td>Min POR Balance <a href="#" data-toggle="tooltip" title="This is the minimum balance from POR needed to update the amount owed."><i style="color:black;" class="fa fa-info-circle"></i></a></td><td style="text-align:right;">'.$this->view->minStake.' GRC</td></tr>
-					<tr><td>Number of Active Hosts</td><td style="text-align:right;">'.$this->view->numberOfActiveHosts.'</td></tr>
+					<tr><td>Number of Active Hosts</td><td style="text-align:right;">
+						#1 '.$this->view->numberOfActiveHosts1.'<br/>
+						#2 '.$this->view->numberOfActiveHosts2.'<br/>
+					</td></tr>
 				</table>
 				<div class="text-right"><a href="/report/poolBalance">pool financials &raquo;</a></div>
 			',true).'
@@ -66,7 +76,7 @@ $webPage->appendScript('
 			$("#version").html(data.version);
 			$("#lastSuperblock").html(data.block);
 			$("#superblockAge").html(data.ageText);
-			$("#poolMag").html(data.mag);
+			$("#poolMag").html("#1 "+data.mag[0]+"<br/>#2 "+data.mag[1]);
 			$("#whiteListCount").html(data.whiteListCount);
 			if (data.pending) {
 				$("#pendingSuperblock").html(data.pending);

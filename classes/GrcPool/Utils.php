@@ -31,25 +31,20 @@ class GrcPool_Utils {
 		return $str;
 	}
 	
-	public static function getDaemonForEnvironment() {
-	
+	public static function getDaemonForEnvironment($path=Constants::DAEMON_POOL_1_PATH,$datadir=Constants::DAEMON_POOL_1_DATADIR) {
 		$daemon = new GridcoinDaemon();
 		if (PHP_OS == 'WINNT' || PHP_OS == 'Darwin') {
 			$daemon->setPath('C:\PROGRA~2\GridcoinResearch\gridcoinresearchd.exe');
 			$daemon->setDataDir('c:\users\brianb~1\appdata\roaming\gridcoinresearch');
 		} else {
-			$PROPERTY = new Property(dirname(__FILE__).'/../../../properties/grcpool.props.json');
+			$daemon->setPath($path);
+			$daemon->setDataDir($datadir);
+			$PROPERTY = new Property(Constants::PROPERTY_FILE);
 			if ($PROPERTY->get('test')) {
-				$daemon->setPath('/usr/bin/gridcoinresearchd');
-				$daemon->setDataDir('/home/bgb/.GridcoinResearch');
 				$daemon->setTestnet(true);
-			} else {
-				$daemon->setPath('/usr/bin/gridcoinresearchd');
-				$daemon->setDataDir('/home/bgb/.GridcoinResearch');
 			}
 		}
 		return $daemon;
-		
 	}
 	
 }

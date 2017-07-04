@@ -20,7 +20,7 @@ $accountPanel->setContent('
 			<div><span style="font-size:2.0em;">Account</span></div>
 		</div>
 		<div style="margin-bottom:8px;">
-			'.(0 && $this->getUser()->getVerified()?'
+			'.($this->getUser()->getVerified()?'
 				<i class="text-success fa fa-check"></i>
 			':'
 				<i data-placement="right" title="your email address has not been verified" class="bs-tooltip text-danger fa fa-warning"></i>
@@ -63,6 +63,12 @@ $payoutPanel->setContent('
 			<i class="fa fa-bank"></i> Owed: <a href="/account/payouts">'.number_format($this->view->owed,3).' GRC</a>
 		</div>		
 		
+		'.($this->view->orphans?'
+			<div style="margin-bottom:8px;">
+				<i class="fa fa-chain-broken"></i> Orphans: <a href="/account/orphans">'.count($this->view->orphans).' for '.number_format($this->view->orphansOwed,2).'</a>
+			</div>':''
+		).'
+
 		<div style="margin-bottom:8px;">
 			<i class="fa fa-balance-scale"></i> Minimum Payout: <a href="/account/payoutAddress#minpayout">'.$this->getUser()->getMinPayout().' GRC</a>
 		</div>
