@@ -20,4 +20,8 @@ class GrcPool_Member_Host_DAO extends GrcPool_Member_Host_MODELDAO {
 		return $this->fetchAll(array($this->where('memberId',$memberId)));
 	}
 	
+	public static function sortByDisplayedHostName($a,$b) {
+		return strnatcasecmp($a->getCustomName()?$a->getCustomName():$a->getHostName(),$b->getCustomName()?$b->getCustomName():$b->getHostName());
+	}
+	
 }

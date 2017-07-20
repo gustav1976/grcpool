@@ -75,6 +75,9 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 	$superblockData->txCount[0] = $rsaData[1]['Tx Count'];
 	$superblockData->magUnit = $rsaData[2]['Magnitude Unit (GRC payment per Magnitude per day)'];
 	
+	//$stakingInfo = $daemon->getStakingInfo();
+	//$superblockData->netWeight = $stakingInfo['weight']/COIN;
+	
 	$balance = $daemon->getTotalBalance();
 	$superblockData->balance[0] = $balance;
 	

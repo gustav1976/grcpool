@@ -22,8 +22,8 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 				$dao->deleteWithMemberId($usr->getId());
 				$dao = new GrcPool_Member_Host_Stat_Mag_DAO();
 				$dao->deleteWithMemberId($usr->getId());
-				$dao = new GrcPool_Member_Host_Xml_DAO();
-				$dao->deleteWithMemberId($usr->getId());
+// 				$dao = new GrcPool_Member_Host_Xml_DAO();
+// 				$dao->deleteWithMemberId($usr->getId());
 				$dao = new GrcPool_Member_Notice_DAO();
 				$dao->deleteWithMemberId($usr->getId());
 				$dao = new GrcPool_Session_DAO();
@@ -34,6 +34,89 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 			}
 		}
 		$this->view->twoFactor = $this->getUser()->getTwoFactor();
+	}
+	
+	public function tasksAction() {
+		
+		$numberToShow = 50;
+		$page = $this->args(0,COntroller::VALIDATION_NUMBER);
+		if ($page == null) {
+			$page = 0;
+		}
+		
+		$projectDao = new GrcPool_Member_Host_Project_DAO();
+		$hostDao = new GrcPool_Member_Host_DAO();
+		$taskDao = new GrcPool_Wcg_Tasks_DAO();
+		
+		$projects = $projectDao->getWithMemberId($this->getUser()->getId());
+		
+		$appNames = $taskDao->getUniqueAppNames();
+		$this->view->appNames = $appNames;
+		
+		$wcgIds = array();
+		$hostIds = array();
+		$hostIdX = array();
+		foreach ($projects as $project) {
+			if (strstr($project->getProjectUrl(),'worldcommunitygrid') && $project->getHostDbid()) {
+				array_push($wcgIds,$project->getHostDbId());
+				array_push($hostIds,$project->getHostId());
+				$hostIdx[$project->getHostId()] = $project->getHostDbId();
+			}
+		}
+		
+		$hosts = $hostDao->initWithKeys($hostIds,array('hostName'=>'asc'));
+		$this->view->hosts = array();
+		$this->view->filter_host = $this->get('filter_host',Controller::VALIDATION_NUMBER);
+		if (!isset($hostIdx[$this->view->filter_host])) {
+			$this->view->filter_host = '';
+		}
+		$this->view->hostNames = array();
+		foreach ($hosts as $host) {
+			if ($host->getMemberId() == $this->getUser()->getId()) {
+				array_push($this->view->hosts,$host);
+				$this->view->hostNames[$hostIdx[$host->getId()]] = $host->getHostName();
+			}
+		}
+		
+		$this->view->filter_app = $this->get('filter_app',Controller::VALIDATION_ALPHANUM);
+		if (array_search($this->view->filter_app,$appNames) === false) {
+			$this->view->filter_app = '';
+		}
+
+		$this->view->filter_valid = $this->get('filter_valid',Controller::VALIDATION_ALPHANUM);
+
+		$this->view->valids = GrcPool_Boinc_ValidationEnum::getNameValue();
+		
+		$this->view->sort = $this->get('sort',Controller::VALIDATION_ALPHANUM);
+		switch ($this->view->sort) {
+			case 'cpu' : $sortBy  = array('cpuTime'=>'desc');break;
+			default : $sortBy = array('modtime'=>'desc');$this->view->sort = 'mod';break;
+		}
+		$where = array();
+		if ($this->view->filter_host) {
+			array_push($where,$taskDao->where('deviceId',$hostIdx[$this->view->filter_host]));
+		}
+		if ($this->view->filter_app) {
+			array_push($where,$taskDao->where('appName',$this->view->filter_app));
+		}
+		if ($this->view->filter_valid) {
+			array_push($where,$taskDao->where('validateState',GrcPool_Boinc_ValidationEnum::keyToCode($this->view->filter_valid)));
+		}
+		$limit = array();
+		
+		$tasks = $taskDao->getWithDeviceIds($wcgIds,$where,$sortBy,$limit);
+		$pagination = new Bootstrap_Pagination();
+		$pagination->setGroup($numberToShow);
+		$pagination->setHref('/account/tasks/?');
+		$pagination->setQueryString(true);
+		$pagination->setHowMany(count($tasks));
+		$pagination->setArrows(false);
+		$pagination->setAdjacents(2);
+		$pagination->setStart($page);
+		
+		$this->view->pagination = $pagination->render();
+		$this->view->tasks = array_slice($tasks,$numberToShow*$page,$numberToShow);
+		
 	}
 	
 	public function hostsAction() {
@@ -62,6 +145,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$this->view->errorHosts = $projDao->getHostIdsWithErrors($this->getUser()->getId());
 		
 		$memHosts = $dao->getWithMemberId($this->getUser()->getId());
+		usort($memHosts,'GrcPool_Member_Host_DAO::sortByDisplayedHostName');
 		$this->view->memHosts = $memHosts;
 		
 		$hosts = $hostDao->getWithMemberId($this->getUser()->getId());
@@ -302,9 +386,12 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 			array_push($messages,'You have not entered a GRC payout address. In order to receive your earned GRC, <a href="/account/payoutAddress">please input an address</a>.');
 		}
 		$projectDao = new GrcPool_Member_Host_Project_DAO();
-		$projs = $projectDao->getWithMemberIdAndDbid($this->getUser()->getId(),0);
-		if ($projs) {
-			array_push($messages,'There appears to be projects that are not yet attached correctly, you may want to review your host projects.');
+		$projects = $projectDao->getWithMemberId($this->getUser()->getId());
+		foreach ($projects as $project) {
+			if ($project->getHostDbid() == 0) {			
+				array_push($messages,'There appears to be projects that are not yet attached correctly, you may want to review your host projects.');
+				break;
+			}
 		}
 
 		$numberOfHosts = 0;
@@ -336,6 +423,53 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
 		$this->view->magUnit = $superblockData->magUnit;
 		
+		$taskDao = new GrcPool_Wcg_Tasks_DAO();
+		$wcgIds = array();
+		foreach ($projects as $project) {
+			if (strstr($project->getProjectUrl(),'worldcommunitygrid') && $project->getHostDbid()) {
+				array_push($wcgIds,$project->getHostDbId());
+			}
+		}
+		$tasks = $taskDao->getWithDeviceIds($wcgIds);
+
+		$serverStates = array();
+		$outcomes = array();
+		$validations = array();
+		$validEnum = new GrcPool_Boinc_ValidationEnum();
+		$outcomeEnum = new GrcPool_Boinc_OutcomeEnum();
+		$serverEnum = new GrcPool_Boinc_ServerStateEnum();
+		foreach ($tasks as $task) {
+			$key = $serverEnum->codeToText($task->getServerState());
+			if (!isset($serverStates[$key])) {
+				$serverStates[$key] = 0;
+			}
+			$serverStates[$key]++;
+			
+			$key = $outcomeEnum->codeToText($task->getOutcome());
+			if (!isset($outcomes[$key])) {
+				$outcomes[$key] = 0;
+			}
+			$outcomes[$key]++;
+			
+			$key = $validEnum->codeToText($task->getValidateState());
+			if (!isset($validations[$key])) {
+				$validations[$key] = 0;
+			}
+			$validations[$key]++;
+		}
+// 		$this->view->tasks = $tasks;
+// 		$this->view->validations = $validations;
+// 		$this->view->serverStates = $serverStates;
+// 		$this->view->outcomes = $outcomes;
+		
+		require(dirname(__FILE__).'/../classes/SVGGraph/SVGGraph.php');
+
+		$this->view->taskGraph= new SVGGraph(150,150);
+		$this->view->taskGraph->auto_fit = true;
+		$this->view->taskGraph->colours = array('#ffaaaa','#aaffaa','#aaaaff','#fffa67','#67ffef');
+		$this->view->taskGraph->Values($validations);
+		
+		$this->view->numberOfTasks = count($tasks);
 		$this->view->totalMag = $mag;
 		$this->view->owed = $owed;
 		$this->view->numberOfHosts = $numberOfHosts;

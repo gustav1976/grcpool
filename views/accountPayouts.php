@@ -35,7 +35,7 @@ if ($this->view->owed) {
 				<tr>
 					<td>'.$this->view->accounts[$owe->getProjectUrl()]->getName().'</td>
 					<td class="text-center">'.$owe->getProjectPoolId().'</td>
-					<td>'.str_replace('+','+<br/>',substr($owe->getOwedCalc(),1)).'</td>				
+					<td><small>'.str_replace('+','+<br/>',substr($owe->getOwedCalc(),1)).'</small></td>				
 					<td style="text-align:right;">'.$owe->getAvgCredit().'</td>
 					<td style="text-align:right;">'.$owe->getMag().'</td>
 					<td style="text-align:right;">'.$owe->getOwed().'</td>

@@ -22,6 +22,15 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	private $_secure = 0;
 	private $_whiteListCount = 0;
 	private $_minRac = 0.00;
+	private $_android = 0;
+	private $_raspberryPi = 0;
+	private $_linux = 0;
+	private $_windows = 0;
+	private $_virtualBox = 0;
+	private $_intel = 0;
+	private $_amd = 0;
+	private $_nvidia = 0;
+	private $_mac = 0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setName(string $string) {$this->_name=$string;}
@@ -60,6 +69,24 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	public function getWhiteListCount():int {return $this->_whiteListCount;}
 	public function setMinRac(float $float) {$this->_minRac=$float;}
 	public function getMinRac():float {return $this->_minRac;}
+	public function setAndroid(int $int) {$this->_android=$int;}
+	public function getAndroid():int {return $this->_android;}
+	public function setRaspberryPi(int $int) {$this->_raspberryPi=$int;}
+	public function getRaspberryPi():int {return $this->_raspberryPi;}
+	public function setLinux(int $int) {$this->_linux=$int;}
+	public function getLinux():int {return $this->_linux;}
+	public function setWindows(int $int) {$this->_windows=$int;}
+	public function getWindows():int {return $this->_windows;}
+	public function setVirtualBox(int $int) {$this->_virtualBox=$int;}
+	public function getVirtualBox():int {return $this->_virtualBox;}
+	public function setIntel(int $int) {$this->_intel=$int;}
+	public function getIntel():int {return $this->_intel;}
+	public function setAmd(int $int) {$this->_amd=$int;}
+	public function getAmd():int {return $this->_amd;}
+	public function setNvidia(int $int) {$this->_nvidia=$int;}
+	public function getNvidia():int {return $this->_nvidia;}
+	public function setMac(int $int) {$this->_mac=$int;}
+	public function getMac():int {return $this->_mac;}
 }
 
 abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
@@ -87,5 +114,14 @@ abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
 		'secure' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 		'whiteListCount' => array('type'=>'INT','dbType'=>'smallint(3)'),
 		'minRac' => array('type'=>'FLOAT','dbType'=>'decimal(9,2)'),
+		'android' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'raspberryPi' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'linux' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'windows' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'virtualBox' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'intel' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'amd' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'nvidia' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'mac' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 	);
 }

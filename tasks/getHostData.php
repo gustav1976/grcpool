@@ -6,6 +6,9 @@ $FORCE =isset($argv[1]) && $argv[1] == 'FORCE';
 $idArg = 1;
 if ($FORCE) {$idArg++;}
 
+$neededProjectCount = 15;
+$validSuper = false;
+
 echo "############## GETHOSTDATA ".date("Y.m.d H.i.s")."\n";
 $settingsDao = new GrcPool_Settings_DAO();
 if (!$FORCE && $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE) != '1') {
@@ -36,11 +39,12 @@ if ($whiteListed == null) {
 }
 $numberOfProjects = $superblockData->whiteListCount;
 
-if ($numberOfProjects < 10) {
+if ($numberOfProjects < $neededProjectCount) {
+	$validSuper = false;
 	$PROPERTY = new Property(Constants::PROPERTY_FILE);
 	if (!$PROPERTY->get('test')) {
-		echo 'WHITE LISTED PROJECT COUNT LOW: '.$numberOfProjects;
-		exit;
+		echo 'WHITE LISTED PROJECT COUNT LOW: '.$numberOfProjects."\n\n";
+		//exit;
 	}
 }
  
@@ -51,6 +55,8 @@ $hostDao = new GrcPool_Member_Host_Credit_DAO();
 $projects = $projectDao->fetchAll();
 
 foreach ($projects as $project) {
+	echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ '.$project->getName().' '.$project->getBaseUrl()."\n";
+	
 	if ($id && $project->getId() != $id) {
 		echo 'SKIPPING: '.$project->getUrl()."\n";
 		continue;
@@ -63,21 +69,28 @@ foreach ($projects as $project) {
 		echo '!!!!!!!!!!! NO TEAMID: '.$project->getUrl()."\n";
 		continue;
 	}
-	if (array_search($project->getGrcName(),$whiteListed) === false) {
-		$PROPERTY = new Property(Constants::PROPERTY_FILE);
-		if (!$PROPERTY->get('test')) {
-			echo "!!!!!!!!!!! BLACK LISTED PROJECT ".$project->getGrcName().' '.$project->getUrl()."\n";
-			$hostDao->setMagToZeroForProjectUrl($project->getUrl());
-			$project->setWhitelist(0);
+	
+	if ($validSuper) {
+		if (array_search($project->getGrcName(),$whiteListed) === false) {
+			$PROPERTY = new Property(Constants::PROPERTY_FILE);
+			if (!$PROPERTY->get('test')) {
+				echo "!!!!!!!!!!! BLACK LISTED PROJECT BY NETWORK ".$project->getGrcName().' '.$project->getUrl()."\n";
+				$hostDao->setMagToZeroForProjectUrl($project->getUrl());
+				$project->setWhitelist(0);
+				$projectDao->save($project);
+				continue;
+			}
+		}
+		if (!$project->getWhiteList()) {
+			$project->setWhitelist(1);
 			$projectDao->save($project);
+		}
+	} else {
+		if ($project->getWhiteList() == 0) {
+			echo "!!!!!!!!!!! BLACK LISTED PROJECT BY TABLE ".$project->getGrcName().' '.$project->getUrl()."\n";
 			continue;
 		}
 	}
-	if (!$project->getWhiteList()) {
-		$project->setWhitelist(1);
-		$projectDao->save($project);
-	}
-	echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ '.$project->getName().' '.$project->getBaseUrl()."\n";
 		
 	$domain = $project->getBaseUrl();
 	if ($project->getSecure() && !strstr($domain,'https:')) {
@@ -99,8 +112,10 @@ foreach ($projects as $project) {
 	}
 	echo 'RAC '.$rac."   \n";
 	$project->setRac($rac);
-	$project->setWhiteListCount($numberOfProjects);
-	$project->setMinRac(GrcPool_Utils::getMinRac($rac,$numberOfProjects));
+	if ($validSuper) {
+		$project->setWhiteListCount($numberOfProjects);
+	}
+	$project->setMinRac(GrcPool_Utils::getMinRac($rac,$project->getWhiteListCount()));
 	$projectDao->save($project);
 	$hostCount = 0;
 	for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
@@ -154,8 +169,7 @@ foreach ($projects as $project) {
 			if ($obj->getAvgCredit() < $project->getMinRac() || $project->getMinRac() == 0) {
 				$mag = 0;
 			} else {
-				//$mag = Utils::truncate(Constants::GRC_MAG_MULTIPLIER*(($obj->getAvgCredit()/$project->getRac())/$numberOfProjects),2);
-				$mag = GrcPool_Utils::calculateMag($obj->getAvgCredit(),$project->getRac(),$numberOfProjects,2);
+				$mag = GrcPool_Utils::calculateMag($obj->getAvgCredit(),$project->getRac(),$project->getWhiteListCount(),2);
 			}
 			if ($obj->getMemberIdCredit() == 0) {
 				$hostObjs = $hostProjectDao->getWithHostDbIdAndProjectUrl($obj->getHostDbid(),$obj->getProjectUrl());

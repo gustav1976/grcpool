@@ -94,6 +94,7 @@ $payoutPanel->setContent('
 		</div>	
 	</div>
 ');
+
 $hostPanel = new Bootstrap_Panel();
 $hostPanel->setContent('
 	<a style="color:#555;" href="/account/hosts">
@@ -122,6 +123,33 @@ $hostPanel->setContent('
 		</div>
 	</a>	
 ');
+$taskPanel = null;
+if ($this->view->numberOfTasks) {
+	$taskPanel = new Bootstrap_Panel();
+	$taskPanel->setContent('
+		<a style="color:#555;" href="/account/tasks">
+			<div class="pull-right">
+				<i class="fa fa-files-o fa-2x"></i>
+			</div>
+			<div style="margin-bottom:15px;"><span style="font-size:2.0em;">Tasks</span></div>
+			<div style="margin-bottom:8px;">
+				<div style="margin-bottom:8px;"><i class="fa fa-file-o"></i> Number of Tasks: '.$this->view->numberOfTasks.'</div>
+				<div class="row">
+					<div class="col-xs-3 col-sm-3 col-md-5 col-lg-4">
+						'.$this->view->taskGraph->Fetch('PieGraph').'
+					</div>
+				</div>
+			</div>
+			<div class="pull-left"><small>Tasks are only available for WCG</small></div>
+			<div class="pull-right">
+				<span class="fa-stack fa-2x">
+					<i class="text-primary fa fa-circle fa-stack-2x"></i>
+					<i class="fa fa-arrow-right fa-stack-1x fa-inverse"></i>
+				</span>
+			</div>
+		</a>
+	');
+}
 $webPage->append('
 	<div class="row">
 		<div class="col-md-6">
@@ -130,6 +158,7 @@ $webPage->append('
 		</div>
 		<div class="col-md-6">
 			'.$hostPanel->render().'
+			'.($taskPanel?$taskPanel->render():'').'
 		</div>
 	</div>
 ');

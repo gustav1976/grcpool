@@ -5,13 +5,13 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 		parent::__construct();
 		$pills = new Bootstrap_Pills();
 		$pills->addPill('Magnitude',array(
-			'Top Project Host'=>'/report/magProjectHost',
-			'Top Host'=>'/report/magHost',
-			'Top Accounts'=>'/report/magAccount'
+			(strstr($_SERVER['REQUEST_URI'],'/report/magProjectHost')?'<i class="fa fa-check"></i> ':'').'Top Project Host'=>'/report/magProjectHost',
+			(strstr($_SERVER['REQUEST_URI'],'/report/magHost')?'<i class="fa fa-check"></i> ':'').'Top Host'=>'/report/magHost',
+				(strstr($_SERVER['REQUEST_URI'],'/report/magAccount')?'<i class="fa fa-check"></i> ':'').'Top Accounts'=>'/report/magAccount'
 		),strstr($_SERVER['REQUEST_URI'],'/report/mag'));
 		$pills->addPill('Earnings',array(
-				'Top Earners'=>'/report/earnTop',
-				'Top Donators'=>'/report/earnDonation'
+				(strstr($_SERVER['REQUEST_URI'],'/report/earnTop')?'<i class="fa fa-check"></i> ':'').'Top Earners'=>'/report/earnTop',
+				(strstr($_SERVER['REQUEST_URI'],'/report/earnDonation')?'<i class="fa fa-check"></i> ':'').'Top Donators'=>'/report/earnDonation'
 		),strstr($_SERVER['REQUEST_URI'],'/report/earn'));
 		$pills->addPill('Pool Financials','/report/poolBalance',strstr($_SERVER['REQUEST_URI'],'/report/poolBalance'));
 		$this->getWebPage()->setSecondaryNav($pills->render());

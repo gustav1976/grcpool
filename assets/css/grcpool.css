@@ -35,3 +35,4 @@ body {margin-top:0px;background-color:#f8feff;}
 .row.no-gutter [class*='col-']:not(:first-child),.row.no-gutter [class*='col-']:not(:last-child) { padding-right: 0; padding-left: 0;}
 .table-striped>tbody>tr:nth-child(even)>td, 
 .table-striped>tbody>tr:nth-child(even)>th {background-color: white;}
+.grayscale {-webkit-filter: grayscale(100%);-moz-filter: grayscale(100%);-o-filter: grayscale(100%);-ms-filter: grayscale(100%);filter: grayscale(100%);opacity:.5;}

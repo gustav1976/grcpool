@@ -27,6 +27,10 @@ class GrcPool_Member_Host_Project_DAO extends GrcPool_Member_Host_Project_MODELD
 		return $this->fetchAll(array($this->where('memberId',$memberId),$this->where('hostCpid',$cpid)));
 	}
 	
+	public function getWithMemberId($memberId) {
+		return $this->fetchAll(array($this->where('memberId',$memberId)));
+	}
+	
 	public function getWithMemberIdAndDbidAndProjectUrl($memberId,$dbid,$url) {
 		return $this->fetch(array($this->where('memberId',$memberId),$this->where('hostDbid',$dbid),$this->where('projectUrl',$url)));
 	}

@@ -23,11 +23,13 @@ class SuperBlockData {
 	public $magUnit;
 	public $version;
 	public $projects;
+	//public $netWeight;
 	
 	public function __construct($json = null) {
 		if ($json) {
 			$data = json_decode($json,true);
 			$this->version = $data['version'];
+			//$this->netWeight = $data['netWeight'];
 			$this->grcNoAddress = $data['grcNoAddress'];
 			$this->whiteListCount = $data['whiteListCount'];
 			$this->timestamp = $data['timestamp'];
@@ -55,6 +57,7 @@ class SuperBlockData {
 	public function toJson() {
 		$json = array();
 		$json['version'] = $this->version;
+		//$json['netWeight'] = $this->netWeight;
 		$json['grcNoAddress'] = $this->grcNoAddress;
 		$json['timestamp'] = $this->timestamp;
 		$json['age'] = $this->age;

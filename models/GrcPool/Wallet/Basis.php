@@ -7,8 +7,8 @@ abstract class GrcPool_Wallet_Basis_MODEL {
 	private $_basis = 0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
-	public function setBasis($int) {$this->_basis=$int;}
-	public function getBasis() {return $this->_basis;}
+	public function setBasis(int $int) {$this->_basis=$int;}
+	public function getBasis():int {return $this->_basis;}
 }
 
 abstract class GrcPool_Wallet_Basis_MODELDAO extends TableDAO {

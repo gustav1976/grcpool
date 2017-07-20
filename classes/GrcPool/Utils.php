@@ -26,7 +26,7 @@ class GrcPool_Utils {
 		if (strlen($str) > 200) {
 			$str = '<textarea style="width:100%;height:100px;">'.$str.'</textarea>';
 		} else {
-			$str = str_replace('+','+<br/>',substr($str,1));
+			$str = str_replace('+','+<br/>',$str);
 		}
 		return $str;
 	}

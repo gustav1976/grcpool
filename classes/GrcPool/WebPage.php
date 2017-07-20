@@ -2,7 +2,7 @@
 class GrcPool_WebPage {
 	public $title;
 	public $metaKeywords = 'gridcoin, pool, mining, boinc, science, research, cryptocurrency';
-	public $metaDescription = 'This is a Gridcoin Research Mining Pool. Join the pool, research, and earn Gridcoin!';
+	public $metaDescription = 'This is a Gridcoin Research Mining Pool. Join the pool, crunch, and earn Gridcoin!';
 	public $pageTitle;
 
 	private $head = '';
@@ -59,31 +59,20 @@ class GrcPool_WebPage {
 		return '
 			<div class="container" style="padding-top:20px;">
 				<div class="pull-right rowpadsmall">
-					<a style="color:black;" href="https://www.youtube.com/c/GridcoinPool">
-						<i class="fa fa-youtube"></i>
-					</a>			
-					&nbsp;|&nbsp;
-					<a style="color:black;" href="https://www.facebook.com/gridcoinpool/">
-				  		<i class="fa fa-facebook"></i>
-					</a>			
-					&nbsp;				
-					<div style="display:inline-block;" class="fb-follow" data-href="https://www.facebook.com/gridcoinpool" data-layout="button_count" data-size="small" data-show-faces="false"></div>
+					'.($USER->getId() == 0?'
+						<a href="/login"><i class="fa fa-power-off"></i> login</a>
 						&nbsp;|&nbsp;
-						'.($USER->getId() == 0?'
-							<a href="/login"><i class="fa fa-power-off"></i> login</a>
-							&nbsp;|&nbsp;
-							<a href="/signup"><i class="fa fa-edit"></i> sign up</a>
+						<a href="/signup"><i class="fa fa-edit"></i> sign up</a>
+					':'
+						<a href="/logout"><i class="fa fa-power-off"></i> logout</a>
+						&nbsp;|&nbsp;
+						<a href="/account">
+						'.($USER->hasAlerts()?'
+							<i class="fa fa-warning text-danger"></i>
 						':'
-							<a href="/logout"><i class="fa fa-power-off"></i> logout</a>
-							&nbsp;|&nbsp;
-							<a href="/account">
-							'.($USER->hasAlerts()?'
-								<i class="fa fa-warning text-danger"></i>
-							':'
-								<i class="fa fa-user"></i>
-							').'
-	 						'.($USER->getUsername()
-	 					).'</a>
+							<i class="fa fa-user"></i>
+						').'
+ 						'.($USER->getUsername()).'</a>
 						|
 						Owed: <a href="/account/payouts">'.number_format($owed,3,'.','').'</a>
 					').'
@@ -121,7 +110,7 @@ class GrcPool_WebPage {
 				<link rel="icon" href="/favicon.ico?20170214" type="image/x-icon"> 
 				<link rel="stylesheet" href="/assets/libs/bootstrap/3.3.5/css/bootstrap.min.css"/>
 				<link rel="stylesheet" href="/assets/libs/fontAwesome/4.6.3/css/font-awesome.min.css"/>
-				<link rel="stylesheet" href="/assets/css/grcpool.css?20170515"/>	
+				<link rel="stylesheet" href="/assets/css/grcpool.css?20170714"/>	
 				<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 				<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
 				<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -141,14 +130,6 @@ class GrcPool_WebPage {
  			</head>
  			<body>
 				'.$this->getTestBanner().'
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1836912156576334";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, \'script\', \'facebook-jssdk\'));</script> 			
 				'.($this->isHome?'<div style="background-repeat:no-repeat;background-image:url(/assets/images/pool.jpg)">':'').'
 	 				'.$this->getUserBar().'
 		 			<div class="container" style="margin-bottom:20px;">
@@ -177,11 +158,19 @@ class GrcPool_WebPage {
 			         							</ul>
 								        </li>
 		 								<li class=""><a href="/report">Reports</a></li>
-		 								<li class=""><a href="/project">Projects</a></li>
+		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/project')?'active':'').'">
+			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
+			          						<ul class="dropdown-menu">
+			            						<li><a href="/project/choose">Choosing a Project</a></li>
+		 										<li><a href="/project/poolStats">Pool Stats</a></li>
+		         							</ul>
+								        </li>		 								
+		 										
 		        						<li class=""><a href="/payout">Payouts</a></li>
 		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/help')?'active':'').'">
 			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Help <span class="caret"></span></a>
 			          						<ul class="dropdown-menu">
+												<li><a href="/help/calculators">Calculators</a></li>
 			            						<li><a href="/help/chooseProject">Choosing a Project</a></li>
 		 										<li><a href="/help/android">Pool on Android</a></li>
 		         							</ul>
@@ -190,6 +179,18 @@ class GrcPool_WebPage {
 			    				</div>
 			  				</div>
 						</nav>
+						<div>
+							<div class="pull-right" style="margin-left:5px;">
+								<div class="g-ytsubscribe" data-channelid="UC7HniwuUMx4EXlB2OXG89BA" data-layout="default" data-count="default"></div>
+							</div>
+							<div class="pull-right"  style="margin-left:5px;height:24px;border-radius:3px;">
+								<a style="" href="https://twitter.com/grcpool" class="twitter-follow-button" data-show-count="false">Follow @grcpool</a>
+							</div>
+							<div class="pull-right" style="height:24px;border-radius:3px;">
+								<div style="" class="fb-follow" data-href="https://www.facebook.com/gridcoinpool" data-layout="button_count" data-size="small" data-show-faces="false"></div>
+							</div>
+						</div>
+						<br clear="all"/>
 		 			</div>
 	 				<div class="container">
 						'.$this->renderBreadcrumb().'
@@ -212,6 +213,7 @@ class GrcPool_WebPage {
 	 	
  				<script src="/assets/libs/jQuery/jquery-1.11.3.min.js" type="text/javascript"></script>
 				<script type="text/javascript" src="/assets/libs/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+ 				'.$this->script.'
 				<script src="/socket.io/socket.io.js"></script>
         		<script>
 	                var connected = false;
@@ -225,7 +227,6 @@ class GrcPool_WebPage {
                     	$("#btc_usd").animate({"opacity": 0}, 1000, function () {$(this).text(json.coinbase);}).animate({"opacity": 1}, 1000);
 					});
  				</script>
- 				'.$this->script.'
 				<script>
 				  (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){
 				  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -234,8 +235,17 @@ class GrcPool_WebPage {
 				  ga(\'create\', \'UA-91641882-1\', \'auto\');
 				  ga(\'send\', \'pageview\');
 				</script>
+				<div id="fb-root"></div>
+				<script>(function(d, s, id) {
+				  var js, fjs = d.getElementsByTagName(s)[0];
+				  if (d.getElementById(id)) return;
+				  js = d.createElement(s); js.id = id;
+				  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1836912156576334";
+				  fjs.parentNode.insertBefore(js, fjs);
+				}(document, \'script\', \'facebook-jssdk\'));</script>
+				<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+				<script src="https://apis.google.com/js/platform.js"></script>
 			</body>
  		</html>';
 	}
-
 }

@@ -20,6 +20,12 @@ class GrcPool_Member_Host_Credit_DAO extends GrcPool_Member_Host_Credit_MODELDAO
 		return $this->fetchAll(array($this->where('projectUrl',$projectUrl),$this->where('poolId',$poolId),$this->where('hostCpid',$hash)));
 	}
 	
+	public function getActiveStatsProjectUrl($url) {
+		$sql = 'select sum(totalCredit) as totalCredit, sum(mag) as totalMag, count(*) as numberOfHosts from '.$this->getFullTableName().' where avgCredit > 0 and projectUrl = \''.$url.'\'';
+		$result = $this->query($sql);
+		return $result[0];
+	}
+	
 	public function getNumberOfActiveHostsForPool($poolId) {
 		$sql = 'select count(*) as howMany from '.$this->getFullTableName().' where avgCredit > 0 and poolId = '.$poolId;
 		$result = $this->query($sql);

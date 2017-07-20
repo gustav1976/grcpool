@@ -173,6 +173,9 @@ for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
 	 		}
 	 		$payout = new GrcPool_Member_Payout_OBJ();
 	 		$payout->setCalculation($owedGroup->getOwedCalc());
+	 		if (strlen($payout->getCalculation()) > 490) {
+	 			$payout->setCalculation(substr($payout->getCalculation(),0,490).'...');
+	 		}
 	 		$payout->setAmount($owedGroup->getOwed());
 	 		$payout->setFee($payoutData->fee);
 	 		$payout->setDonation($payoutData->donation);

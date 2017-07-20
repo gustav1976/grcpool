@@ -84,6 +84,11 @@ $projects = '
 		<tbody>
 ';
 foreach ($this->view->accounts as $account) {
+	
+	if ($account->getLastSeen() < time()-60*60*24*60) {
+		continue;
+	}
+	
 	$mag_1 = 0;
 	$hostCount_1 = 0;
 	$mag_2 = 0;

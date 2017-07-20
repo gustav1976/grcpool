@@ -30,7 +30,7 @@ $memberDao = new GrcPool_Member_DAO();
 
 // PROPERTIES OF PAYOUT
 $PAYOUTFEE = $settingsDao->getValueWithName(Constants::SETTINGS_PAYOUT_FEE);
-$MINORPHANPAYOUT = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_ORPHAN_PAYOUT);
+$MINORPHANPAYOUT = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_ORPHAN_PAYOUT_ZERO_MAG);
 
 for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
 	echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%';

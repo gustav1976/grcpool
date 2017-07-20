@@ -99,22 +99,6 @@ class BoincApi_Rpc {
 		
 		if ($this->memberValid) {
 			
-			// log last XML request in Database
-			if ((String)$this->xml->opaque->hostId) {
-				// cannot trust host actually in log
-				$xmlDao = new GrcPool_Member_Host_Xml_DAO();
-				$xmlObj = $xmlDao->getWithMemberIdAndHostId($this->member->getId(),(String)$this->xml->opaque->hostId);
-				if ($xmlObj == null) {
-					$xmlObj = new GrcPool_Member_Host_Xml_OBJ();
-				}
-				$xmlObj->setMemberId($this->member->getId());
-				$xmlObj->setHostId((int)$this->xml->opaque->hostId);
-				$xmlObj->setThetime(time());
-				$xmlObj->setXml(gzcompress($this->rawXml));
-				$xmlDao->save($xmlObj);
-				if ($echo) echo "LOGGED XML IN DATABASE\n";
-			}
-			
 			$hostDao = new GrcPool_Member_Host_DAO();
 
 			$this->host = null;

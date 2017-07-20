@@ -15,13 +15,14 @@ $webPage->appendHomeBody('
 	':'').'		
 	<div class="row">
 		<div class="col-sm-6 rowpad">
-			<div class="embed-responsive embed-responsive-16by9" style="border:1px solid #ccc;"><iframe class="embed-responsive-item" width="560" height="315" src="https://www.youtube.com/embed/79rTDNjdOf8" frameborder="0" allowfullscreen></iframe></div>
+			<div class="embed-responsive embed-responsive-16by9" style="border:1px solid #ccc;"><iframe class="embed-responsive-item" width="560" height="315" src="https://www.youtube.com/embed/jm2E6pQ-Ifw" frameborder="0" allowfullscreen></iframe></div>
 		</div>
 		<div class="col-sm-6 rowpad">
-			<div class="embed-responsive embed-responsive-16by9" style="border:1px solid #ccc;"><iframe class="embed-responsive-item" width="560" height="315" src="https://www.youtube.com/embed/FjVjqZnhMZA" frameborder="0" allowfullscreen></iframe></div>
+			<div class="embed-responsive embed-responsive-16by9" style="border:1px solid #ccc;"><iframe class="embed-responsive-item" width="560" height="315" src="https://www.youtube.com/embed/Ws4BUte-2b8" frameborder="0" allowfullscreen></iframe></div>
 		</div>
 	</div>
 ');
+
 $webPage->append('
 	<div class="row rowpad">
 		<div class="col-sm-6">

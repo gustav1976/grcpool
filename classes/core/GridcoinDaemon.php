@@ -133,6 +133,12 @@ class GridcoinDaemon {
 		return trim($version);
 	}
 	
+//	public function getStakingInfo() {
+//		$data = $this->executeDaemon('getstakinginfo');
+//		$json = json_decode($data,true);
+//		return $json;
+//	}
+	
 	public function getMagnitude() {
 		$data = $this->executeDaemon('list mymagnitude');
 		$json = json_decode($data,true);
