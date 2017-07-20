@@ -1,8 +1,6 @@
 <?php
 
-$webPage->setPageTitle('Change Password or Email');
-
-
+$webPage->addBreadcrumb('account','user','/account');
 
 $form = new Bootstrap_Form();
 
@@ -65,9 +63,11 @@ $form->setButtons('
 	<input type="hidden" name="cmd" value="submit"/>
 ');
 
-$webPage->append('
-	'.$form->render().'
-');
+$panel = new Bootstrap_Panel();
+$panel->setContext('info');
+$panel->setHeader('Password or Email Change');
+$panel->setContent($form->render());
+$webPage->append($panel->render());
 
 
 

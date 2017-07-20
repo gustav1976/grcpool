@@ -1,4 +1,7 @@
 <?php
+
+$webPage->addBreadcrumb('account','user','/account');
+
 $webPage->setPageTitle('Email Verification');
 
 $webPage->append('

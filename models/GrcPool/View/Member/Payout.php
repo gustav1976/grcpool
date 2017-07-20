@@ -5,7 +5,9 @@ abstract class GrcPool_View_Member_Payout_MODEL {
 
 	private $_id = 0;
 	private $_username = '';
+	private $_poolId = 1;
 	private $_amount = 0;
+	private $_payoutPoolId = 1;
 	private $_donation = 0.00000000;
 	private $_fee = 0.00000000;
 	private $_tx = '';
@@ -15,8 +17,12 @@ abstract class GrcPool_View_Member_Payout_MODEL {
 	public function getId():int {return $this->_id;}
 	public function setUsername(string $string) {$this->_username=$string;}
 	public function getUsername():string {return $this->_username;}
+	public function setPoolId(int $int) {$this->_poolId=$int;}
+	public function getPoolId():int {return $this->_poolId;}
 	public function setAmount(float $float) {$this->_amount=$float;}
 	public function getAmount():float {return $this->_amount;}
+	public function setPayoutPoolId(int $int) {$this->_payoutPoolId=$int;}
+	public function getPayoutPoolId():int {return $this->_payoutPoolId;}
 	public function setDonation(float $float) {$this->_donation=$float;}
 	public function getDonation():float {return $this->_donation;}
 	public function setFee(float $float) {$this->_fee=$float;}
@@ -37,7 +43,9 @@ abstract class GrcPool_View_Member_Payout_MODELDAO extends TableDAO {
 	protected $_fields = array(
 		'id' => array('type'=>'INT','dbType'=>'int(11)'),
 		'username' => array('type'=>'STRING','dbType'=>'varchar(25)'),
+		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
 		'amount' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
+		'payoutPoolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
 		'donation' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
 		'fee' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
 		'tx' => array('type'=>'STRING','dbType'=>'varchar(100)'),

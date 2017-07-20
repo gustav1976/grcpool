@@ -7,6 +7,11 @@ class GrcPool_Member_Host_Stat_Mag_OBJ extends GrcPool_Member_Host_Stat_Mag_MODE
 
 class GrcPool_Member_Host_Stat_Mag_DAO extends GrcPool_Member_Host_Stat_Mag_MODELDAO {
 
+	public function deleteWithMemberId($memberId) {
+		$sql = 'delete from '.$this->getFullTableName().' where memberId = '.$memberId;
+		$this->executeQuery($sql);
+	}
+	
 	public function getWithMemberId($memberId,$since = 0) {
 		return $this->fetchAll(array($this->where('memberId',$memberId),$this->where('thetime',$since,'>=')),array('projectUrl'=>'asc','thetime'=>'asc'));
 	}

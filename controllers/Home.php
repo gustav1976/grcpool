@@ -8,19 +8,34 @@ class GrcPool_Controller_Home extends GrcPool_Controller {
 	public function indexAction() {
 		
 		$hostCreditDao = new GrcPool_Member_Host_Credit_DAO();
-		$totalMag = $hostCreditDao->getTotalMag();
-		$this->view->totalMag = $totalMag;
+
+		$this->view->mags = array();
+		for ($i = 1; $i <= Constants::NUMBER_OF_POOLS; $i++) {
+			$this->view->mags[$i] = $hostCreditDao->getTotalMagForPool($i);
+			if ($this->view->mags[$i] == '') {
+				$this->view->mags[$i] = 0;
+			}
+		}
 		
-		$activeHosts = $hostCreditDao->getNumberOfActiveHosts();
-		$this->view->numberOfActiveHosts = $activeHosts;
+		$activeHosts = $hostCreditDao->getNumberOfActiveHostsForPool(1);
+		$this->view->numberOfActiveHosts1 = $activeHosts;
+		$activeHosts = $hostCreditDao->getNumberOfActiveHostsForPool(2);
+		$this->view->numberOfActiveHosts2 = $activeHosts;
 		
 		$settingsDao = new GrcPool_Settings_DAO();
-		$this->view->txFee = $settingsDao->getValueWithName(SETTINGS_PAYOUT_FEE);
-		$this->view->minPayout = $settingsDao->getValueWithName(SETTINGS_MIN_OWE_PAYOUT);
-		$this->view->minStake = $settingsDao->getValueWithName(SETTINGS_MIN_STAKE_BALANCE);
+		$this->view->txFee = $settingsDao->getValueWithName(Constants::SETTINGS_PAYOUT_FEE);
+		$this->view->minPayout = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_OWE_PAYOUT);
+		$this->view->minStake = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_STAKE_BALANCE);
 		$this->view->totalPaidOut = $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT);
-		$this->view->cpid = $settingsDao->getValueWithName(Constants::SETTINGS_CPID);
+		$this->view->cpids = array();
+		for ($i = 1; $i <= Constants::NUMBER_OF_POOLS; $i++) {
+			array_push($this->view->cpids,$settingsDao->getValueWithName(Constants::SETTINGS_CPID.($i==1?'':$i)));
+		}
 		$this->view->online = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE);
+		$this->view->onlineMessage = '';
+		if (!$this->view->online) {
+			$this->view->onlineMessage = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_MESSAGE);
+		}
 		
 	}
 	

@@ -52,15 +52,16 @@ class BoincApi_Account {
 		$xml = "\n".'<account>'."\n";
 		foreach ($fields as $fieldName => $fieldValue) {
 			if ($fieldValue != '' || $fieldName == 'resource_share') {
-				$xml .= '<'.$fieldName.'>'.$fieldValue.'</'.$fieldName.'>'."\n";
 				if ($fieldName == 'no_cpu') {
-					$xml .= '<no_rsc>CPU</no_rsc>';
+					$xml .= '<no_rsc>CPU</no_rsc>'."\n";
 				} else if ($fieldName == 'no_intel') {
-					$xml .= '<no_rsc>intel_gpu</no_rsc>';
+					$xml .= '<no_rsc>intel_gpu</no_rsc>'."\n";
 				} else if ($fieldName == 'no_cuda') {
-					$xml .= '<no_rsc>NVIDIA</no_rsc>';
+					$xml .= '<no_rsc>NVIDIA</no_rsc>'."\n";
 				} else if ($fieldName == 'no_ati') {
-					$xml .= '<no_rsc>ATI</no_rsc>';
+					$xml .= '<no_rsc>ATI</no_rsc>'."\n";
+				} else {
+     					$xml .= '<'.$fieldName.'>'.$fieldValue.'</'.$fieldName.'>'."\n";
 				}
 			}
 		}

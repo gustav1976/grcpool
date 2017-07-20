@@ -1,20 +1,14 @@
+
+
 module.exports = function(grunt) {
 
+	var target = grunt.option('target') || '';
+	
   grunt.initConfig({
-//    pkg: grunt.file.readJSON('package.json'),
-//    uglify: {
-//      options: {
-//        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-//      },
-//      build: {
-//        src: 'src/<%= pkg.name %>.js',
-//        dest: 'build/<%= pkg.name %>.min.js'
-//      }
-//    }
 	  
 		phpunit: {
 		    classes: {
-		        dir: '../test'
+		        dir: '../test/'+target
 		    },
 		    options: {
 		        bin: '../composer/vendor/bin/phpunit',
@@ -34,15 +28,9 @@ module.exports = function(grunt) {
 		},  	
   });
 
-  // Load the plugin that provides the "uglify" task.
-//  grunt.loadNpmTasks('grunt-contrib-uglify');
-//
-//  // Default task(s).
-//  grunt.registerTask('default', ['uglify']);
 
-	
-	grunt.loadNpmTasks('grunt-phpunit');
-	grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-phpunit');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 	
 };
 

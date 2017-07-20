@@ -9,6 +9,7 @@ if ($this->view->payouts) {
 		<table class="table table-striped table-hover">
 			<tr>
 				<th>Researcher</th>
+				<th class="text-center">Pool</th>
 				<th>When</th>
 				<th>Transaction</th>		
 				<th>Calculation</th>
@@ -21,6 +22,7 @@ if ($this->view->payouts) {
 		$webPage->append('
 			<tr>
 				<td>'.$payout->getUsername().'</td>
+				<td class="text-center">'.$payout->getPoolId().'</td>
 				<td>'.date('Y-m-d H:i:s',$payout->getTheTime()).'<br/>'.Utils::getTimeAgo($payout->getTheTime()).'</td>
 				<td><a href="'.GrcPool_Utils::getTxUrl($payout->getTx()).'">'.substr($payout->getTx(),0,10).'...</a></td>
 				<td><small>'.GrcPool_Utils::displayCalculation($payout->getCalculation()).'</small></td>				

@@ -7,8 +7,16 @@ class GrcPool_View_Member_Host_Project_Credit_OBJ extends GrcPool_View_Member_Ho
 
 class GrcPool_View_Member_Host_Project_Credit_DAO extends GrcPool_View_Member_Host_Project_Credit_MODELDAO {
 
+	public function getWithMemberIdAndHostId($memberId,$hostId) {
+		return $this->fetchAll(array($this->where('id',$memberId),$this->where('hostId',$hostId)));
+	}
+	
 	public function getOwed($min = 0) {
 		return $this->fetchAll(array($this->where('owed',$min,'>')));
+	}
+	
+	public function getOwedForPool($poolId,$min = 0) {
+		return $this->fetchAll(array($this->where('projectPoolId',$poolId),$this->where('owed',$min,'>')));
 	}
 	
 	public function getWithMemberId($id) {
@@ -27,12 +35,12 @@ class GrcPool_View_Member_Host_Project_Credit_DAO extends GrcPool_View_Member_Ho
 	}
 	
 	public function getTopAccounts($limit) {
-		$sql = 'select username,sum(mag) as magTotal from '.$this->getFullTableName().' group by username order by magTotal desc limit '.$limit;
+		$sql = 'select id,username,sum(mag) as magTotal from '.$this->getFullTableName().' group by id,username order by magTotal desc limit '.$limit;
 		return $this->query($sql);
 	}
 	
 	public function getTopHosts($limit) {
-		$sql = 'select username,hostId,sum(mag) as magTotal from '.$this->getFullTableName().' group by username,hostId order by magTotal desc limit '.$limit;
+		$sql = 'select id,username,hostId,sum(mag) as magTotal from '.$this->getFullTableName().' group by id,username,hostId order by magTotal desc limit '.$limit;
 		return $this->query($sql);
 	}
 	

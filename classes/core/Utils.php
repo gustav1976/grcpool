@@ -22,7 +22,7 @@ class Utils {
 				'w' => 'week',
 				'd' => 'day',
 				'h' => 'hour',
-				'i' => 'minute',
+				'i' => 'min',
 				's' => 'second',
 		);
 		foreach ($string as $k => &$v) {

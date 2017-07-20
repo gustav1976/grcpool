@@ -12,6 +12,11 @@ class GrcPool_Member_Host_Project_DAO extends GrcPool_Member_Host_Project_MODELD
 // 		return $this->fetch(array($this->where('memberId',$memberId),$this->where('projectUrl',$projUrl)));
 // 	}
 
+	public function deleteWithMemberId($memberId) {
+		$sql = 'delete from '.$this->getFullTableName().' where memberId = '.$memberId;
+		$this->executeQuery($sql);
+	}
+	
 	/**
 	 * 
 	 * @param unknown $memberId
@@ -22,16 +27,33 @@ class GrcPool_Member_Host_Project_DAO extends GrcPool_Member_Host_Project_MODELD
 		return $this->fetchAll(array($this->where('memberId',$memberId),$this->where('hostCpid',$cpid)));
 	}
 	
+	public function getWithMemberId($memberId) {
+		return $this->fetchAll(array($this->where('memberId',$memberId)));
+	}
+	
 	public function getWithMemberIdAndDbidAndProjectUrl($memberId,$dbid,$url) {
 		return $this->fetch(array($this->where('memberId',$memberId),$this->where('hostDbid',$dbid),$this->where('projectUrl',$url)));
 	}
 	
-	public function getWithMemberIdAndCpidAndProjectUrl($memberId,$cpid,$url) {
-		return $this->fetch(array($this->where('memberId',$memberId),$this->where('hostCpid',$cpid),$this->where('projectUrl',$url)));
+	public function getWithMemberIdAndCpidAndProjectUrlAndPoolId($memberId,$cpid,$url,$poolId) {
+		return $this->fetch(array($this->where('memberId',$memberId),$this->where('poolId',$poolId),$this->where('hostCpid',$cpid),$this->where('projectUrl',$url)));
 	}
 	
-	public function getWithHostIdAndProjectUrl($hostId,$url) {
-		return $this->fetch(array($this->where('hostId',$hostId),$this->where('projectUrl',$url)));
+	public function getHostIdsWithErrors($memberId) {
+		$datas = $this->fetchAll(array($this->where('memberid',$memberId),$this->where('hostDbid',0)));
+		$ids = array();
+		foreach ($datas as $data) {
+			$ids[$data->getHostId()] = 1;
+		}
+		return $ids;
+	}
+	
+// 	public function getWithHostIdAndProjectUrlAndPoolId($hostId,$url,$poolId) {
+// 		return $this->fetch(array($this->where('poolId',$poolId),$this->where('hostId',$hostId),$this->where('projectUrl',$url)));
+// 	}
+	
+	public function getActiveProjectForHost($hostId,$url,$poolId) {
+		return $this->fetch(array($this->where('poolId',$poolId),$this->where('attached',2,'!='),$this->where('hostId',$hostId),$this->where('projectUrl',$url)));
 	}
 	
 	public function getWithMemberIdAndHostId($memberId,$hostId) {

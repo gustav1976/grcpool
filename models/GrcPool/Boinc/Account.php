@@ -9,6 +9,8 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	private $_signature = '';
 	private $_weakKey = '';
 	private $_strongKey = '';
+	private $_weakKey2 = '';
+	private $_strongKey2 = '';
 	private $_whiteList = 0;
 	private $_rac = 0;
 	private $_baseUrl = '';
@@ -20,6 +22,15 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	private $_secure = 0;
 	private $_whiteListCount = 0;
 	private $_minRac = 0.00;
+	private $_android = 0;
+	private $_raspberryPi = 0;
+	private $_linux = 0;
+	private $_windows = 0;
+	private $_virtualBox = 0;
+	private $_intel = 0;
+	private $_amd = 0;
+	private $_nvidia = 0;
+	private $_mac = 0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setName(string $string) {$this->_name=$string;}
@@ -32,6 +43,10 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	public function getWeakKey():string {return $this->_weakKey;}
 	public function setStrongKey(string $string) {$this->_strongKey=$string;}
 	public function getStrongKey():string {return $this->_strongKey;}
+	public function setWeakKey2(string $string) {$this->_weakKey2=$string;}
+	public function getWeakKey2():string {return $this->_weakKey2;}
+	public function setStrongKey2(string $string) {$this->_strongKey2=$string;}
+	public function getStrongKey2():string {return $this->_strongKey2;}
 	public function setWhiteList(int $int) {$this->_whiteList=$int;}
 	public function getWhiteList():int {return $this->_whiteList;}
 	public function setRac(float $float) {$this->_rac=$float;}
@@ -54,6 +69,24 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	public function getWhiteListCount():int {return $this->_whiteListCount;}
 	public function setMinRac(float $float) {$this->_minRac=$float;}
 	public function getMinRac():float {return $this->_minRac;}
+	public function setAndroid(int $int) {$this->_android=$int;}
+	public function getAndroid():int {return $this->_android;}
+	public function setRaspberryPi(int $int) {$this->_raspberryPi=$int;}
+	public function getRaspberryPi():int {return $this->_raspberryPi;}
+	public function setLinux(int $int) {$this->_linux=$int;}
+	public function getLinux():int {return $this->_linux;}
+	public function setWindows(int $int) {$this->_windows=$int;}
+	public function getWindows():int {return $this->_windows;}
+	public function setVirtualBox(int $int) {$this->_virtualBox=$int;}
+	public function getVirtualBox():int {return $this->_virtualBox;}
+	public function setIntel(int $int) {$this->_intel=$int;}
+	public function getIntel():int {return $this->_intel;}
+	public function setAmd(int $int) {$this->_amd=$int;}
+	public function getAmd():int {return $this->_amd;}
+	public function setNvidia(int $int) {$this->_nvidia=$int;}
+	public function getNvidia():int {return $this->_nvidia;}
+	public function setMac(int $int) {$this->_mac=$int;}
+	public function getMac():int {return $this->_mac;}
 }
 
 abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
@@ -68,6 +101,8 @@ abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
 		'signature' => array('type'=>'STRING','dbType'=>'varchar(500)'),
 		'weakKey' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'strongKey' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'weakKey2' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'strongKey2' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'whiteList' => array('type'=>'INT','dbType'=>'int(1)'),
 		'rac' => array('type'=>'FLOAT','dbType'=>'decimal(22,8)'),
 		'baseUrl' => array('type'=>'STRING','dbType'=>'varchar(100)'),
@@ -79,5 +114,14 @@ abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
 		'secure' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 		'whiteListCount' => array('type'=>'INT','dbType'=>'smallint(3)'),
 		'minRac' => array('type'=>'FLOAT','dbType'=>'decimal(9,2)'),
+		'android' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'raspberryPi' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'linux' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'windows' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'virtualBox' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'intel' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'amd' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'nvidia' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'mac' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 	);
 }

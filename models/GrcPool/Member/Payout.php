@@ -11,6 +11,7 @@ abstract class GrcPool_Member_Payout_MODEL {
 	private $_tx = '';
 	private $_thetime = 0;
 	private $_calculation = '';
+	private $_poolId = 1;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setMemberId(int $int) {$this->_memberId=$int;}
@@ -27,6 +28,8 @@ abstract class GrcPool_Member_Payout_MODEL {
 	public function getThetime():int {return $this->_thetime;}
 	public function setCalculation(string $string) {$this->_calculation=$string;}
 	public function getCalculation():string {return $this->_calculation;}
+	public function setPoolId(int $int) {$this->_poolId=$int;}
+	public function getPoolId():int {return $this->_poolId;}
 }
 
 abstract class GrcPool_Member_Payout_MODELDAO extends TableDAO {
@@ -43,5 +46,6 @@ abstract class GrcPool_Member_Payout_MODELDAO extends TableDAO {
 		'tx' => array('type'=>'STRING','dbType'=>'varchar(100)'),
 		'thetime' => array('type'=>'INT','dbType'=>'int(11)'),
 		'calculation' => array('type'=>'STRING','dbType'=>'varchar(4000)'),
+		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
 	);
 }
