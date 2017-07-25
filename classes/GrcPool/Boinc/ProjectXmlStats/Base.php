@@ -68,7 +68,7 @@ class GrcPool_Boinc_ProjectXmlStats_Base {
 		if (file_exists($this->feedPath.'user.gz')) {
 			$data = '';
 			$tempFile = $this->basePath.'temp.xml';
-			unlink($tempFile);
+			if(file_exists($tempFile)){unlink($tempFile);}
 
 			$buffer_size = 4096;
 			$out_file_name = $tempFile;
