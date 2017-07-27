@@ -7,7 +7,7 @@ $idArg = 1;
 if ($FORCE) {$idArg++;}
 
 $neededProjectCount = 15;
-$validSuper = false;
+$validSuper = true;
 
 echo "############## GETHOSTDATA ".date("Y.m.d H.i.s")."\n";
 $settingsDao = new GrcPool_Settings_DAO();

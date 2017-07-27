@@ -163,12 +163,32 @@ $webPage->append('
 	</div>
 ');
 
+$tabs = new Bootstrap_Tabs();
+$tab = new Bootstrap_Tab();
+$tab->setActive(true);
+$tab->setTitle('Total Mag');
+$tab->setContent('<div style="background-color:white;"><div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="/api/memberTotalMagChart/'.$this->getUser()->getId().'"></iframe></div></div>');
+$tabs->addTab($tab);
+$tab = new Bootstrap_Tab();
+$tab->setActive(false);
+$tab->setTitle('Mag');
+$tab->setContent('<div style="background-color:white;"><div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="/api/memberMagChart/'.$this->getUser()->getId().'"></iframe></div></div>');
+$tabs->addTab($tab);
+$tab = new Bootstrap_Tab();
+$tab->setActive(false);
+$tab->setTitle('Rac');
+$tab->setContent('<div style="background-color:white;"><div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="/api/memberRacChart/'.$this->getUser()->getId().'"></iframe></div></div>');
+$tabs->addTab($tab);
+$tab = new Bootstrap_Tab();
+$tab->setActive(false);
+$tab->setTitle('Earnings');
+$tab->setContent('<div style="background-color:white;"><div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="/api/memberEarningsChart/'.$this->getUser()->getId().'"></iframe></div></div>');
+$tabs->addTab($tab);
+
 $webPage->append('
 	<div class="row">
 		<div class="col-xs-12">
-			<img src="/api/memberMagChart/'.$this->getUser()->getId().'" class="img-responsive"/>
-			<br/><br/>
-			<img src="/api/memberRacChart/'.$this->getUser()->getId().'" class="img-responsive"/>
+			'.$tabs->render().'
 		</div>
 	</div>
 ');

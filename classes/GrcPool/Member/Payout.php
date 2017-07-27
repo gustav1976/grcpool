@@ -17,4 +17,8 @@ class GrcPool_Member_Payout_DAO extends GrcPool_Member_Payout_MODELDAO {
 		}
 	}
 	
+	public function getWithMemberIdSince($memberId,$since) {
+		return $this->fetchAll(array($this->where('memberId',$memberId),$this->where('thetime',$since,'>=')),array('thetime'=>'asc'));
+	}
+	
 }
