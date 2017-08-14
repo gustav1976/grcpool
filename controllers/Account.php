@@ -22,8 +22,6 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 				$dao->deleteWithMemberId($usr->getId());
 				$dao = new GrcPool_Member_Host_Stat_Mag_DAO();
 				$dao->deleteWithMemberId($usr->getId());
-// 				$dao = new GrcPool_Member_Host_Xml_DAO();
-// 				$dao->deleteWithMemberId($usr->getId());
 				$dao = new GrcPool_Member_Notice_DAO();
 				$dao->deleteWithMemberId($usr->getId());
 				$dao = new GrcPool_Session_DAO();
@@ -56,8 +54,12 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$wcgIds = array();
 		$hostIds = array();
 		$hostIdX = array();
+		
+		$accountDao = new GrcPool_Boinc_Account_DAO();
+		$wcgAccount = $accountDao->getWithGrcName(Constants::GRCNAME_WORLD_COMMUNITY_GRID);
+		$wcgIds = array();
 		foreach ($projects as $project) {
-			if (strstr($project->getProjectUrl(),'worldcommunitygrid') && $project->getHostDbid()) {
+			if ($wcgAccount && $project->getAccountId() == $wcgAccount->getId() && $project->getHostDbid()) {
 				array_push($wcgIds,$project->getHostDbId());
 				array_push($hostIds,$project->getHostId());
 				$hostIdx[$project->getHostId()] = $project->getHostDbId();
@@ -125,6 +127,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$hostDao = new GrcPool_View_Member_Host_Project_Credit_DAO();
 		$dao = new GrcPool_Member_Host_DAO();
 		$projDao = new GrcPool_Member_Host_Project_DAO();
+		
 		if ($this->args(0) == 'enableDelete') {
 			if (!$noticeDao->isNoticeForMembeAndId($this->getUser()->getId(),GrcPool_Member_Notice_OBJ::NOTICE_DELETE)) {
 				$obj = new GrcPool_Member_Notice_OBJ();
@@ -149,36 +152,42 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$this->view->memHosts = $memHosts;
 		
 		$hosts = $hostDao->getWithMemberId($this->getUser()->getId());
+
 		$this->view->hosts = $hosts;
 		
 		$accountDao = new GrcPool_Boinc_Account_DAO();
-		$accounts = $accountDao->fetchAll();
-		$this->view->accounts = array();
-		foreach ($accounts as $account) {
-			$this->view->accounts[$account->getUrl()] = $account;
-		}
+		$this->view->accounts = $accountDao->fetchAll();
 		
 		$cache = new Cache();
 		$superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
 		$this->view->magUnit = $superblockData->magUnit;
+		
+		$settingsDao = new GrcPool_Settings_DAO();
+		$this->view->poolWhiteListCount = $settingsDao->getValueWithName(Constants::SETTINGS_POOL_WHITELIST_COUNT);
 		
 		$this->view->hasDeleteNotice = $noticeDao->isNoticeForMembeAndId($this->getUser()->getId(),GrcPool_Member_Notice_OBJ::NOTICE_DELETE);
 		
 	}
 	
 	public function payoutsAction() {
-		$dao = new GrcPool_View_Member_Payout_DAO();
+		$dao = new GrcPool_Member_Payout_DAO();
+		$accountDao = new GrcPool_Boinc_Account_DAO();
+		$hostDao = new GrcPool_Member_Host_DAO();
+		
 		$numberToShow = 25;		
 		$start = 0;
+		
 		if (is_numeric($this->args(0))) {
 			$start = $this->args(0,Controller::VALIDATION_NUMBER);
 		}
+
+		$hosts = $hostDao->getWithMemberId($this->getUser()->getId());
+		$this->view->hosts = $hosts;
 		
-		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$accounts = $accountDao->fetchAll();
 		$this->view->accounts = array();
 		foreach ($accounts as $account) {
-			$this->view->accounts[$account->getUrl()] = $account;
+			$this->view->accounts[$account->getUrlId()] = $account;
 		}
 		
 		$numberOfPayouts = $dao->getCountForUser($this->getUser()->getId());
@@ -365,11 +374,11 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 			$this->view->orphansOwed+= $orphan->getOwed();
 		}
 		$accountDao = new GrcPool_Boinc_Account_DAO();
-		$accounts = $accountDao->fetchAll();
-		$this->view->accounts = array();
-		foreach ($accounts as $account) {
-			$this->view->accounts[$account->getUrl()] = $account;
-		}
+		$this->view->accounts = $accountDao->fetchAll();
+// 		$this->view->accounts = array();
+// 		foreach ($accounts as $account) {
+// 			$this->view->accounts[$account->getUrl()] = $account;
+// 		}
 		$settingsDao = new GrcPool_Settings_DAO();
 		$this->view->payoutNoMag = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_ORPHAN_PAYOUT_ZERO_MAG);
 		$this->view->payoutWithMag = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_ORPHAN_PAYOUT_WITH_MAG);
@@ -424,9 +433,11 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$this->view->magUnit = $superblockData->magUnit;
 		
 		$taskDao = new GrcPool_Wcg_Tasks_DAO();
+		$accountDao = new GrcPool_Boinc_Account_DAO();
+		$wcgAccount = $accountDao->getWithGrcName(Constants::GRCNAME_WORLD_COMMUNITY_GRID);
 		$wcgIds = array();
 		foreach ($projects as $project) {
-			if (strstr($project->getProjectUrl(),'worldcommunitygrid') && $project->getHostDbid()) {
+			if ($wcgAccount && $project->getAccountId() == $wcgAccount->getId() && $project->getHostDbid()) {
 				array_push($wcgIds,$project->getHostDbId());
 			}
 		}
@@ -482,38 +493,47 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$projectDao = new GrcPool_Boinc_Account_DAO();
 		$noticeDao = new GrcPool_Member_Notice_DAO();
 		$hostProjectsDao = new GrcPool_Member_Host_Project_DAO();
-	
+		$keyDao = new GrcPool_Boinc_Account_Key_DAO();
+		
 		$host = $hostDao->initWithKey($this->args(0),Controller::VALIDATION_NUMBER);
 		if ($host->getMemberId() != $this->getUser()->getId()) {
 			Server::goHome();
 		}
+		
 		if ($this->args(1) == 'delete') {
 			$proj = $hostProjectsDao->initWithKey($this->args(2,Controller::VALIDATION_NUMBER));
 			if ($proj && $proj->getHostId() == $host->getId() && $proj->getMemberId() == $this->getUser()->getId()) {
 				$hostProjectsDao->delete($proj);
 			}
 		}
+		
 		$this->view->host = $host;
 		
-		$projects = $projectDao->fetchAll(array(),array('name'=>'asc'));
-		$this->view->projects = array();
-		foreach ($projects as $account) {
-			$this->view->projects[$account->getUrl()] = $account;
+		$keys = $keyDao->getForPoolId($this->getUser()->getPoolId());
+		$accountKeys = array();
+		foreach ($keys as $key) {
+			$accountKeys[$key->getAccountId()]['weak'] = $key->getWeak();
 		}
+		
+		$projects = $projectDao->fetchAll(array(),array('name'=>'asc'));
+		foreach ($projects as $idx => $project) {
+			if (isset($accountKeys[$project->getId()]) && $accountKeys[$project->getId()] != '' && $project->getWhiteList() && $project->getAttachable()) {
+				$projects[$idx]->attachable = true;
+			} else {
+				$projects[$idx]->attachable = false;
+			}
+		}
+		$this->view->projects = $projects;
 		
 		if ($this->post('cmd') == 'saveSettings' && $this->post('ids')) {
 			foreach ($this->post('ids') as $id) {
-				$hostProject = null;
-
-				$hostProject = $hostProjectsDao->getActiveProjectForHost($host->getId(),$projects[$id]->getUrl(),$this->getUser()->getPoolId());
-				//$hostProject = $hostProjectsDao->getWithHostIdAndProjectUrlAndPoolId($host->getId(),$projects[$id]->getUrl(),$this->getUser()->getPoolId());
-				
+				$hostProject = $hostProjectsDao->getActiveProjectForHost($host->getId(),$id,$this->getUser()->getPoolId());
 				if ($hostProject == null) {
 					$hostProject = new GrcPool_Member_Host_Project_OBJ();
 				}
 				$hostProject->setHostId($host->getId());
 				$hostProject->setMemberId($this->getUser()->getId());
-				$hostProject->setProjectUrl($projects[$id]->getUrl());
+				$hostProject->setAccountId($id);
 				$hostProject->setHostCpid($host->getCpid());
 				$share = $this->post('resourceShare_'.$id);
 				if (is_numeric($share) && $share < 10000) {
@@ -532,7 +552,6 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 			$this->addSuccessMsg('Host settings should be updated.');
 		}
 		
-		//$hostProjects = $hostProjectsDao->getWithMemberIdAndHostCpid($this->getUser()->getId(),$host->getCpid());
 		$hostProjects = $hostProjectsDao->getWithMemberIdAndHostId($this->getUser()->getId(),$host->getId());
 		$this->view->hostProjects = $hostProjects;
 		

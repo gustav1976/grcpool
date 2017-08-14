@@ -1,16 +1,24 @@
 <?php
-require_once(dirname(__FILE__).'/../bootstrap.php');
+
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+
+require_once(dirname(__FILE__).'/../../bootstrap.php');
 
 $cache = new Cache();
 
 $webSocket = new WebSocket();
 $result = array();
 
-$grcValue = CryptoHelper::getPoloniexGRCValue();
-if ($grcValue != null) {
-	$result['poloniex'] = $grcValue;
-	echo 'POLO: '.$grcValue."  ";
-	$cache->set($grcValue,Constants::CACHE_POLONIEX_GRC_VALUE);
+try {
+	$grcValue = CryptoHelper::getPoloniexGRCValue();
+	if ($grcValue != null) {
+		$result['poloniex'] = $grcValue;
+		echo 'POLO: '.$grcValue."  ";
+		$cache->set($grcValue,Constants::CACHE_POLONIEX_GRC_VALUE);
+	}
+} catch (Exception $e) {
+	error_log('getPriceData Poloniex error');
 }
 
 $grcValue = CryptoHelper::getCEXGRCValue();

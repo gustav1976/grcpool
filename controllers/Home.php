@@ -23,6 +23,7 @@ class GrcPool_Controller_Home extends GrcPool_Controller {
 		$this->view->numberOfActiveHosts2 = $activeHosts;
 		
 		$settingsDao = new GrcPool_Settings_DAO();
+		$this->view->poolWhiteListCount = $settingsDao->getValueWithName(Constants::SETTINGS_POOL_WHITELIST_COUNT);
 		$this->view->txFee = $settingsDao->getValueWithName(Constants::SETTINGS_PAYOUT_FEE);
 		$this->view->minPayout = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_OWE_PAYOUT);
 		$this->view->minStake = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_STAKE_BALANCE);

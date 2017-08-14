@@ -12,7 +12,7 @@ $totalMag = 0;
 foreach ($this->view->orphans as $orphan) {
 	$table .= '
 		<tr>
-			<td>'.$this->view->accounts[$orphan->getProjectUrl()]->getName().'</td>
+			<td>'.$this->view->accounts[$orphan->getAccountId()]->getName().'</td>
 			<td class="text-center">'.$orphan->getPoolId().'</td>
 			<td class="text-right">'.$orphan->getAvgCredit().'</td>
 			<td class="text-right">'.$orphan->getMag().'</td>

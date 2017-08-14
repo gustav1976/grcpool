@@ -1,4 +1,9 @@
 <?php
+exit;
+/**
+ * STARTED TO DEVELOP THIS, BUT THE GRC CLIENT DOESN"T REALLY SUPPORT IT
+ */
+
 require_once(dirname(__FILE__).'/../bootstrap.php');
 set_time_limit(240);
 
@@ -32,7 +37,7 @@ if (!$FORCE && $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONL
 
 $lockFile = Constants::PAYOUT_LOCK_FILE;
 
-$fp = fopen(dirname(__FILE__).'/'.$lockFile,"w");
+$fp = fopen(dirname(__FILE__).'/../'.$lockFile,"w");
 if (!flock($fp, LOCK_EX | LOCK_NB)) {
 	echo('CRITICAL: !!!!!!!!!!!! LOCKED !!!!!!!!!!!!!');
 	exit;
@@ -99,8 +104,8 @@ for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
  	$owe = null;
 	
  	echo "INFO: Total Owed: ".$totalAmountOwed."\n";
- 	if ($totalAmountOwed > $availablePOR) {
- 		echo "CRITICAL: !!!!!!!!!! Trying to pay out to much ".$totalAmountOwed." > ".$availablePOR."\n";
+ 	if ($totalAmountOwed * COIN > $availablePOR * COIN) {
+ 		echo "CRITICAL: !!!!!!!!!! Trying to pay out to much ".($totalAmountOwed*COIN)." > ".($availablePOR*COIN)."\n";
  		continue;
  	}
 

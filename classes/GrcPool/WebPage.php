@@ -94,6 +94,8 @@ class GrcPool_WebPage {
 			if ($PROPERTY->get('test')) {
 				return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">This is the TEST System - All coins are testnet coins</div>';
 			}
+		} else {
+			//return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">The website is currently being upgraded, some features may be disabled.</div>';
 		}
 	}
 	
@@ -101,7 +103,7 @@ class GrcPool_WebPage {
 		echo '<!DOCTYPE html>
  		<html>
  			<head>
- 				<title>Gridcoin Research Pool '.$this->title.'</title>
+ 				<title>Gridcoin Pool '.$this->title.'</title>
  				<meta name="keywords" content="'.htmlspecialchars($this->metaKeywords).'"/>
  				<meta name="description" content="'.htmlspecialchars($this->metaDescription).'"/>
  				<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -127,6 +129,7 @@ class GrcPool_WebPage {
 				<!--<meta property="fb:admins" content=""/>-->
 				<meta property="og:image" content="https://www.grcpool.com/assets/images/gpLogo1200.png"/>
  				'.$this->head.'
+				<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css" />
  			</head>
  			<body>
 				'.$this->getTestBanner().'
@@ -154,7 +157,7 @@ class GrcPool_WebPage {
 			          						<ul class="dropdown-menu">
 			            						<li><a href="/about/fees">Fees and Donations</a></li>
 		 										<li><a href="/about/calculations">Calculations</a></li>
-		 										<li><a href="/about/hotWallet">Pool Hot Wallet</a></li>
+		 										<li><a href="/about/hotWallet">Pool Staking Wallet</a></li>
 			         							</ul>
 								        </li>
 		 								<li class=""><a href="/report">Reports</a></li>
@@ -162,7 +165,7 @@ class GrcPool_WebPage {
 			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
 			          						<ul class="dropdown-menu">
 			            						<li><a href="/project/choose">Choosing a Project</a></li>
-		 										<li><a href="/project/poolStats">Pool Stats</a></li>
+		 										<li><a href="/project/poolStats">Pool Status</a></li>
 		         							</ul>
 								        </li>		 								
 		 										
@@ -245,6 +248,22 @@ class GrcPool_WebPage {
 				}(document, \'script\', \'facebook-jssdk\'));</script>
 				<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 				<script src="https://apis.google.com/js/platform.js"></script>
+				<script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+				<script>
+				window.addEventListener("load", function(){
+				window.cookieconsent.initialise({
+				  "palette": {
+				    "popup": {
+				      "background": "#252e39"
+				    },
+				    "button": {
+				      "background": "#14a7d0"
+				    }
+				  },
+				  "theme": "edgeless"
+				})});
+				</script>
+
 			</body>
  		</html>';
 	}

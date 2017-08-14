@@ -1,7 +1,9 @@
 <?php
-$webPage->setPageTitle('Help with Choosing a BOINC Project');
-
-$webPage->append('		
+$webPage->appendTitle('Help with Choosing a BOINC Project');
+$panel = new Bootstrap_Panel();
+$panel->setHeader('Help with Choosing a BOINC Project');
+$panelContent = '';
+$panelContent .= '
 	<p><em>Thanks to Quez for putting this information together</em></p>
 	<p><strong>Tactical Mining / Research</strong></p>
 	<p>Foreword: Mining means researching in the Gridcoin world. Research is never bad. It\'s a good thing to do, especially if you like to participate in a research field that you are interested in. The following guide is not meant to stop you from doing research for your favorite projects. Its purpose is to show you how you can optimize your Gridcoin earnings. This might include that you will work on projects that have no scientific purpose if you follow this guide.</p>
@@ -26,4 +28,6 @@ Optimization of GRC mining is more like trial-and-error, but this guide shows yo
 		<li><a href="https://steemit.com/gridcoin/@dutch/hardware-and-project-selection-part-2-gpu-projects">GPU Projects</a></li>
 		<li><a href="https://steemit.com/gridcoin/@dutch/hardware-and-project-selection-part-3-cpu-projects">CPU Projects</a></li>
 	</ul>
-');
+';
+$panel->setContent($panelContent);
+$webPage->append($panel->render());

@@ -24,7 +24,8 @@ class CryptoHelper {
 	}
 	public static function getCEXGRCValue() {
 		try {
-			$json = json_decode(file_get_contents('https://c-cex.com/t/grc-btc.json'),true);
+			$ctx = stream_context_create(array('http'=>array('timeout' => 15,)));
+			$json = json_decode(file_get_contents('https://c-cex.com/t/grc-btc.json',false,$ctx),true);
 			$json = $json['ticker'];
 			if (isset($json['lastprice']) && $json['lastprice'] > 0) {
 				return number_format($json['lastprice'],8);
@@ -37,7 +38,8 @@ class CryptoHelper {
 	}
 	public static function getPoloniexGRCValue() {
 		try {
-			$json = json_decode(file_get_contents('https://poloniex.com/public?command=returnTicker'),true);
+			$ctx = stream_context_create(array('http'=>array('timeout' => 15,)));
+			$json = json_decode(file_get_contents('https://poloniex.com/public?command=returnTicker',false,$ctx),true);
 			if (isset($json['BTC_GRC'])) {
 				$ticker = $json['BTC_GRC'];
 				if (isset($ticker['last']) && $ticker['last'] > 0) {

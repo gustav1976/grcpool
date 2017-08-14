@@ -94,6 +94,8 @@ class BoincApi_Rpc {
 		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$dao = new GrcPool_Member_DAO();
 		$hostProjectDao = new GrcPool_Member_Host_Project_DAO();
+		$urlDao = new GrcPool_Boinc_Account_Url_DAO();
+		$keyDao = new GrcPool_Boinc_Account_Key_DAO();
 		$this->member = $dao->initWithUsername((String)$this->xml->name);
 		$this->memberValid = $this->member==null?false:$this->member->getPasswordHash()==(String)$this->xml->password_hash;
 		
@@ -119,10 +121,13 @@ class BoincApi_Rpc {
 			if ($this->host == null) {
 				if ($this->xml->project->hostid) {
 					$projectDao = new GrcPool_Member_Host_Project_DAO();
-					$testProj = $projectDao->getWithMemberIdAndDbidAndProjectUrl($this->member->getId(),(String)$this->xml->project->hostid,(String)$this->xml->project->url);
-					if ($testProj != null) {
-						if ($echo) echo "FOUND HOST WITH PROJECT DBID AND URL\n";
-						$this->host = $hostDao->initWithKey($testProj->getHostId());
+					$urlObj = $urlDao->initWithUrl((String)$this->xml->project->url);
+					if ($urlObj) {
+						$testProj = $projectDao->getWithMemberIdAndDbidAndAccountId($this->member->getId(),(String)$this->xml->project->hostid,$urlObj->getAccountId());
+						if ($testProj != null) {
+							if ($echo) echo "FOUND HOST WITH PROJECT DBID AND URL\n";
+							$this->host = $hostDao->initWithKey($testProj->getHostId());
+						}
 					}
 				} else {
 					if ($echo) echo "NO HOST DBID\n";
@@ -182,21 +187,24 @@ class BoincApi_Rpc {
 			$hostDao->save($this->host);
 			
  			foreach ($this->xml->project as $project) {
- 				$account = $accountDao->initWithUrl((String)$project->url);
+ 				$urlObj = $urlDao->initWithUrl((String)$project->url);
+ 				$account = null;
+ 				if ($urlObj) {
+ 					$account = $accountDao->initWithKey($urlObj->getAccountId());
+ 				}
  				$weakKey = '';
- 				if ($account != null && $account->getId() != 0) {
- 					switch ($this->member->getPoolId()) {
-	 					case 1 : $weakKey = $account->getWeakKey();break;
- 						case 2 : $weakKey = $account->getWeakKey2();break;
+ 				if ($account) {
+ 					$keyObj = $keyDao->getWithAccountAndPool($account->getId(), $this->member->getPoolId());
+ 					if ($keyObj) {
+ 						$weakKey = $keyObj->getWeak();
  					}
  				}
  				if ($account != null && $account->getId() != 0 && (String)$project->account_key == $weakKey) { // key indicates if using pool account
 	 				$dbid = (String)$project->hostid;
 	 				$cpid = (String)$this->xml->host_cpid;
-	 				$projectUrl = (String)$project->url;
-	 				$obj = $hostProjectDao->getWithMemberIdAndDbidAndProjectUrl($this->member->getId(),$dbid,$projectUrl);
+	 				$obj = $hostProjectDao->getWithMemberIdAndDbidAndAccountId($this->member->getId(),$dbid,$account->getId());
 	 				if ($obj == null) {
-	 					$obj = $hostProjectDao->getWithMemberIdAndCpidAndProjectUrlAndPoolId($this->member->getId(),$cpid,$projectUrl,$this->member->getPoolId());
+	 					$obj = $hostProjectDao->getWithMemberIdAndCpidAndAccountIdAndPoolId($this->member->getId(),$cpid,$account->getId(),$this->member->getPoolId());
 	 					if ($obj == null) {
 	 						//$obj = new GrcPool_Member_Host_Project_OBJ();
 	 						//$obj->setAttached(1);
@@ -204,21 +212,21 @@ class BoincApi_Rpc {
 	 						//$obj->setResourceShare(100);
 	 						// I would have liked to add the project if they sere using the weak key here, but could open up security problems if any dbid was accpeted
 	 						// so lets restrict projects being added only from account pages
-	 						$this->error .= $projectUrl.' is currently not in your account, please login to the pool and add it first.';
+	 						$this->error .= $account->getName().' is currently not in your account, please login to the pool and add it first.';
 	 						if ($echo) echo "CREATED NEW PROJECT FOR HOST\n";
 	 						continue;
 	 					} else {
 	 						if ($echo) echo "FOUND PROJECT WITH CPID\n";
 	 					}
 	 				} else {
-	 					$this->attachedProjects[$projectUrl] = 1;
+	 					$this->attachedProjects[$account->getId()] = 1;
 	 					if ($echo) echo "FOUND PROJECT WITH DBID\n";
 	 				}
 	 				if ($obj->getHostDbid() != $dbid) {
 	 					// dbid changing, so lets validate it is not duplicate
-	 					$testObj = $hostProjectDao->getWithHostDbIdAndProjectUrl($dbid, $projectUrl);
+	 					$testObj = $hostProjectDao->getWithHostDbIdAndAccountId($dbid, $account->getId());
 	 					if (count($testObj)) {
-	 						$this->error .= $projectUrl.' appears to already be in the pool. Please remove the prior project before trying to add with this host.';
+	 						$this->error .= $account->getName().' appears to already be in the pool. Please remove the prior project before trying to add with this host.';
 	 						continue;
 	 					}
 	 				}
@@ -229,7 +237,7 @@ class BoincApi_Rpc {
 	 				$hostProjectDao->save($obj);
  				} else if ($account != null && $account->getId() != 0) {
  					// attached using a personal account
- 					$this->attachedProjects[(String)$project->url] = 0;
+ 					$this->attachedProjects[$account->getId()] = 0;
  				}
  			}
 		}
@@ -280,18 +288,20 @@ class BoincApi_Rpc {
 		if ($this->memberValid) {
 			$accountsDao = new GrcPool_Boinc_Account_DAO();
 			$hostProjectDao = new GrcPool_Member_Host_Project_DAO();
+			$keyDao = new GrcPool_Boinc_Account_Key_DAO();
+			$urlDao = new GrcPool_Boinc_Account_Url_DAO();
 			$hostProjects = $hostProjectDao->getWithMemberIdAndHostCpid($this->member->getId(),$this->xml->host_cpid);
 			foreach ($hostProjects as $hostProject) {
 				if ($hostProject->getPoolId() != $this->member->getPoolId()) {continue;} // don't send it because it is on wrong pool
 				if ($hostProject->getAttached() == 2) {continue;} // special case, orphaned project
-				$account = $accountsDao->initWithUrl($hostProject->getProjectUrl());
+				$account = $accountsDao->initWithKey($hostProject->getAccountId());
 				if ($account) {
 					$weakKey = '';
-					switch ($this->member->getPoolId()) {
-						case 1 : $weakKey = $account->getWeakKey();break;
-						case 2 : $weakKey = $account->getWeakKey2();break;
+					$key = $keyDao->getWithAccountAndPool($account->getId(),$this->member->getPoolId());
+					if ($key) {
+						$weakKey = $key->getWeak();
 					}
-					$attachedFlag = isset($this->attachedProjects[$hostProject->getProjectUrl()])?$this->attachedProjects[$hostProject->getProjectUrl()]:null;
+					$attachedFlag = isset($this->attachedProjects[$hostProject->getAccountId()])?$this->attachedProjects[$hostProject->getAccountId()]:null;
 					
 					if ( // writing this out for legibility
 						($hostProject->getAttached() == 0 && $attachedFlag === null) || // pool detach, not in client 
@@ -304,15 +314,17 @@ class BoincApi_Rpc {
 // 						continue;
 // 					}
 					
-					
 					$acct = new BoincApi_Account();
-					$acct->setUrl($hostProject->getProjectUrl());
+					
+					// NEED TO FIX THIS LATER FOR URL UPDATING CHANGES
+					$urlObj = $urlDao->initWithKey($account->getUrlId());
+					$acct->setUrl($urlObj->getUrl());
 					$acct->setNo_ati($hostProject->getNoAtiGpu()|null);
 					$acct->setNo_cpu($hostProject->getNoCpu()|null);
 					$acct->setNo_cuda($hostProject->getNoNvidiaGpu()|null);
 					$acct->setNo_intel($hostProject->getNoIntelGpu()|null);
 					$acct->setResource_share($hostProject->getResourceShare());
-					$acct->setUrl_signature($account->getSignature());
+					$acct->setUrl_signature($urlObj->getSignature());
 					$acct->setAuthenticator($weakKey);
 					if ($hostProject->getAttached()==0) {
 						$acct->setDetach(1);

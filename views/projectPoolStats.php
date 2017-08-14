@@ -1,4 +1,5 @@
 <?php
+$webPage->appendTitle('Pool Status');
 $webPage->appendHead('
 	<link rel="stylesheet" href="/assets/libs/tablesorter/2.28.7/theme.bootstrap.css">
 ');
@@ -121,7 +122,6 @@ $webPage->appendScript('
 		}
 	</script>  
 ');
-$webPage->setPageTitle('Project Pool Stats');
 $projects = '
 	<div class="btn-group rowpad">
 		<div class="btn-group rowpad">
@@ -209,6 +209,7 @@ $projects = '
 ';
 
 foreach ($this->view->accounts as $account) {
+	
 	if ($account->getLastSeen() < time()-60*60*24*60) {
 		continue;
 	}
@@ -217,42 +218,32 @@ foreach ($this->view->accounts as $account) {
 	$hostCount = 0;
 
 	$attachable = '';
-	if ($this->view->poolFilter == 0 || $this->view->poolFilter == 1) {
-		$attachable .= '
-			<span class="fa-stack pool1Attach">
-				<i class="fa fa-circle text-'.($account->getAttachable()&&$account->getWeakKey()!=''?'success':'danger').' fa-stack-2x"></i>
-				<strong class="fa-stack-1x" style="color:white;">1</strong>
-			</span>
-		';
-		if (isset($this->view->projStats[$account->getUrl()])) {
-			if (isset($this->view->projStats[$account->getUrl()]['hostCount_1'])) {
-				$hostCount += $this->view->projStats[$account->getUrl()]['hostCount_1'];
-				$mag += $this->view->projStats[$account->getUrl()]['mag_1'];
+	
+	for ($p = 1; $p <= Constants::NUMBER_OF_POOLS; $p++) {
+		if ($this->view->poolFilter == 0 || $this->view->poolFilter == $p) {
+			$attachable .= '
+				<span class="fa-stack pool'.$p.'Attach">
+					<i class="fa fa-circle text-'.($account->{'pool'.$p.'Attach'}?'success':'danger').' fa-stack-2x"></i>
+					<strong class="fa-stack-1x" style="color:white;">'.$p.'</strong>
+				</span>
+			';
+			if (isset($this->view->projStats[$account->getId()])) {
+				if (isset($this->view->projStats[$account->getId()]['hostCount_'.$p])) {
+					$hostCount += $this->view->projStats[$account->getId()]['hostCount_'.$p];
+					$mag += $this->view->projStats[$account->getId()]['mag_'.$p];
+				}
 			}
+			
 		}
-		
 	}
-	if ($this->view->poolFilter == 0 || $this->view->poolFilter == 2) {
-		$attachable .= '
-			<span class="fa-stack pool2Attach">
-				<i class="fa fa-circle text-'.($account->getAttachable()&&$account->getWeakKey2()!=''?'success':'danger').' fa-stack-2x"></i>
-				<strong class="fa-stack-1x" style="color:white;">2</strong>
-			</span>
-		';
-		if (isset($this->view->projStats[$account->getUrl()])) {
-			if (isset($this->view->projStats[$account->getUrl()]['hostCount_2'])) {
-				$hostCount += $this->view->projStats[$account->getUrl()]['hostCount_2'];
-				$mag += $this->view->projStats[$account->getUrl()]['mag_2'];
-			}
-		}
-		
-	}
-
+	
 	$projects .= '
 		<tr>
 			<td>
-				<a href="/project/detail/'.$account->getId().'">'.$account->getName().'</a>
-				'.($account->getMessage()?'<a href="#" data-toggle="tooltip" title="'.$account->getMessage().'"><i class="text-danger fa fa-warning"></i>':'').'
+				<!--<a href="/project/detail/'.$account->getId().'">'.$account->getName().'</a>-->
+				'.$account->getName().'
+				'.($account->getMessage()?'<a href="#" data-toggle="tooltip" title="'.$account->getMessage().'"><i class="text-danger fa fa-warning"></i></a>':'').'<br/>
+				<small><em>'.$this->view->boincUrls[$account->getUrlId()]->getUrl().'</em></small>
 			</td>
 			<td style="text-align:center;">
 				<i class="fa fa-circle fa-2x text-'.(array_search($account->getGrcName(),$this->view->networkProjects)!==false?'success':'danger').'"></i>
@@ -263,8 +254,8 @@ foreach ($this->view->accounts as $account) {
 			<td style="text-align:center;">'.$attachable.'</td>
 			<td class="text-center">'.Utils::getTimeAgo($account->getLastSeen()).'</td>					
 			<td class="text-right">'.number_format($account->getMinRac(),2).'</td>
-			<td data-pool1="'.($this->view->projStats[$account->getUrl()]['hostCount_1']??0).'" data-pool2="'.($this->view->projStats[$account->getUrl()]['hostCount_2']??0).'" class="text-right hostCol">'.$hostCount.'</td>
-			<td data-pool1="'.($this->view->projStats[$account->getUrl()]['mag_1']??0).'" data-pool2="'.($this->view->projStats[$account->getUrl()]['mag_2']??0).'" class="text-right magCol">'.number_format($mag,2).'</td>
+			<td data-pool1="'.($this->view->projStats[$account->getId()]['hostCount_1']??0).'" data-pool2="'.($this->view->projStats[$account->getId()]['hostCount_2']??0).'" class="text-right hostCol">'.$hostCount.'</td>
+			<td data-pool1="'.($this->view->projStats[$account->getId()]['mag_1']??0).'" data-pool2="'.($this->view->projStats[$account->getId()]['mag_2']??0).'" class="text-right magCol">'.number_format($mag,2).'</td>
 			<td class="text-right">'.(isset($this->view->tasksToSend[$account->getId()])?number_format($this->view->tasksToSend[$account->getId()]):'').'</td>
 			<td class="text-center">
 				<img class="'.($account->getLinux()?'':'grayscale').' linux" title="Linux" style="height:22px;" src="/assets/images/svg/linux.svg"/>

@@ -1,4 +1,8 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Member_Notice_MODEL {
 
 	public function __construct() { }
@@ -18,7 +22,7 @@ abstract class GrcPool_Member_Notice_MODEL {
 }
 
 abstract class GrcPool_Member_Notice_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'member_notice';
 	protected $_model = 'GrcPool_Member_Notice_OBJ';
 	protected $_primaryKey = 'id';

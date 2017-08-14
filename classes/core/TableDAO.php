@@ -290,6 +290,22 @@ abstract class TableDAO extends DAO {
 		return $this->initWithRows($statement->fetchAll(PDO::FETCH_ASSOC));    	
     }
     
+    public function fetchObj($objs,$where) {
+    	foreach ($objs as $obj) {
+    		$match = true;
+    		foreach ($where as $w) {
+    			if (call_user_func_array(array($obj,'get'.$w['field']), array()) !== $w['value']) {
+    				$match = false;
+    				break;
+    			}
+    		}
+    		if ($match) {
+    			return $obj;
+    		}
+    	}
+    	return null;
+    }
+    
     public function truncate() {
     	$this->executeQuery("truncate table ".$this->getFullTableName());
     }

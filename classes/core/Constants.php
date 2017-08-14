@@ -1,6 +1,9 @@
 <?php
 class Constants {
 	
+	const DATABASE_NAME = 'grcpool';
+	const DATABASE_SERVER = '127.0.0.1';
+	
 	const NUMBER_OF_POOLS = 2;
 	
 	const PROPERTY_FILE = '/var/www/properties/grcpool.props.json';
@@ -35,6 +38,7 @@ class Constants {
 	const SETTINGS_GRC_DONATION_ADDRESS = 'GRC_DONATION_ADDRESS';
 	const SETTINGS_WCG_CODE = 'WCG_CODE';
 	const SETTINGS_WCG_CODE2 = 'WCG_CODE2';
+	const SETTINGS_POOL_WHITELIST_COUNT = 'POOL_WHITELIST_COUNT';
 	
 	const PAYOUT_ERROR_NO_GRC_ADDR = 'No GRC Address';
 	const PAYOUT_ERROR_MIN_NOT_MET = 'Minimum owed payout not met';
@@ -53,6 +57,9 @@ class Constants {
 	const DAEMON_POOL_1_DATADIR = '/home/bgb/.GridcoinResearch';
 	const DAEMON_POOL_2_PATH = '/usr/bin/gridcoinresearchd2';
 	const DAEMON_POOL_2_DATADIR = '/home/bgb/.GridcoinResearch2';
+	
+	const GRCNAME_WORLD_COMMUNITY_GRID = 'world community grid';
+	const GRCNAME_SETI = 'seti@home';
 	
 }
 	

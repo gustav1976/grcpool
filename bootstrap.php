@@ -34,7 +34,7 @@ e73144ac178b785f677e320166041f165e777160ceaea2952f5ee4914c875d7b
 .');
 require(dirname(__FILE__).'/autoload.php');
 $PROPERTY = new Property(Constants::PROPERTY_FILE);
-$DATABASE = new Database($PROPERTY->get('databaseUser'),$PROPERTY->get('databasePassword'),$PROPERTY->get('databaseName'),$PROPERTY->get('databaseServer'));
+$DATABASE = new Database($PROPERTY->get('databaseUser'),$PROPERTY->get('databasePassword'),Constants::DATABASE_NAME,Constants::DATABASE_SERVER);
 $DATABASE->connect();
 $memberDao = new GrcPool_Member_DAO();
 $USER = $memberDao->initWithSession();

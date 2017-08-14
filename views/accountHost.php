@@ -75,11 +75,10 @@ $haveIds = array();
 $html = '';
 
 $otherPoolHosts = array();
-
 foreach ($this->view->projects as $p) {
 	$host = null;
 	foreach ($this->view->hostProjects as $proj) {
-		if ($p->getUrl() == $proj->getProjectUrl()) {
+		if ($p->getId() == $proj->getAccountId()) {
 			if ($proj->getPoolId() == $this->getUser()->getPoolId() && $proj->getAttached() != 2) {
 				$host = $proj;
 			} else {
@@ -102,7 +101,7 @@ foreach ($this->view->projects as $p) {
 					'.($host->getHostDbId()==0?'
 						<small><br/><span class="text-danger"><i class="fa fa-warning"></i> <a href="/help/topics/1">This project may not be attached correctly, or needs sync.</a>
 					':'
-						<small><br/><a target="_blank" href="'.$p->getBaseUrl().'/show_host_detail.php?hostid='.$host->getHostDbid().'">host project details</a></small>
+						<small><br/><a target="_blank" href="'.$p->getBaseUrl().'show_host_detail.php?hostid='.$host->getHostDbid().'">host project details</a></small>
 					').'
 				</td>
 				<td><input class="form-control" style="width:80px;" type="text" name="resourceShare_'.$id.'" value="'.$host->getResourceShare().'"/></td>
@@ -118,10 +117,8 @@ foreach ($this->view->projects as $p) {
 
 $options = '';
 foreach ($this->view->projects as $project) {
-	if (($this->getUser()->getPoolId() == 1 && $project->getWeakKey() != '') || ($this->getUser()->getPoolId() == 2 && $project->getWeakKey2() != '')) { 
-		if ($project->getWhiteList() && $project->getAttachable() && !isset($haveIds[$project->getId()])) {
-			$options .= '<option value="'.$project->getId().'">'.$project->getName().'</opton>';
-		}
+	if ($project->attachable && !isset($haveIds[$project->getId()])) {
+		$options .= '<option value="'.$project->getId().'">'.$project->getName().'</opton>';
 	}
 }
 
@@ -177,7 +174,7 @@ if ($otherPoolHosts) {
 	foreach ($otherPoolHosts as $host) {
 		$html .= '
 			<tr>
-				<td>'.$this->view->projects[$host->getProjectUrl()]->getName().'</td>
+				<td>'.$this->view->projects[$host->getAccountId()]->getName().'</td>
 				<td class="text-center">'.$host->getPoolId().'</td>
 			</tr>
 		';

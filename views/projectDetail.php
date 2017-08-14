@@ -6,7 +6,7 @@ $webPage->append('
 		
 	<br/><br/>	
 		
-	<a target="_blank" href="'.$this->view->project->getUrl().'">'.$this->view->project->getName().'</a>
+	<a target="_blank" href="'.$this->view->url->getUrl().'">'.$this->view->project->getName().'</a>
 	
 	<br/>Total Credit: '.$this->view->stats['TOTAL_CREDIT'].'
 	<br/>Total Users: '.$this->view->stats['TOTAL_USERS'].'
@@ -25,7 +25,7 @@ $badges = json_decode($this->view->stats['BADGES'],true);
 foreach ($badges as $badge) {
 	$webPage->append('
 		'.$badge['title'].'
-		<img src="'.$this->view->project->getUrl().''.$badge['image'].'" title="'.$badge['title'].'"/>	
+		<img src="'.$this->view->url->getUrl().''.$badge['image'].'" title="'.$badge['title'].'"/>	
 	');
 }
 
@@ -40,7 +40,7 @@ $webPage->append('
 		</tr>
 ');
 foreach ($this->view->users as $user) {
-	$mag = GrcPool_Utils::calculateMag($user->getAvgCredit(),$this->view->project->getRac(),$this->view->project->getWhiteListCount(),2);
+	$mag = GrcPool_Utils::calculateMag($user->getAvgCredit(),$this->view->project->getRac(),$this->view->poolWhiteListCount,2);
 	$webPage->append('
 		<tr>
 			<td><a target="_blank" href="https://gridcoinstats.eu/cpid/'.$user->getCpid().'">'.$user->getName().' <i class="fa fa-external-link"></i></a></td>

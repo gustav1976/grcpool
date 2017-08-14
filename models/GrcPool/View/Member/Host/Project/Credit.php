@@ -1,9 +1,13 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 
 	public function __construct() { }
 
-	private $_id = 0;
+	private $_memberId = 0;
 	private $_email = '';
 	private $_username = '';
 	private $_poolId = 1;
@@ -12,7 +16,7 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 	private $_donation = 0.00;
 	private $_hostDbid = 0;
 	private $_projectPoolId = 1;
-	private $_projectUrl = '';
+	private $_accountID = 0;
 	private $_hostId = 0;
 	private $_creditId = 0;
 	private $_totalCredit = 0;
@@ -21,8 +25,8 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 	private $_owed = 0.00000000;
 	private $_owedCalc = '';
 	private $_hostName = '';
-	public function setId(int $int) {$this->_id=$int;}
-	public function getId():int {return $this->_id;}
+	public function setMemberId(int $int) {$this->_memberId=$int;}
+	public function getMemberId():int {return $this->_memberId;}
 	public function setEmail(string $string) {$this->_email=$string;}
 	public function getEmail():string {return $this->_email;}
 	public function setUsername(string $string) {$this->_username=$string;}
@@ -39,8 +43,8 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 	public function getHostDbid():int {return $this->_hostDbid;}
 	public function setProjectPoolId(int $int) {$this->_projectPoolId=$int;}
 	public function getProjectPoolId():int {return $this->_projectPoolId;}
-	public function setProjectUrl(string $string) {$this->_projectUrl=$string;}
-	public function getProjectUrl():string {return $this->_projectUrl;}
+	public function setAccountID(int $int) {$this->_accountID=$int;}
+	public function getAccountID():int {return $this->_accountID;}
 	public function setHostId(int $int) {$this->_hostId=$int;}
 	public function getHostId():int {return $this->_hostId;}
 	public function setCreditId(int $int) {$this->_creditId=$int;}
@@ -60,12 +64,12 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 }
 
 abstract class GrcPool_View_Member_Host_Project_Credit_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'view_member_host_project_credit';
 	protected $_model = 'GrcPool_View_Member_Host_Project_Credit_OBJ';
 	protected $_primaryKey = '';
 	protected $_fields = array(
-		'id' => array('type'=>'INT','dbType'=>'int(11)'),
+		'memberId' => array('type'=>'INT','dbType'=>'int(11)'),
 		'email' => array('type'=>'STRING','dbType'=>'varchar(200)'),
 		'username' => array('type'=>'STRING','dbType'=>'varchar(25)'),
 		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
@@ -74,7 +78,7 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODELDAO extends TableDAO
 		'donation' => array('type'=>'FLOAT','dbType'=>'decimal(5,2)'),
 		'hostDbid' => array('type'=>'INT','dbType'=>'int(11)'),
 		'projectPoolId' => array('type'=>'INT','dbType'=>'smallint(3)'),
-		'projectUrl' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'accountID' => array('type'=>'INT','dbType'=>'smallint(5)'),
 		'hostId' => array('type'=>'INT','dbType'=>'int(11)'),
 		'creditId' => array('type'=>'INT','dbType'=>'int(11)'),
 		'totalCredit' => array('type'=>'FLOAT','dbType'=>'decimal(22,6)'),

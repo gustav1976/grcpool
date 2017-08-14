@@ -18,10 +18,11 @@ class GrcPool_Controller_About extends GrcPool_Controller {
 	public function hotWalletAction() {
 		$walletDao = new GrcPool_Wallet_Basis_DAO();
 		$settingsDao = new GrcPool_Settings_DAO();
-		$this->view->hotWalletAddress = $settingsDao->getValueWithName(Constants::SETTINGS_HOT_WALLET_ADDRESS);
-		$this->view->hotWalletAddress2 = $settingsDao->getValueWIthName(Constants::SETTINGS_HOT_WALLET_ADDRESS.'2');
-		$this->view->seed = $settingsDao->getValueWithName(Constants::SETTINGS_SEED);
-		$this->view->seed2 = $settingsDao->getValueWithName(Constants::SETTINGS_SEED.'2');
+		
+		$this->view->hotWallets = array();
+		for ($p = 1; $p <= Constants::NUMBER_OF_POOLS; $p++) {
+			array_push($this->view->hotWallets,$settingsDao->getValueWithName(Constants::SETTINGS_HOT_WALLET_ADDRESS.($p>1?$p:'')));
+		}
 	}
 	
 	public function calculationsAction() {

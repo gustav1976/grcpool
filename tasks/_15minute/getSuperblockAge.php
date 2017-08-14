@@ -1,5 +1,9 @@
 <?php
-require_once(dirname(__FILE__).'/../bootstrap.php');
+
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+
+require_once(dirname(__FILE__).'/../../bootstrap.php');
 
 $FORCE =isset($argv[1]) && $argv[1] == 'FORCE';
 
@@ -9,11 +13,12 @@ if (!$FORCE && $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONL
 	exit;
 }
 
-
 $cache = new Cache();
 $daemon = GrcPool_Utils::getDaemonForEnvironment();
+$updateHostData = array();
 
 $superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
+$hostDao = new GrcPool_Member_Host_Credit_DAO();
 
 $result = $daemon->getSuperBlockAge();
 $superblockData->timestamp = $result['timestamp'];
@@ -24,9 +29,11 @@ $superblockData->ageText = $result['ageText'];
 
 if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $superblockData->block)) {
 	
-	echo "NEW SUPERBLOCK DATA NEEDED";
+	echo "\nNEW SUPERBLOCK DATA NEEDED\n\n";
 	
 	$settingsDao = new GrcPool_Settings_DAO();
+	$poolWhiteListCount = $settingsDao->getValueWithName(Constants::SETTINGS_POOL_WHITELIST_COUNT);
+	
 	$superblockData->paidOut = array();
 	$superblockData->paidOut[0] = $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT);
 	$superblockData->paidOut[1] = $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT.'2');
@@ -46,6 +53,42 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 	$superblockData->whiteListCount = count($wl);
 	$superblockData->projects = $wl;
 	
+	////////////////////
+	// WHITE LIST STUFF
+	$projectDao = new GrcPool_Boinc_Account_DAO();
+	$projects = $projectDao->fetchAll();
+	$checkNumberOfProjects = $superblockData->whiteListCount;
+	foreach ($projects as $project) {
+		if ($project->getAuto()) {
+			if (array_search($project->getGrcName(),$superblockData->projects) === false) {
+				if ($project->getWhiteList()) {
+					echo 'CHANGING '.$project->getName().' WHITELIST OFF'."\n";
+					$hostDao->setMagToZeroForAccountId($project->getId());
+					$project->setWhitelist(0);
+					$projectDao->save($project);
+				}
+			} else if (!$project->getWhiteList()) {
+				echo 'CHANGING '.$project->getName().' WHITELIST ON'."\n";
+				array_push($updateHostData,$project->getId());
+				$project->setWhitelist(1);
+				$projectDao->save($project);
+			}
+		} else {
+			if (array_search($project->getGrcName(),$superblockData->projects) === false) {
+				if ($project->getWhiteList()) {
+					// missing from network, override for pool
+					echo "OVERRIDING ".$project->getName()."\n";
+					$checkNumberOfProjects++;
+				}
+			}
+		}
+	}
+	echo "PROJECT WHITE LIST COUNT FOR POOL IS: ".$checkNumberOfProjects."\n";
+	if ($checkNumberOfProjects != $poolWhiteListCount) {
+		echo 'CHANGING WHITE LIST COUNT FROM '.$poolWhiteListCount.' TO '.$checkNumberOfProjects."\n";
+		$settingsDao->setValueWithName(Constants::SETTINGS_POOL_WHITELIST_COUNT,$checkNumberOfProjects);
+	}
+
 	////////////////////
 
 	$superblockData->mag = array();

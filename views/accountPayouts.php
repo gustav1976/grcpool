@@ -12,6 +12,7 @@ if ($this->view->owed) {
 		<table class="table table-striped table-hover rowpad table-condensed">
 			<tr>
 				<th>Project</th>
+				<th>Host</th>
 				<th class="text-center">Pool</th>
 				<th>Calculation</th>			
 				<th style="text-align:right;">Avg Credit</th>
@@ -33,7 +34,8 @@ if ($this->view->owed) {
 			$totalOwe += $owe->getOwed();
 			$content .= '
 				<tr>
-					<td>'.$this->view->accounts[$owe->getProjectUrl()]->getName().'</td>
+					<td>'.$this->view->accounts[$owe->getAccountId()]->getName().'</td>
+					<td>'.$this->view->hosts[$owe->getHostId()]->getHostName().'</td>
 					<td class="text-center">'.$owe->getProjectPoolId().'</td>
 					<td><small>'.str_replace('+','+<br/>',substr($owe->getOwedCalc(),1)).'</small></td>				
 					<td style="text-align:right;">'.$owe->getAvgCredit().'</td>
@@ -46,6 +48,7 @@ if ($this->view->owed) {
 	$content .= '<tr style="backgrounc-color:#ccc;">
 		<tr>
 			<td style="background-color:#ccc;"><strong>Totals</td>
+			<td style="background-color:#ccc;"></td>
 			<td style="background-color:#ccc;"></td>
 			<td style="background-color:#ccc;"></td>
 			<td style="background-color:#ccc;"></td>
@@ -86,7 +89,7 @@ if ($this->view->payouts) {
 		$content .= '
 			<tr>
 				<td>'.date('Y-m-d H:i:s',$payout->getTheTime()).'<br/><small>'.Utils::getTimeAgo($payout->getTheTime()).'</small></td>
-				<td class="text-center">'.$payout->getPayoutPoolId().'</td>
+				<td class="text-center">'.$payout->getPoolId().'</td>
 				<td><a href="http://www.gridresearchcorp.com/gridcoin/?transaction_detail&txid='.$payout->getTx().'">'.substr($payout->getTx(),0,10).'...</a></td>
 				<td><small>'.GrcPool_Utils::displayCalculation($payout->getCalculation()).'</small></td>
 				<td style="text-align:right;">'.$payout->getAmount().'</td>

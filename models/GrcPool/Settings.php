@@ -1,4 +1,8 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Settings_MODEL {
 
 	public function __construct() { }
@@ -15,7 +19,7 @@ abstract class GrcPool_Settings_MODEL {
 }
 
 abstract class GrcPool_Settings_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'settings';
 	protected $_model = 'GrcPool_Settings_OBJ';
 	protected $_primaryKey = 'id';

@@ -34,7 +34,7 @@ $webPage->append('
 					<tr><td>Superblock Age</td><td style="text-align:right;" id="superblockAge"></td></tr>
 					<tr><td>Pending Superblock</td><td style="text-align:right;" id="pendingSuperblock">---</td></tr>
 					<tr><td>Pool Magnitude</td><td id="poolMag" style="text-align:right;"></td></tr>
-					<tr><td>Whitelisted Projects</td><td id="whiteListCount" class="text-right"></td></tr>
+					<tr><td>Network Whitelist Count</td><td id="whiteListCount" class="text-right"></td></tr>
 				</table>					
 			',true).'		
 		</div>
@@ -61,6 +61,7 @@ $webPage->append('
 					<tr><td>Pool Fee</td><td style="text-align:right;">'.$this->view->txFee.' GRC per payout</td></tr>
 					<tr><td>Min Pool Payout</td><td style="text-align:right;">'.$this->view->minPayout.' GRC</td></tr>
 					<tr><td>Min POR Balance <a href="#" data-toggle="tooltip" title="This is the minimum balance from POR needed to update the amount owed."><i style="color:black;" class="fa fa-info-circle"></i></a></td><td style="text-align:right;">'.$this->view->minStake.' GRC</td></tr>
+					<tr><td>Pool Whitelist Count</td><td style="text-align:right;">'.$this->view->poolWhiteListCount.'</td></tr>
 					<tr><td>Number of Active Hosts</td><td style="text-align:right;">
 						#1 '.$this->view->numberOfActiveHosts1.'<br/>
 						#2 '.$this->view->numberOfActiveHosts2.'<br/>

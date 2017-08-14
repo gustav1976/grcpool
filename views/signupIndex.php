@@ -5,17 +5,15 @@ $webPage->appendHead("<script src='https://www.google.com/recaptcha/api.js'></sc
 $webPage->setPageTitle('Pool Registration');
 
 
-if (false) {
+if (true) {
 	
 	$webPage->append('
 		'.Bootstrap_Callout::info('
 			Hi,
 			<br/><br/>
-			Unfortunately the pool is nearly at its capacity. The Gridcoin network allows a maximum magnitude of 20,000. Since the pool is in the 19,000s I have turned off new signups to allow some
-			growth.<br/><br/>
-			The good news is there is already a 2nd pool setup and ready to take on more researchers. However, the Gridcoin network needs to create a superblock before the new pool
-			can be accepted into the network and start earning rewards. This normally happens every 24 hours, but there is an issue that is preventing the super block from being created. 
-			The dev community is hard at work investigating the issue. When the superblock finally happens, sign ups will be open again for the 2nd pool.
+			Unfortunately the pool is nearly at its capacity. The Gridcoin network allows a maximum magnitude of 20,000. I have turned off new signups to allow some growth with the current member base.<br/><br/>
+			The good news is I should have a 3rd pool setup and ready to go in thre next couple of days. The pool\'s CPID is already in the Gridcoin network and most projects are also ready. I just need to do a 
+			little testing to verify it is working correctly.
 			<br/><br/>
 			Thanks for your patience...
 		').'
@@ -25,9 +23,9 @@ if (false) {
 
 	$webPage->append('
 		'.Bootstrap_Callout::info('
-		Please take a moment to read how this pool\'s <a href="/about/fees">fees</a>, <a href="/about/calculations">calculations</a>, and <a href="/about/hotWallet">hot wallet</a> works.
+		Please take a moment to read how this pool\'s <a href="/about/fees">fees</a>, <a href="/about/calculations">calculations</a>, and <a href="/about/hotWallet">staking wallet</a> works.
 		<br/><br/>
-		Note you will be joining <strong>Pool #'.$this->view->poolSignup.'</strong>. <a href="/about/poolTwo">What does this mean?</a>
+		You will be joining <strong>Pool #'.$this->view->poolSignup.'</strong>. <a href="/about/poolTwo">What does this mean?</a>
 		').'	
 	');
 	

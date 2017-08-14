@@ -1,4 +1,8 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Boinc_Account_User_MODEL {
 
 	public function __construct() { }
@@ -24,7 +28,7 @@ abstract class GrcPool_Boinc_Account_User_MODEL {
 }
 
 abstract class GrcPool_Boinc_Account_User_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'boinc_account_user';
 	protected $_model = 'GrcPool_Boinc_Account_User_OBJ';
 	protected $_primaryKey = 'id';

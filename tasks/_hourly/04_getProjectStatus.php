@@ -2,7 +2,10 @@
 
 set_time_limit(240);
 
-require_once(dirname(__FILE__).'/../bootstrap.php');
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+
+require_once(dirname(__FILE__).'/../../bootstrap.php');
 
 $id = 0;
 if (isset($argv[1])) {
@@ -25,8 +28,10 @@ foreach ($projects as $project) {
 		$domain = str_replace('http:','https:',$domain);
 	}
 
+	
+	
 	// GET SERVER STATUS
-	if ($project->getUrl() == 'http://setiathome.berkeley.edu/') {
+	if ($project->getGrcName() == Constants::GRCNAME_SETI) {
 		$file = 'sah_status.xml';
 	} else {
 		$file = 'server_status.php?xml=1';

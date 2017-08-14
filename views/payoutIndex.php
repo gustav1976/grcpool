@@ -1,6 +1,5 @@
 <?php
-
-$webPage->setPageTitle('Pool Payouts');
+$webPage->appendTitle('Pool Payouts');
 if ($this->view->payouts) {
 	$webPage->append('
 		<div class="pull-right">'.$this->view->pagination.'</div>
@@ -21,10 +20,10 @@ if ($this->view->payouts) {
 	foreach ($this->view->payouts as $payout) {
 		$webPage->append('
 			<tr>
-				<td>'.$payout->getUsername().'</td>
+				<td>'.($payout->getUsername()==''?'<em>unknown</em>':$payout->getUsername()).'</td>
 				<td class="text-center">'.$payout->getPoolId().'</td>
 				<td>'.date('Y-m-d H:i:s',$payout->getTheTime()).'<br/>'.Utils::getTimeAgo($payout->getTheTime()).'</td>
-				<td><a href="'.GrcPool_Utils::getTxUrl($payout->getTx()).'">'.substr($payout->getTx(),0,10).'...</a></td>
+				<td><a target="_blank" href="'.GrcPool_Utils::getTxUrl($payout->getTx()).'">'.substr($payout->getTx(),0,10).'...</a><i class="fa fa-external-link"></i></td>
 				<td><small>'.GrcPool_Utils::displayCalculation($payout->getCalculation()).'</small></td>				
 				<td style="text-align:right;">'.$payout->getAmount().'</td>
 				<td style="text-align:right;">'.$payout->getFee().'</td>

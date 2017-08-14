@@ -1,4 +1,8 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Boinc_Account_Stats_MODEL {
 
 	public function __construct() { }
@@ -21,7 +25,7 @@ abstract class GrcPool_Boinc_Account_Stats_MODEL {
 }
 
 abstract class GrcPool_Boinc_Account_Stats_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'boinc_account_stats';
 	protected $_model = 'GrcPool_Boinc_Account_Stats_OBJ';
 	protected $_primaryKey = 'id';
@@ -29,7 +33,7 @@ abstract class GrcPool_Boinc_Account_Stats_MODELDAO extends TableDAO {
 		'id' => array('type'=>'INT','dbType'=>'int(11)'),
 		'accountId' => array('type'=>'INT','dbType'=>'mediumint(4)'),
 		'name' => array('type'=>'STRING','dbType'=>'varchar(100)'),
-		'value' => array('type'=>'STRING','dbType'=>'varchar(100)'),
+		'value' => array('type'=>'STRING','dbType'=>'varchar(2000)'),
 		'modTime' => array('type'=>'INT','dbType'=>'int(11)'),
 	);
 }

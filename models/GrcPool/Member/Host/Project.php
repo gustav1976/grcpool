@@ -1,4 +1,8 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Member_Host_Project_MODEL {
 
 	public function __construct() { }
@@ -9,7 +13,7 @@ abstract class GrcPool_Member_Host_Project_MODEL {
 	private $_hostId = 0;
 	private $_hostCpid = '';
 	private $_hostDbid = 0;
-	private $_projectUrl = '';
+	private $_accountId = 0;
 	private $_noCpu = 0;
 	private $_noNvidiaGpu = 0;
 	private $_noAtiGpu = 0;
@@ -28,8 +32,8 @@ abstract class GrcPool_Member_Host_Project_MODEL {
 	public function getHostCpid():string {return $this->_hostCpid;}
 	public function setHostDbid(int $int) {$this->_hostDbid=$int;}
 	public function getHostDbid():int {return $this->_hostDbid;}
-	public function setProjectUrl(string $string) {$this->_projectUrl=$string;}
-	public function getProjectUrl():string {return $this->_projectUrl;}
+	public function setAccountId(int $int) {$this->_accountId=$int;}
+	public function getAccountId():int {return $this->_accountId;}
 	public function setNoCpu(int $int) {$this->_noCpu=$int;}
 	public function getNoCpu():int {return $this->_noCpu;}
 	public function setNoNvidiaGpu(int $int) {$this->_noNvidiaGpu=$int;}
@@ -45,7 +49,7 @@ abstract class GrcPool_Member_Host_Project_MODEL {
 }
 
 abstract class GrcPool_Member_Host_Project_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'member_host_project';
 	protected $_model = 'GrcPool_Member_Host_Project_OBJ';
 	protected $_primaryKey = 'id';
@@ -56,7 +60,7 @@ abstract class GrcPool_Member_Host_Project_MODELDAO extends TableDAO {
 		'hostId' => array('type'=>'INT','dbType'=>'int(11)'),
 		'hostCpid' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'hostDbid' => array('type'=>'INT','dbType'=>'int(11)'),
-		'projectUrl' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'accountId' => array('type'=>'INT','dbType'=>'smallint(5)'),
 		'noCpu' => array('type'=>'INT','dbType'=>'int(1)'),
 		'noNvidiaGpu' => array('type'=>'INT','dbType'=>'int(1)'),
 		'noAtiGpu' => array('type'=>'INT','dbType'=>'int(1)'),

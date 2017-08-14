@@ -1,9 +1,13 @@
 <?php
 
-set_time_limit(500);
-ini_set('memory_limit','512M');
+exit;
 
-require_once(dirname(__FILE__).'/../bootstrap.php');
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+
+set_time_limit(500);
+
+require_once(dirname(__FILE__).'/../../bootstrap.php');
 
 $id = 0;
 if (isset($argv[1])) {
@@ -44,7 +48,7 @@ foreach ($projects as $project) {
 		if (strstr($feed,'.xml')) {
 			$ext = 'xml';	
 		}
-		$new_file = dirname(__FILE__).'/feeds/'.preg_replace( '/[^a-z0-9]+/', '-', strtolower($project->getGrcName())).'_'.$feedId.'.'.$ext;	
+		$new_file = dirname(__FILE__).'/../feeds/'.preg_replace( '/[^a-z0-9]+/', '-', strtolower($project->getGrcName())).'_'.$feedId.'.'.$ext;	
 		try {	
 			if ($ext == 'gz') {
 				$remote = gzopen($url, "rb");
@@ -74,10 +78,12 @@ foreach ($projects as $project) {
 	//exit;
 }
 
+echo "\n\n";
 foreach ($projects as $project) {
 	if ($id && $project->getId() != $id) {
 		continue;
 	}
+	echo'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ '.$project->getBaseUrl()."\n";
 	$feed = null;
 	$className = 'GrcPool_Boinc_ProjectXmlStats_'.ucwords(preg_replace( '/[^a-z0-9]+/', '', strtolower($project->getGrcName())));
 	if (class_exists($className)) {

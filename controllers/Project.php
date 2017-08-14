@@ -51,9 +51,23 @@ class GrcPool_Controller_Project extends GrcPool_Controller {
 		
 		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$accounts = $accountDao->fetchAll(array(),array('name'=>'asc'));
+
+		$keyDao = new GrcPool_Boinc_Account_Key_DAO();
+		$keys = $keyDao->fetchAll();
 		
-		$this->view->accounts = $accounts;
-		
+		$this->view->accounts = array();
+		foreach ($accounts as $account) {
+			for ($p = 1; $p <= Constants::NUMBER_OF_POOLS; $p++) {
+				$obj = $keyDao->fetchObj($keys,array($keyDao->where('poolId',$p),$keyDao->where('accountId',$account->getId())));
+				if ($obj) {
+					$account->{'pool'.$p.'Attach'} = $account->getWhiteList()&&$account->getAttachable()&&$obj->getWeak()!='';
+				} else {
+					$account->{'pool'.$p.'Attach'} = false;
+				}
+			}
+			array_push($this->view->accounts,$account);	
+		}
+				
 		$hostCreditDao = new GrcPool_Member_Host_Credit_DAO();
 		$totalMag = $hostCreditDao->getTotalMag();
 		$this->view->totalMag = $totalMag;
@@ -68,9 +82,15 @@ class GrcPool_Controller_Project extends GrcPool_Controller {
 			$this->view->tasksToSend[$stat->getAccountId()] = $stat->getValue();
 		}
 		
+		$boincUrlDao = new GrcPool_Boinc_Account_Url_DAO();
+		$boincUrls = $boincUrlDao->fetchAll();
+		$this->view->boincUrls = $boincUrls;
+		
 	}
 	
 	public function detailAction() {
+		
+		Server::go('/project/poolStats');
 		
 		$cache = new Cache();
 		$superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
@@ -85,7 +105,11 @@ class GrcPool_Controller_Project extends GrcPool_Controller {
 		$projectObj = $projectDao->initWithKey($id);
 		
 		$creditDao = new GrcPool_Member_Host_Credit_DAO();
-		$hostStats = $creditDao->getActiveStatsProjectUrl($projectObj->getUrl());
+		$hostStats = $creditDao->getActiveStatsProjectUrl($projectObj->getUrlId());
+		
+		$urlDao = new GrcPool_Boinc_Account_Url_DAO();
+		$this->view->url = $urlDao->initWithKey($projectObj->getUrlId());
+		
 		$this->view->stats['totalCredit'] = $hostStats['totalCredit'];
 		$this->view->stats['totalMag'] = $hostStats['totalMag'];
 		$this->view->stats['poolHosts'] = $hostStats['numberOfHosts'];

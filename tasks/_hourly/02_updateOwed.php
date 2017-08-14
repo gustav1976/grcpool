@@ -1,7 +1,17 @@
 <?php
-require_once(dirname(__FILE__).'/../bootstrap.php');
+
+ini_set('display_errors',1);
+error_reporting(E_ALL);
 
 $FORCE =isset($argv[1]) && $argv[1] == 'FORCE';
+
+$runOnHours = array('1','4','7','10','13','16','19','22');
+if (!$FORCE && array_search(date('G'),$runOnHours) === false) {
+	echo "NOT TIME TO RUN ".date('G')."\n";
+	exit;
+}
+
+require_once(dirname(__FILE__).'/../../bootstrap.php');
 
 echo "############## UPDATEOWED ".date("Y.m.d H.i.s")."\n";
 
@@ -11,7 +21,7 @@ if (!$FORCE && $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONL
 	exit;
 }
 $lockFile = 'payout.lock';
-$fp = fopen(dirname(__FILE__).'/'.$lockFile,"w");
+$fp = fopen(dirname(__FILE__).'/../'.$lockFile,"w");
 if (!flock($fp, LOCK_EX | LOCK_NB)) {
 	echo('!!!!!!!!!! LOCKED !!!!!!!!!!!!!');
 	exit;
@@ -72,6 +82,23 @@ for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
 	$sql = 'update grcpool.member_host_credit set grcpool.member_host_credit.owed = grcpool.member_host_credit.owed + ((grcpool.member_host_credit.mag/'.$totalMag.') * '.($stakeBalance/COIN).'), 
 			grcpool.member_host_credit.owedCalc = concat(grcpool.member_host_credit.owedCalc,\'+((\',grcpool.member_host_credit.mag,\'/\','.$totalMag.',\')*\','.($stakeBalance/COIN).',\')\') where mag > 0 and poolId = '.$poolId;
 	//echo "\n\n".$sql."\n\n";
+	$hostCreditDao->executeQuery($sql);
+	
+	// GOING TO MOVE TO THIS METHOD...
+	$sql = '
+		insert into grcpool.member_por (accountId,hostDbid,avgCredit,memberMag,poolMag,totalPor,amount,thetime)
+		select	grcpool.member_host_credit.accountId,
+		grcpool.member_host_credit.hostDbid,
+		grcpool.member_host_credit.avgCredit,
+		grcpool.member_host_credit.mag,
+		'.$totalMag.',
+		'.$stakeBalance.',
+		'.COIN.' * (((grcpool.member_host_credit.mag/'.$totalMag.') * ('.$stakeBalance.'/'.COIN.'))),
+		UNIX_TIMESTAMP(NOW())
+		from 		grcpool.member_host_credit
+		where		grcpool.member_host_credit.mag > 0 and
+		grcpool.member_host_credit.poolId = '.$poolId.'
+	';	
 	$hostCreditDao->executeQuery($sql);
 }	
 

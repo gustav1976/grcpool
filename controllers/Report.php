@@ -5,9 +5,9 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 		parent::__construct();
 		$pills = new Bootstrap_Pills();
 		$pills->addPill('Magnitude',array(
-			(strstr($_SERVER['REQUEST_URI'],'/report/magProjectHost')?'<i class="fa fa-check"></i> ':'').'Top Project Host'=>'/report/magProjectHost',
-			(strstr($_SERVER['REQUEST_URI'],'/report/magHost')?'<i class="fa fa-check"></i> ':'').'Top Host'=>'/report/magHost',
-				(strstr($_SERVER['REQUEST_URI'],'/report/magAccount')?'<i class="fa fa-check"></i> ':'').'Top Accounts'=>'/report/magAccount'
+			(strstr($_SERVER['REQUEST_URI'],'/report/magProjectHost')?'<i class="fa fa-check"></i> ':'').'Top Mags for Project'=>'/report/magProjectHost',
+			(strstr($_SERVER['REQUEST_URI'],'/report/magHost')?'<i class="fa fa-check"></i> ':'').'Top Mags for Host'=>'/report/magHost',
+				(strstr($_SERVER['REQUEST_URI'],'/report/magAccount')?'<i class="fa fa-check"></i> ':'').'Top Mag for Account'=>'/report/magAccount'
 		),strstr($_SERVER['REQUEST_URI'],'/report/mag'));
 		$pills->addPill('Earnings',array(
 				(strstr($_SERVER['REQUEST_URI'],'/report/earnTop')?'<i class="fa fa-check"></i> ':'').'Top Earners'=>'/report/earnTop',
@@ -31,13 +31,14 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 	}
 	
 	public function earnDonationAction() {
-		$dao = new GrcPool_View_Member_Payout_DAO();
+		$dao = new GrcPool_Member_Payout_DAO();
 		$this->view->members = $dao->getTopDonators(100);
 	}
 	
 	public function earnTopAction() {
-		$dao = new GrcPool_View_Member_Payout_DAO();
+		$dao = new GrcPool_Member_Payout_DAO();
 		$this->view->members = $dao->getTopEarners(100);
+		$this->view->totalGrc = $dao->getTotalAmount();
 	}
 	
 	public function magAccountAction() {
@@ -46,6 +47,8 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 	}
 	
 	public function magProjectHostAction() {
+		$accountDao = new GrcPool_Boinc_Account_DAO();
+		$this->view->accounts = $accountDao->fetchAll();
 		$dao = new GrcPool_View_Member_Host_Project_Credit_DAO();
 		$this->view->hosts = $dao->fetchAll(array(),array('mag'=>'desc'),100);
 	}
@@ -53,21 +56,13 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 	public function researcherAction() {
 		$memberDao = new GrcPool_Member_DAO();
 		$this->view->member = $memberDao->initWithKey($this->args(0,Controller::VALIDATION_NUMBER));
-		
 		if (!$this->view->member || !$this->view->member->getId()) {Server::goHome();}
-
 		$accountDao = new GrcPool_Boinc_Account_DAO();
-		$accounts = $accountDao->fetchAll();
-		$this->view->accounts = array();
-		foreach ($accounts as $account) {
-			$this->view->accounts[$account->getUrl()] = $account;
-		}
-		
+		$this->view->accounts = $accountDao->fetchAll();
 		$this->view->hosts = null;
 		$this->view->host = null;
 		$hostDao = new GrcPool_Member_Host_DAO();
 		$creditDao = new GrcPool_View_Member_Host_Project_Credit_DAO();
-		
 		if ($this->args(1,Controller::VALIDATION_NUMBER)) {
 			$this->view->host = $hostDao->initWithKey($this->args(1,Controller::VALIDATION_NUMBER));
 			$this->view->credits = $creditDao->getWithMemberIdAndHostId($this->view->member->getId(),$this->view->host->getId());
@@ -82,20 +77,17 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 	}
 	
 	public function magHostAction() {
-		$projectDao = new GrcPool_Member_Host_Project_DAO();
 		$dao = new GrcPool_View_Member_Host_Project_Credit_DAO();
 		$this->view->hosts = $dao->getTopHosts(100);
 		$hostDao = new GrcPool_Member_Host_DAO();
 		$keys = array();
 		$projects = array();
 		foreach ($this->view->hosts as $host) {
-			//$projs = $projectDao->getWithMemberIdAndHostId($host['id'],$host['hostId']);
-			//$projects[$host['hostId']] = $projs;
-			$keys[$host['hostId']] = 1;
+			$keys[$host['hostId']] = $host;
 		}
-		$this->view->projects = $projects;
-		$this->view->hostDetails = $hostDao->initWithKeys(array_keys($keys));
+		$hostDetails = $hostDao->initWithKeys(array_keys($keys));
+		foreach ($this->view->hosts as $idx => $host) {
+			$this->view->hosts[$idx]['detail'] = $hostDetails[$host['hostId']];
+		}
 	}
-	
-
 }

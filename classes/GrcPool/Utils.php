@@ -10,15 +10,15 @@ class GrcPool_Utils {
 	}
 	
 	public static function getCpidUrl($cpid) {
-		return 'http://gridcoinstats.eu/cpid.php?a=view&id='.$cpid;
+		return 'http://www.gridcoinstats.eu/cpid/'.$cpid;
 	}
 	
 	public static function getTxUrl($tx) {
-		return 'http://gridcoinstats.eu/tx.php?id='.$tx;
+		return 'http://www.gridcoinstats.eu/tx/'.$tx;
 	}
 	
 	public static function getGrcAddressUrl($addr) {
-		return 'http://gridcoinstats.eu/addresses.php?a=view&id='.$addr;
+		return 'http://www.gridcoinstats.eu/address/'.$addr;
 	}
 	
 	public static function displayCalculation($str) {

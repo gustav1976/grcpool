@@ -1,6 +1,5 @@
 <?php
-$webPage->setPageTitle('Calculations');
-
+$webPage->appendTitle('Equations and Calculations');
 $webPage->append('		
 		
 	<div class="panel panel-default">

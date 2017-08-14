@@ -1,4 +1,8 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Member_Host_Credit_MODEL {
 
 	public function __construct() { }
@@ -8,13 +12,13 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 	private $_hostCpid = '';
 	private $_totalCredit = 0;
 	private $_avgCredit = 0;
-	private $_projectUrl = '';
+	private $_accountId = 0;
 	private $_lastSeen = 0;
 	private $_mag = 0;
 	private $_magTotalCredit = 0;
 	private $_owed = 0.00000000;
 	private $_owedCalc = '';
-	private $_memberId = 0;
+	private $_memberIdPayout = 0;
 	private $_poolId = 1;
 	private $_memberIdCredit = 0;
 	public function setId(int $int) {$this->_id=$int;}
@@ -27,8 +31,8 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 	public function getTotalCredit():float {return $this->_totalCredit;}
 	public function setAvgCredit(float $float) {$this->_avgCredit=$float;}
 	public function getAvgCredit():float {return $this->_avgCredit;}
-	public function setProjectUrl(string $string) {$this->_projectUrl=$string;}
-	public function getProjectUrl():string {return $this->_projectUrl;}
+	public function setAccountId(int $int) {$this->_accountId=$int;}
+	public function getAccountId():int {return $this->_accountId;}
 	public function setLastSeen(int $int) {$this->_lastSeen=$int;}
 	public function getLastSeen():int {return $this->_lastSeen;}
 	public function setMag(float $float) {$this->_mag=$float;}
@@ -39,8 +43,8 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 	public function getOwed():float {return $this->_owed;}
 	public function setOwedCalc(string $string) {$this->_owedCalc=$string;}
 	public function getOwedCalc():string {return $this->_owedCalc;}
-	public function setMemberId(int $int) {$this->_memberId=$int;}
-	public function getMemberId():int {return $this->_memberId;}
+	public function setMemberIdPayout(int $int) {$this->_memberIdPayout=$int;}
+	public function getMemberIdPayout():int {return $this->_memberIdPayout;}
 	public function setPoolId(int $int) {$this->_poolId=$int;}
 	public function getPoolId():int {return $this->_poolId;}
 	public function setMemberIdCredit(int $int) {$this->_memberIdCredit=$int;}
@@ -48,7 +52,7 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 }
 
 abstract class GrcPool_Member_Host_Credit_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'member_host_credit';
 	protected $_model = 'GrcPool_Member_Host_Credit_OBJ';
 	protected $_primaryKey = 'id';
@@ -58,13 +62,13 @@ abstract class GrcPool_Member_Host_Credit_MODELDAO extends TableDAO {
 		'hostCpid' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'totalCredit' => array('type'=>'FLOAT','dbType'=>'decimal(22,6)'),
 		'avgCredit' => array('type'=>'FLOAT','dbType'=>'decimal(22,6)'),
-		'projectUrl' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'accountId' => array('type'=>'INT','dbType'=>'smallint(5)'),
 		'lastSeen' => array('type'=>'INT','dbType'=>'int(11)'),
 		'mag' => array('type'=>'FLOAT','dbType'=>'decimal(9,2)'),
 		'magTotalCredit' => array('type'=>'FLOAT','dbType'=>'decimal(22,6)'),
 		'owed' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
 		'owedCalc' => array('type'=>'STRING','dbType'=>'varchar(4000)'),
-		'memberId' => array('type'=>'INT','dbType'=>'int(11)'),
+		'memberIdPayout' => array('type'=>'INT','dbType'=>'int(11)'),
 		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
 		'memberIdCredit' => array('type'=>'INT','dbType'=>'int(11)'),
 	);

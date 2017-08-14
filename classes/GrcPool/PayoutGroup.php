@@ -48,7 +48,10 @@ class GrcPool_PayoutGroup {
 	}
 
 	public function getId():int {
-		return $this->objs[0]->getId();
+		return $this->getMemberId();
+	}
+	public function getMemberId():int {
+		return $this->objs[0]->getMemberId();
 	}
 	
 	public function getUsername():string {

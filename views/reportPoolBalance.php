@@ -1,17 +1,18 @@
 <?php
-$webPage->setPageTitle('Pool Financial Information');
+$webPage->appendTitle('Pool Financial Information');
+$panel = new Bootstrap_Panel();
+$panel->setHeader('Pool Financials');
+$panelContent = '';
 
 $stakeBalance0 = (($this->view->superblockData->balance[0]*COIN)-($this->view->superblockData->owed[0]*COIN)-($this->view->superblockData->interest[0]*COIN)-($this->view->superblockData->basis[0]))/COIN;
 $stakeBalance1 = (($this->view->superblockData->balance[1]*COIN)-($this->view->superblockData->owed[1]*COIN)-($this->view->superblockData->interest[1]*COIN)-($this->view->superblockData->basis[1]))/COIN;
 $profit0 = (($this->view->superblockData->balance[0]*COIN)-($this->view->seed*COIN)-($this->view->superblockData->interest[0]*COIN)-($stakeBalance0<0?0:$stakeBalance0*COIN)-($this->view->superblockData->owed[0]*COIN))/COIN;
 $profit1 = (($this->view->superblockData->balance[1]*COIN)-($this->view->seed2*COIN)-($this->view->superblockData->interest[1]*COIN)-($stakeBalance1<0?0:$stakeBalance1*COIN)-($this->view->superblockData->owed[1]*COIN))/COIN;
 
-$webPage->append('
-		
+$panelContent .= '		
 	<div class="rowpad">
 		This information is from when superblock <strong>'.$this->view->superblockData->block.'</strong> was created.
 	</div>
-	
 	<table class="table table-striped table-hover">
 		<tr><th>Data</th><th style="width:25%;" class="text-right">Pool 1</th><th style="width:25%;" class="text-right">Pool 2</th></tr>
 		<tr><td>Magnitude</td><td class="text-right">'.$this->view->superblockData->mag[0].'</td><td class="text-right">'.$this->view->superblockData->mag[1].'</td></tr>
@@ -42,4 +43,6 @@ $webPage->append('
 		<tr><td>Owed to Researchers</td><td class="text-right">-'.$this->view->superblockData->owed[0].'</td><td class="text-right">-'.$this->view->superblockData->owed[1].'</td></tr>
 		<tr><td><strong>Pool Profit from fees &amp; donations</strong></td><td class="text-right"><strong>'.Utils::truncate($profit0,8).' GRC</strong></td><td class="text-right"><strong>'.Utils::truncate($profit1,8).' GRC</strong></td></tr>
 	</table>	
-');
+';
+$panel->setContent($panelContent);
+$webPage->append($panel->render());

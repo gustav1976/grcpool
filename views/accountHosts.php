@@ -87,10 +87,16 @@ if ($this->view->memHosts) {
 					$totalAllGrc += Utils::truncate($a->getMag()*$this->view->magUnit,8);
 					$pools[$a->getProjectPoolid()] = 1;
 					$racTotal += $a->getAvgCredit();
-					$magCalc = Constants::GRC_MAG_MULTIPLIER.' * ( ( '.$a->getAvgCredit().' / '.$this->view->accounts[$a->getProjectUrl()]->getRac().' ) / '.$this->view->accounts[$a->getProjectUrl()]->getWhiteListCount().' )';
+					$magCalc = Constants::GRC_MAG_MULTIPLIER.' * ( ( '.$a->getAvgCredit().' / '.$this->view->accounts[$a->getAccountId()]->getRac().' ) / '.$this->view->poolWhiteListCount.' )';
 					$projectContent .= '
 						<tr class="accordion'.$hostId.' collapse">
-							<td><a style="margin-left:10px;" title="go to your host details and tasks" target="_blank" href="'.$this->view->accounts[$a->getProjectUrl()]->getBaseUrl().'/show_host_detail.php?hostid='.$a->getHostDbid().'">'.$this->view->accounts[$a->getProjectUrl()]->getName().'</a>&nbsp;<small><i class="fa fa-external-link"></i></small></td>
+							<td><a 
+								style="margin-left:10px;"
+								title="go to your host details and tasks"
+								target="_blank"
+								href="'.$this->view->accounts[$a->getAccountId()]->getBaseUrl().'/show_host_detail.php?hostid='.$a->getHostDbid().'"
+							>'.$this->view->accounts[$a->getAccountId()]->getName().'</a>&nbsp;<small><i class="fa fa-external-link"></i></small></a>
+							</td>
 							<td class="text-center">'.$a->getProjectPoolId().'</td>
 							<td class="text-right">'.$a->getAvgCredit().'</td>							
 							<td class="text-right">
@@ -119,7 +125,7 @@ if ($this->view->memHosts) {
 				</td>
 				<td class="text-center" style="font-weight:bold;background-color:#f0f0f0">'.(implode(" & ",array_keys($pools))).'</td>
 				<td class="text-right" style="font-weight:bold;background-color:#f0f0f0">'.$racTotal.'</td>
-				<td class="text-right" style="font-weight:bold;background-color:#f0f0f0">'.$totalMag.'</td>
+				<td class="text-right" style="font-weight:bold;background-color:#f0f0f0">'.number_format($totalMag,2).'</td>
 				<td class="text-right" style="font-weight:bold;background-color:#f0f0f0">'.number_format($totalGrc,3).'</td>
 			</tr>
 			'.$projectContent.'
@@ -150,8 +156,8 @@ if ($this->view->memHosts) {
 				<td style="background-color:#ddd;"><strong>Hosts Total</strong></td>
 				<td style="background-color:#ddd;"></td>
 				<td style="background-color:#ddd;" class="text-right"></td>
-				<td style="background-color:#ddd;" class="text-right"><strong>'.$totalAllMag.'</strong></td>
-				<td style="background-color:#ddd;" class="text-right"><strong>'.number_format($totalAllGrc,8).'</strong></td>
+				<td style="background-color:#ddd;" class="text-right"><strong>'.number_format($totalAllMag,2).'</strong></td>
+				<td style="background-color:#ddd;" class="text-right"><strong>'.number_format($totalAllGrc,3).'</strong></td>
 			</tr>
 		';
 	}
@@ -167,7 +173,6 @@ if ($this->view->memHosts) {
 } else {
 	$content .= 'You have not attached any hosts to grcpool.com';
 }
-
 
 $panel = new Bootstrap_Panel();
 $panel->setContext('info');

@@ -33,7 +33,7 @@ class GrcPool_Controller_LoginHelp extends GrcPool_Controller {
 					$member->setPasswordHash(md5($this->post('password').strtolower($member->getUsername())));
 				}
 				$dao->save($member);
-				$this->addSuccessMsg('Your password has been udpated. You may try logging in now.');
+				$this->addSuccessMsg('Your password has been updated. You may try logging in now.');
 				$this->view->showForm = false;
 			}
 		}
@@ -80,5 +80,4 @@ class GrcPool_Controller_LoginHelp extends GrcPool_Controller {
 		}
 		
 	}
-	
 }

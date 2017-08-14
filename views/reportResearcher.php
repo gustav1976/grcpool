@@ -1,11 +1,13 @@
 <?php
-$webPage->setPageTitle('Researcher - '.$this->view->member->getUsername());
 
+$panel = new Bootstrap_Panel();
+$panel->setHeader($this->view->member->getUsername());
+$panelContent = '';
 if ($this->view->hosts) {
-	$webPage->append('
+	$panelContent .= '
 		<table class="table table-striped table-hover table-condensed">
 			<tr><th>Host</th><th class="text-right">Mag</th></tr>
-	');
+	';
 	$magGrandTotal = 0;
 	foreach ($this->view->hosts as $host) {
 		$magTotal = 0;
@@ -15,7 +17,7 @@ if ($this->view->hosts) {
 			}
 		}
 		$magGrandTotal += $magTotal;
-		$webPage->append('
+		$panelContent .= '
 			<tr>
 				<td>
 					<a href="/report/researcher/'.$host->getMemberId().'/'.$host->getId().'">'.$host->getOsName().' '.$host->getOsVersion().' '.$host->getProductName().'</a>
@@ -30,18 +32,18 @@ if ($this->view->hosts) {
 					'.$magTotal.'
 				</td>
 			</tr>
-		');
+		';
 	}
-	$webPage->append('
+	$panelContent .= '
 			<tr>
 				<td></td><td></td><td class="text-right"><strong>'.$magGrandTotal.'</strong></td></tr>
 		</table>
-	');
+	';
 			
 }
 
 if ($this->view->host) {
-	$webPage->append('
+	$panelContent .= '
 		<table class="table table-striped table-hover table-condensed">
 			<tr><td>BOINC Version</td><td>'.$this->view->host->getClientVersion().'</td></tr>
 			<tr><td>Model</td><td>'.$this->view->host->getModel().'</td></tr>
@@ -54,37 +56,37 @@ if ($this->view->host) {
 			</td></tr>
 		</table>		
 		<br/>		
-	');
-	$webPage->append('
+	';
+	$panelContent .= '
 	<table class="table table-striped table-hover table-condensed">
 		<tr>
 			<th>Project</th>
 			<th class="text-center">Pool</th>
 			<th class="text-right">Mag</th>
 		</tr>
-');
-	
+';
 	$magTotal = 0;
 	foreach ($this->view->credits as $credit) {
 		$magTotal += $credit->getMag();
-		$webPage->append('
+		$panelContent .= '
 		<tr>
-			<td>'.$this->view->accounts[$credit->getProjectUrl()]->getName().'</td>
+			<td>'.$this->view->accounts[$credit->getAccountId()]->getName().'</td>
 			<td class="text-center">'.$credit->getProjectPoolId().'</td>
 			<td class="text-right">'.$credit->getMag().'</td>
 		</tr>
-	');
+	';
 	}
 	
-	$webPage->append('
-		<tr>
-			<td></td>
-			<td></td>
-			<td class="text-right"><strong>'.$magTotal.'</strong></td>
-		</tr>
-	</table>
-');
+	$panelContent .= '
+			<tr>
+				<td></td>
+				<td></td>
+				<td class="text-right"><strong>'.$magTotal.'</strong></td>
+			</tr>
+		</table>
+	';
 }
-
+$panel->setContent($panelContent);
+$webPage->append($panel->render());
 
 
