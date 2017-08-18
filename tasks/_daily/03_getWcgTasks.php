@@ -12,10 +12,11 @@ echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WCGTASKS START ".date("Y.m.d H.i.s")."\n";
 $settingsDao = new GrcPool_Settings_DAO();
 $taskDao = new GrcPool_Wcg_Tasks_DAO();
 
-for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
+for ($poolId = 1; $poolId <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $poolId++) {
 	echo '############ POOL '.$poolId."\n";
 	$poolName = 'grcpool.com'.($poolId==1?'':'-'.$poolId);
 	$poolCode = $settingsDao->getValueWithName(Constants::SETTINGS_WCG_CODE.($poolId==1?'':$poolId));
+	if ($poolCode == '') continue;
 
 	$modTime = $taskDao->getMaxModTimeWithPoolId($poolId);
 	echo "MOD TIME: ".$modTime."\n";

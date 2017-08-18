@@ -57,10 +57,10 @@ class GrcPool_Controller_Project extends GrcPool_Controller {
 		
 		$this->view->accounts = array();
 		foreach ($accounts as $account) {
-			for ($p = 1; $p <= Constants::NUMBER_OF_POOLS; $p++) {
+			for ($p = 1; $p <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $p++) {
 				$obj = $keyDao->fetchObj($keys,array($keyDao->where('poolId',$p),$keyDao->where('accountId',$account->getId())));
 				if ($obj) {
-					$account->{'pool'.$p.'Attach'} = $account->getWhiteList()&&$account->getAttachable()&&$obj->getWeak()!='';
+					$account->{'pool'.$p.'Attach'} = $account->getWhiteList()&&$account->getAttachable()&&$obj->getWeak()!=''&&$obj->getAttachable();
 				} else {
 					$account->{'pool'.$p.'Attach'} = false;
 				}

@@ -1,12 +1,14 @@
 <?php
 class Constants {
 	
+	const ADMIN_USER_ID = 573; // should change to priv data in user table later
+	
 	const DATABASE_NAME = 'grcpool';
 	const DATABASE_SERVER = '127.0.0.1';
 	
-	const NUMBER_OF_POOLS = 2;
-	
 	const PROPERTY_FILE = '/var/www/properties/grcpool.props.json';
+	const PROPERTY_DAEMONS = 'daemons';
+	const PROPERTY_NUMBER_OF_POOLS = 'numberOfPools';
 	
 	const CACHE_COINBASE_BTC_VALUE = "CACHE_COINBASE_BTC_VALUE";
 	const CACHE_CEX_GRC_VALUE = "CACHE_CEX_GRC_VALUE";
@@ -52,12 +54,7 @@ class Constants {
 	const API_ERROR_004 = 'Email address already exists';
 	const API_ERROR_005 = 'Please provide a longer password, at least 8 characters';
 	const API_ERROR_006 = 'Researcher not found';
-	
-	const DAEMON_POOL_1_PATH = '/usr/bin/gridcoinresearchd';
-	const DAEMON_POOL_1_DATADIR = '/home/bgb/.GridcoinResearch';
-	const DAEMON_POOL_2_PATH = '/usr/bin/gridcoinresearchd2';
-	const DAEMON_POOL_2_DATADIR = '/home/bgb/.GridcoinResearch2';
-	
+
 	const GRCNAME_WORLD_COMMUNITY_GRID = 'world community grid';
 	const GRCNAME_SETI = 'seti@home';
 	

@@ -12,7 +12,7 @@ abstract class GrcPool_Member_Por_MODEL {
 	private $_hostDbid = 0;
 	private $_avgCredit = 0;
 	private $_memberMag = 0;
-	private $_poolMag = 0.00;
+	private $_poolMag = 0;
 	private $_totalPor = 0;
 	private $_amount = 0;
 	private $_thetime = 0;

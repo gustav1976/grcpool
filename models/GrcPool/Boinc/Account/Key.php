@@ -12,6 +12,7 @@ abstract class GrcPool_Boinc_Account_Key_MODEL {
 	private $_poolId = 0;
 	private $_strong = '';
 	private $_weak = '';
+	private $_attachable = 0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setAccountId(int $int) {$this->_accountId=$int;}
@@ -22,6 +23,8 @@ abstract class GrcPool_Boinc_Account_Key_MODEL {
 	public function getStrong():string {return $this->_strong;}
 	public function setWeak(string $string) {$this->_weak=$string;}
 	public function getWeak():string {return $this->_weak;}
+	public function setAttachable(int $int) {$this->_attachable=$int;}
+	public function getAttachable():int {return $this->_attachable;}
 }
 
 abstract class GrcPool_Boinc_Account_Key_MODELDAO extends TableDAO {
@@ -35,5 +38,6 @@ abstract class GrcPool_Boinc_Account_Key_MODELDAO extends TableDAO {
 		'poolId' => array('type'=>'INT','dbType'=>'tinyint(2)'),
 		'strong' => array('type'=>'STRING','dbType'=>'varchar(100)'),
 		'weak' => array('type'=>'STRING','dbType'=>'varchar(100)'),
+		'attachable' => array('type'=>'INT','dbType'=>'int(1)'),
 	);
 }

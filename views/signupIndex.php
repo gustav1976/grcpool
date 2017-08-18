@@ -5,8 +5,7 @@ $webPage->appendHead("<script src='https://www.google.com/recaptcha/api.js'></sc
 $webPage->setPageTitle('Pool Registration');
 
 
-if (true) {
-	
+if (false) {
 	$webPage->append('
 		'.Bootstrap_Callout::info('
 			Hi,
@@ -18,9 +17,7 @@ if (true) {
 			Thanks for your patience...
 		').'
 	');
-	
 } else {
-
 	$webPage->append('
 		'.Bootstrap_Callout::info('
 		Please take a moment to read how this pool\'s <a href="/about/fees">fees</a>, <a href="/about/calculations">calculations</a>, and <a href="/about/hotWallet">staking wallet</a> works.

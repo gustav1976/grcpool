@@ -95,7 +95,7 @@ class GrcPool_WebPage {
 				return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">This is the TEST System - All coins are testnet coins</div>';
 			}
 		} else {
-			//return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">The website is currently being upgraded, some features may be disabled.</div>';
+			//return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">Pool #3 projects are currently being added...</div>';
 		}
 	}
 	

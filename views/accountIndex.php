@@ -131,7 +131,7 @@ if ($this->view->numberOfTasks) {
 			<div class="pull-right">
 				<i class="fa fa-files-o fa-2x"></i>
 			</div>
-			<div style="margin-bottom:15px;"><span style="font-size:2.0em;">Tasks</span></div>
+			<div style="margin-bottom:15px;"><span style="font-size:2.0em;">Task Report</span></div>
 			<div style="margin-bottom:8px;">
 				<div style="margin-bottom:8px;"><i class="fa fa-file-o"></i> Number of Tasks: '.$this->view->numberOfTasks.'</div>
 				<div class="row">
@@ -140,7 +140,7 @@ if ($this->view->numberOfTasks) {
 					</div>
 				</div>
 			</div>
-			<div class="pull-left"><small>Tasks are only available for WCG</small></div>
+			<div class="pull-left"><small>Tasks reports are only available for WCG. For other projects, use the links on project names.</small></div>
 			<div class="pull-right">
 				<span class="fa-stack fa-2x">
 					<i class="text-primary fa fa-circle fa-stack-2x"></i>

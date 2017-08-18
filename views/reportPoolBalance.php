@@ -1,48 +1,74 @@
 <?php
 $webPage->appendTitle('Pool Financial Information');
-$panel = new Bootstrap_Panel();
-$panel->setHeader('Pool Financials');
-$panelContent = '';
+$numberOfPools = Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS);
+$profits = array();
+$stakeBalances = array();
+for ($i = 1; $i <= $numberOfPools; $i++) {
+	$stakeBalance = (($this->view->superblockData->balance[$i-1]*COIN)-($this->view->superblockData->owed[$i-1]*COIN)-($this->view->superblockData->interest[$i-1]*COIN)-($this->view->superblockData->basis[$i-1]))/COIN;
+	$profit = (($this->view->superblockData->balance[$i-1]*COIN)-($this->view->seeds[$i]*COIN)-($this->view->superblockData->interest[$i-1]*COIN)-($stakeBalance<0?0:$stakeBalance*COIN)-($this->view->superblockData->owed[$i-1]*COIN))/COIN;
+	$profits[$i] = $profit;
+	$stakeBalances[$i] = $stakeBalance;
+}
 
-$stakeBalance0 = (($this->view->superblockData->balance[0]*COIN)-($this->view->superblockData->owed[0]*COIN)-($this->view->superblockData->interest[0]*COIN)-($this->view->superblockData->basis[0]))/COIN;
-$stakeBalance1 = (($this->view->superblockData->balance[1]*COIN)-($this->view->superblockData->owed[1]*COIN)-($this->view->superblockData->interest[1]*COIN)-($this->view->superblockData->basis[1]))/COIN;
-$profit0 = (($this->view->superblockData->balance[0]*COIN)-($this->view->seed*COIN)-($this->view->superblockData->interest[0]*COIN)-($stakeBalance0<0?0:$stakeBalance0*COIN)-($this->view->superblockData->owed[0]*COIN))/COIN;
-$profit1 = (($this->view->superblockData->balance[1]*COIN)-($this->view->seed2*COIN)-($this->view->superblockData->interest[1]*COIN)-($stakeBalance1<0?0:$stakeBalance1*COIN)-($this->view->superblockData->owed[1]*COIN))/COIN;
+$tabs = new Bootstrap_Tabs();
+$startIdx = $numberOfPools> 1?0:1;
 
-$panelContent .= '		
-	<div class="rowpad">
-		This information is from when superblock <strong>'.$this->view->superblockData->block.'</strong> was created.
-	</div>
-	<table class="table table-striped table-hover">
-		<tr><th>Data</th><th style="width:25%;" class="text-right">Pool 1</th><th style="width:25%;" class="text-right">Pool 2</th></tr>
-		<tr><td>Magnitude</td><td class="text-right">'.$this->view->superblockData->mag[0].'</td><td class="text-right">'.$this->view->superblockData->mag[1].'</td></tr>
-		<tr><td>Transaction Count</td><td class="text-right">'.$this->view->superblockData->txCount[0].'</td><td class="text-right">'.$this->view->superblockData->txCount[1].'</td></tr>
-		<tr><td>Expected Daily Earnings</td><td class="text-right">'.$this->view->superblockData->expectedDailyEarnings[0].'</td><td class="text-right">'.$this->view->superblockData->expectedDailyEarnings[1].'</td></tr>
-		<tr><td>Fulfillment</td><td class="text-right">'.Utils::truncate($this->view->superblockData->fulfillment[0],2).'%</td><td class="text-right">'.Utils::truncate($this->view->superblockData->fulfillment[1],2).'%</td></tr>
-	</table>
-	<br/>
-	<table class="table table-striped table-hover">
-		<tr><th>Financials</th><th style="width:25%;" class="text-right">Pool 1</th><th style="width:25%;" class="text-right">Pool 2</th></tr>
-		<tr><td>Balance</td><td class="text-right">'.$this->view->superblockData->balance[0].'</td><td class="text-right">'.$this->view->superblockData->balance[1].'</td></tr>
-		<tr><td>Interest</td><td class="text-right">'.$this->view->superblockData->interest[0].'</td><td class="text-right">'.$this->view->superblockData->interest[1].'</td></tr>
-		<tr><td>Research Awards</td><td class="text-right">'.$this->view->superblockData->research[0].'</td><td class="text-right">'.$this->view->superblockData->research[1].'</td></tr>
-		<tr><td>Total Owed to Researchers</td><td class="text-right">'.$this->view->superblockData->owed[0].'</td><td class="text-right">'.$this->view->superblockData->owed[1].'</td></tr>
-		<tr><td>&nbsp;&nbsp;&nbsp;Owed to No GRC Address</td><td class="text-right">'.$this->view->superblockData->grcNoAddress[0].'</td><td class="text-right">'.$this->view->superblockData->grcNoAddress[1].'</td></tr>
-		<tr><td>&nbsp;&nbsp;&nbsp;Owed to Unknown Host Owner</td><td class="text-right">'.$this->view->superblockData->grcOwnerUnknown[0].'</td><td class="text-right">'.$this->view->superblockData->grcOwnerUnknown[1].'</td></tr>
-		<tr><td>Basis</td><td class="text-right">'.($this->view->superblockData->basis[0]/COIN).'</td><td class="text-right">'.($this->view->superblockData->basis[1]/COIN).'</td></tr>
-		<tr><td>Paid Out</td><td class="text-right">'.$this->view->superblockData->paidOut[0].'</td><td class="text-right">'.$this->view->superblockData->paidOut[1].'</td></tr>
-		<tr><td>POR Available</td><td class="text-right">'.($stakeBalance0<0?'0':$stakeBalance0).'</td><td class="text-right">'.($stakeBalance1<0?'0':$stakeBalance1).'</td></tr>
-	</table>
-	<br/>	
-	<table class="table table-striped table-hover">
-		<tr><th>Profit</th><th style="width:25%;" class="text-right">Pool 1</th><th style="width:25%;" class="text-right">Pool 2</th></tr>
-		<tr><td>Balance</td><td class="text-right">'.$this->view->superblockData->balance[0].'</td><td class="text-right">'.$this->view->superblockData->balance[1].'</td></tr>
-		<tr><td>Seed</td><td class="text-right">-'.$this->view->seed.'</td><td class="text-right">-'.$this->view->seed2.'</td></tr>
-		<tr><td>Interest</td><td class="text-right">-'.$this->view->superblockData->interest[0].'</td><td class="text-right">-'.$this->view->superblockData->interest[1].'</td></tr>
-		<tr><td>POR Available</td><td class="text-right">-'.($stakeBalance0<0?'0':$stakeBalance0).'</td><td class="text-right">-'.($stakeBalance1<0?'0':$stakeBalance1).'</td></tr>
-		<tr><td>Owed to Researchers</td><td class="text-right">-'.$this->view->superblockData->owed[0].'</td><td class="text-right">-'.$this->view->superblockData->owed[1].'</td></tr>
-		<tr><td><strong>Pool Profit from fees &amp; donations</strong></td><td class="text-right"><strong>'.Utils::truncate($profit0,8).' GRC</strong></td><td class="text-right"><strong>'.Utils::truncate($profit1,8).' GRC</strong></td></tr>
-	</table>	
-';
-$panel->setContent($panelContent);
-$webPage->append($panel->render());
+$first = true;
+for ($i = $startIdx; $i <= $numberOfPools; $i++) {
+	$tab = new Bootstrap_Tab();
+	$tab->setTitle($i?'Pool '.$i:'Combined');
+	$tab->setActive($first);
+	$first = false;
+	$mag = $i?$this->view->superblockData->mag[$i-1]:array_sum($this->view->superblockData->mag);
+	$txCount = $i?$this->view->superblockData->txCount[$i-1]:array_sum($this->view->superblockData->txCount);
+	$expectedDailyEarnings = $i?$this->view->superblockData->expectedDailyEarnings[$i-1]:array_sum($this->view->superblockData->expectedDailyEarnings);
+	$fulfillment = $i?$this->view->superblockData->fulfillment[$i-1]:array_sum($this->view->superblockData->fulfillment);
+	$balance = $i?$this->view->superblockData->balance[$i-1]:array_sum($this->view->superblockData->balance);
+	$interest = $i?$this->view->superblockData->interest[$i-1]:array_sum($this->view->superblockData->interest);
+	$research = $i?$this->view->superblockData->research[$i-1]:array_sum($this->view->superblockData->research);
+	$owed = $i?$this->view->superblockData->owed[$i-1]:array_sum($this->view->superblockData->owed);
+	$grcNoAddress = $i?$this->view->superblockData->grcNoAddress[$i-1]:array_sum($this->view->superblockData->grcNoAddress);
+	$grcOwnerUnknown= $i?$this->view->superblockData->grcOwnerUnknown[$i-1]:array_sum($this->view->superblockData->grcOwnerUnknown);
+	$basis = $i?$this->view->superblockData->basis[$i-1]:array_sum($this->view->superblockData->basis);
+	$paidOut = $i?$this->view->superblockData->paidOut[$i-1]:array_sum($this->view->superblockData->paidOut);
+	$stakeBalance = $i?$stakeBalances[$i]:array_sum($stakeBalances);
+	$balance = $i?$this->view->superblockData->balance[$i-1]:array_sum($this->view->superblockData->balance);
+	$seed = $i?$this->view->seeds[$i]:array_sum($this->view->seeds);
+	$interest = $i?$this->view->superblockData->interest[$i-1]:array_sum($this->view->superblockData->interest);
+	$profit = $i?$profits[$i]:array_sum($profits);
+	
+	$tab->setContent('
+		<table class="table table-striped table-hover">
+			<tr><th colspan="2">Data</th></tr>
+			<tr><td>Magnitude</td><td class="text-right">'.$mag.'</td></tr>
+			<tr><td>Transaction Count</td><td class="text-right">'.$txCount.'</td></tr>
+			<tr><td>Expected Daily Earnings</td><td class="text-right">'.$expectedDailyEarnings.'</td></tr>
+			<tr><td>Fulfillment</td><td class="text-right">'.Utils::truncate($fulfillment,2).'%</td></tr>
+
+			<tr><td colspan="2">&nbsp;</td></tr>
+
+			<tr><th colspan="2">Financials</th></tr>
+			<tr><td>Balance</td><td class="text-right">'.$balance.'</td></tr>
+			<tr><td>Interest</td><td class="text-right">'.$interest.'</td></tr>
+			<tr><td>Research Awards</td><td class="text-right">'.$research.'</td></tr>
+			<tr><td>Total Owed to Researchers</td><td class="text-right">'.$owed.'</td></tr>
+			<tr><td>&nbsp;&nbsp;&nbsp;Owed to No GRC Address</td><td class="text-right">'.$grcNoAddress.'</td></tr>
+			<tr><td>&nbsp;&nbsp;&nbsp;Owed to Unknown Host Owner</td><td class="text-right">'.$grcOwnerUnknown.'</td></tr>
+			<tr><td>Basis</td><td class="text-right">'.($basis/COIN).'</td></tr>
+			<tr><td>Paid Out</td><td class="text-right">'.$paidOut.'</td></tr>
+			<tr><td>POR Available</td><td class="text-right">'.($stakeBalance<0?'0':$stakeBalance).'</td></tr>
+
+			<tr><td colspan="2">&nbsp;</td></tr>
+
+			<tr><th colspan="2">Pool Profit</th></tr>
+			<tr><td>Balance</td><td class="text-right">'.$balance.'</td></tr>
+			<tr><td>Seed</td><td class="text-right">-'.$seed.'</td></tr>
+			<tr><td>Interest</td><td class="text-right">-'.$interest.'</td></tr>
+			<tr><td>POR Available</td><td class="text-right">-'.($stakeBalance<0?'0':$stakeBalance).'</td></tr>
+			<tr><td>Owed to Researchers</td><td class="text-right">-'.$owed.'</td></tr>
+			<tr><td><strong>Pool Profit from fees &amp; donations</strong></td><td class="text-right"><strong>'.Utils::truncate($profit,8).' GRC</strong></td></tr>
+		</table>
+	');
+	$tabs->addTab($tab);
+}
+$webPage->append($tabs->render());

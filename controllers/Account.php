@@ -185,10 +185,8 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$this->view->hosts = $hosts;
 		
 		$accounts = $accountDao->fetchAll();
-		$this->view->accounts = array();
-		foreach ($accounts as $account) {
-			$this->view->accounts[$account->getUrlId()] = $account;
-		}
+		$this->view->accounts = $accounts;//array();
+
 		
 		$numberOfPayouts = $dao->getCountForUser($this->getUser()->getId());
 		$pagination = new Bootstrap_Pagination();
@@ -310,7 +308,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 				if (!$authCheck) {
 					$this->addErrorMsg('Your authorization for this change failed');
 				} else {
-					$daemon = GrcPool_Utils::getDaemonForEnvironment();
+					$daemon = GrcPool_Utils::getDaemonForPool(1);
 					if ($newAddr != '' && !$daemon->isAddress($newAddr)) {
 						$this->addErrorMsg('GRC Address was not formatted properly.');
 					} else {
@@ -513,11 +511,12 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$accountKeys = array();
 		foreach ($keys as $key) {
 			$accountKeys[$key->getAccountId()]['weak'] = $key->getWeak();
+			$accountKeys[$key->getAccountId()]['attachable'] = $key->getAttachable();
 		}
 		
 		$projects = $projectDao->fetchAll(array(),array('name'=>'asc'));
 		foreach ($projects as $idx => $project) {
-			if (isset($accountKeys[$project->getId()]) && $accountKeys[$project->getId()] != '' && $project->getWhiteList() && $project->getAttachable()) {
+			if (isset($accountKeys[$project->getId()]) && $accountKeys[$project->getId()]['weak'] != '' && ($this->getUser()->getId() == Constants::ADMIN_USER_ID || ($project->getWhiteList() && $project->getAttachable() && $accountKeys[$project->getId()]['attachable']))) {
 				$projects[$idx]->attachable = true;
 			} else {
 				$projects[$idx]->attachable = false;

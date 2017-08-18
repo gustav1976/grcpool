@@ -1,0 +1,18 @@
+{
+	"databaseUser" : "",
+	"databasePassword" : "",
+	"emailServer" : "",
+    "emailPort" : "",
+    "emailSslPort" : "",
+    "emailUsername" : "",
+    "emailPassword" : "",
+	"googleCaptchaPublic" : "",
+	"googleCaptchaPrivate" : "",
+	"daemons" : [
+		{
+			"path" : "",
+			"datadir" : "",
+			"testnet" : false
+		}
+	]
+}

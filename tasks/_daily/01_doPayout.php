@@ -37,17 +37,10 @@ $memberDao = new GrcPool_Member_DAO();
 // PROPERTIES OF PAYOUT
 $PAYOUTFEE = $settingsDao->getValueWithName(Constants::SETTINGS_PAYOUT_FEE);
 
-for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
+for ($poolId = 1; $poolId <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $poolId++) {
 	echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POOL # '.$poolId."\n";
 
-	$daemon = null;
-	
-	// TODO
-	if ($poolId == 1) {
-		$daemon = GrcPool_Utils::getDaemonForEnvironment();
-	} else if ($poolId == 2) {
-		$daemon = GrcPool_Utils::getDaemonForEnvironment(Constants::DAEMON_POOL_2_PATH,Constants::DAEMON_POOL_2_DATADIR);
-	}
+	$daemon = GrcPool_Utils::getDaemonForPool($poolId);
 	
 	$walletObj = $walletDao->initWithKey($poolId);
 	$WALLETBASIS = $walletObj->getBasis()/COIN;

@@ -31,18 +31,17 @@ class GrcPool_Utils {
 		return $str;
 	}
 	
-	public static function getDaemonForEnvironment($path=Constants::DAEMON_POOL_1_PATH,$datadir=Constants::DAEMON_POOL_1_DATADIR) {
+	public static function getDaemonForPool($poolId = 1) {
 		$daemon = new GridcoinDaemon();
-		if (PHP_OS == 'WINNT' || PHP_OS == 'Darwin') {
-			$daemon->setPath('C:\PROGRA~2\GridcoinResearch\gridcoinresearchd.exe');
-			$daemon->setDataDir('c:\users\brianb~1\appdata\roaming\gridcoinresearch');
-		} else {
-			$daemon->setPath($path);
-			$daemon->setDataDir($datadir);
-			$PROPERTY = new Property(Constants::PROPERTY_FILE);
-			if ($PROPERTY->get('test')) {
+		$props = Property::getValueFor(Constants::PROPERTY_DAEMONS);
+		if (isset($props[$poolId-1])) {
+			$daemon->setPath($props[$poolId-1]['path']);
+			$daemon->setDataDir($props[$poolId-1]['datadir']);
+			if (isset($props[$poolId-1]['testnet']) && $props[$poolId-1]['testnet']) {
 				$daemon->setTestnet(true);
 			}
+		} else {
+			return null;
 		}
 		return $daemon;
 	}

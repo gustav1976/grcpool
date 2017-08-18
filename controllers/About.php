@@ -20,7 +20,7 @@ class GrcPool_Controller_About extends GrcPool_Controller {
 		$settingsDao = new GrcPool_Settings_DAO();
 		
 		$this->view->hotWallets = array();
-		for ($p = 1; $p <= Constants::NUMBER_OF_POOLS; $p++) {
+		for ($p = 1; $p <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $p++) {
 			array_push($this->view->hotWallets,$settingsDao->getValueWithName(Constants::SETTINGS_HOT_WALLET_ADDRESS.($p>1?$p:'')));
 		}
 	}

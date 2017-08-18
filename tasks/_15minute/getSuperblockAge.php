@@ -13,8 +13,10 @@ if (!$FORCE && $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONL
 	exit;
 }
 
+$numberOfPools = Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS);
+
 $cache = new Cache();
-$daemon = GrcPool_Utils::getDaemonForEnvironment();
+$daemon = GrcPool_Utils::getDaemonForPool(1);
 $updateHostData = array();
 
 $superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
@@ -35,13 +37,14 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 	$poolWhiteListCount = $settingsDao->getValueWithName(Constants::SETTINGS_POOL_WHITELIST_COUNT);
 	
 	$superblockData->paidOut = array();
-	$superblockData->paidOut[0] = $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT);
-	$superblockData->paidOut[1] = $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT.'2');
 	
 	$hostCreditDao = new GrcPool_Member_Host_Credit_DAO();
 	$totalOwed = array();
-	$totalOwed[0] = $hostCreditDao->getTotalOwedForPool(1);
-	$totalOwed[1] = $hostCreditDao->getTotalOwedForPool(2);
+	for ($poolId = 1; $poolId <= $numberOfPools; $poolId++) {
+		$superblockData->paidOut[$poolId-1] = $settingsDao->getValueWithName((Constants::SETTINGS_TOTAL_PAID_OUT).($poolId>1?$poolId:''));
+		$totalOwed[$poolId-1] = $hostCreditDao->getTotalOwedForPool($poolId);
+	}
+
 	$superblockData->owed = $totalOwed;
 	
 	$superblockData->lastBlock = $superblockData->block;
@@ -111,12 +114,12 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 	$superblockData->basis[0] = $basisObj->getBasis();
 	
 	$rsaData = $daemon->getRsa();
-	$superblockData->expectedDailyEarnings[0] = $rsaData[1]['Expected Earnings (Daily)'];
-	$superblockData->fulfillment[0] = $rsaData[1]['Fulfillment %'];
-	$superblockData->interest[0] = $rsaData[1]['CPID Lifetime Interest Paid'];
-	$superblockData->research[0] = $rsaData[1]['CPID Lifetime Research Paid'];
-	$superblockData->txCount[0] = $rsaData[1]['Tx Count'];
-	$superblockData->magUnit = $rsaData[2]['Magnitude Unit (GRC payment per Magnitude per day)'];
+	$superblockData->expectedDailyEarnings[0] = $rsaData[1]['Expected Earnings (Daily)']??0;
+	$superblockData->fulfillment[0] = $rsaData[1]['Fulfillment %']??0;
+	$superblockData->interest[0] = $rsaData[1]['CPID Lifetime Interest Paid']??0;
+	$superblockData->research[0] = $rsaData[1]['CPID Lifetime Research Paid']??0;
+	$superblockData->txCount[0] = $rsaData[1]['Tx Count']??0;
+	$superblockData->magUnit = $rsaData[2]['Magnitude Unit (GRC payment per Magnitude per day)']??0;
 	
 	//$stakingInfo = $daemon->getStakingInfo();
 	//$superblockData->netWeight = $stakingInfo['weight']/COIN;
@@ -126,25 +129,26 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 	
 	// POOL 2
 	
-	echo "GETTING POOL 2 DATA\n";
+	echo "GETTING POOL > 1 DATA\n";
 	
-	$daemon2 = GrcPool_Utils::getDaemonForEnvironment(Constants::DAEMON_POOL_2_PATH,Constants::DAEMON_POOL_2_DATADIR);
-	$basisObj = $basisDao->initWithKey(2);
-	$superblockData->basis[1] = $basisObj->getBasis();
-
-	$rsaData = $daemon2->getRsa();
-	$superblockData->expectedDailyEarnings[1] = $rsaData[1]['Expected Earnings (Daily)'];
-	$superblockData->fulfillment[1] = $rsaData[1]['Fulfillment %'];
-	$superblockData->interest[1] = $rsaData[1]['CPID Lifetime Interest Paid'];
-	$superblockData->research[1] = $rsaData[1]['CPID Lifetime Research Paid'];
-	$superblockData->txCount[1] = $rsaData[1]['Tx Count'];
+	for ($poolId = 2; $poolId <= $numberOfPools; $poolId++) {
+		$daemon2 = GrcPool_Utils::getDaemonForPool($poolId);
+		$basisObj = $basisDao->initWithKey($poolId);
+		$superblockData->basis[$poolId-1] = $basisObj->getBasis();
 	
-	$balance = $daemon2->getTotalBalance();
-	$superblockData->balance[1] = $balance;
-
-	$mag = $daemon2->getMagnitude();
-	$superblockData->mag[1] = $mag;
+		$rsaData = $daemon2->getRsa();
+		$superblockData->expectedDailyEarnings[$poolId-1] = $rsaData[$poolId-1]['Expected Earnings (Daily)']??0;
+		$superblockData->fulfillment[$poolId-1] = $rsaData[$poolId-1]['Fulfillment %']??0;
+		$superblockData->interest[$poolId-1] = $rsaData[$poolId-1]['CPID Lifetime Interest Paid']??0;
+		$superblockData->research[$poolId-1] = $rsaData[$poolId-1]['CPID Lifetime Research Paid']??0;
+		$superblockData->txCount[$poolId-1] = $rsaData[$poolId-1]['Tx Count']??0;
+		
+		$balance = $daemon2->getTotalBalance();
+		$superblockData->balance[$poolId-1] = $balance;
 	
+		$mag = $daemon2->getMagnitude();
+		$superblockData->mag[$poolId-1] = $mag;
+	}
 	
 	////////////////
 	
@@ -153,17 +157,17 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 	$creditViewDao = new GrcPool_View_Member_Host_Project_Credit_DAO();
 	$noAddrs = $creditViewDao->getOwedWithNowAddress();
 	$totalNoAddrs = array();
-	$totalNoAddrs[0] = 0;
-	$totalNoAddrs[1] = 0;
+	$total = array();
+	for ($poolId = 1; $poolId <= $numberOfPools; $poolId++) {
+		$totalNoAddrs[$poolId-1] = 0;
+		$total[$poolId-1] = 0;
+	}
 	foreach ($noAddrs as $no) {
 		$totalNoAddrs[$no->getPoolId()-1] += $no->getOwed();
 	}
 	$superblockData->grcNoAddress = $totalNoAddrs;
 	
 	$objs = $hostCreditDao->getOwedWithNoOwner();
-	$total = array();
-	$total[0] = 0;
-	$total[1] = 0;
 	foreach ($objs as $obj) {
 		$total[$obj->getPoolId()-1] += $obj->getOwed();
 	}

@@ -1,8 +1,31 @@
 <?php
+$numberOfPools = Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS);
 $webPage->appendTitle('Pool Status');
 $webPage->appendHead('
 	<link rel="stylesheet" href="/assets/libs/tablesorter/2.28.7/theme.bootstrap.css">
 ');
+$poolFilters = '';
+$poolAttach = '';
+if ($numberOfPools > 1) {
+	for ($p = 1; $p <= $numberOfPools; $p++) {
+		$poolFilters .= 'if ($("#pool'.$p.'Select").is(":checked")) poolFilter.push('.$p.');';
+		$poolAttach .= '
+			if (poolFilter.includes('.$p.')) {
+				$(".pool'.$p.'Attach").show();
+				mag += Number(magCol.data("pool-'.$p.'"));
+				host += Number(hostCol.data("pool-'.$p.'"));
+			} else {
+				$(".pool'.$p.'Attach").hide();
+			}
+		';		
+	}
+} else {
+	$poolAttach .= '
+		$(".pool1Attach").show();
+		mag += Number(magCol.data("pool-1"));
+		host += Number(hostCol.data("pool-1"));
+	';
+}
 $webPage->appendScript('
 	<script src="/assets/libs/tablesorter/2.28.7/jquery.tablesorter.min.js"></script>
 	<script src="/assets/libs/tablesorter/2.28.7/jquery.tablesorter.widgets.js"></script>
@@ -75,9 +98,7 @@ $webPage->appendScript('
 			if ($("#androidSelect").is(":checked")) filter.push("android");
 			if ($("#raspberrypiSelect").is(":checked")) filter.push("raspberrypi");
 			var poolFilter = [];
-			if ($("#pool1Select").is(":checked")) poolFilter.push(1);
-			if ($("#pool2Select").is(":checked")) poolFilter.push(2);
-
+			'.$poolFilters.'
 			$(\'#projectTable > tbody  > tr\').each(function() {
 				if (filter.length) {
 					var show = true;
@@ -101,20 +122,7 @@ $webPage->appendScript('
 				var host = 0;
 				var magCol = ($(this).find(".magCol"));
 				var hostCol = ($(this).find(".hostCol"));
-				if (poolFilter.includes(1)) {
-					$(".pool1Attach").show();
-					mag += Number(magCol.data("pool1"));	
-					host += Number(hostCol.data("pool1"));
-				} else {
-					$(".pool1Attach").hide();
-				}
-				if (poolFilter.includes(2)) {
-					$(".pool2Attach").show();
-					mag += Number(magCol.data("pool2"));
-					host += Number(hostCol.data("pool2"));
-				} else {
-					$(".pool2Attach").hide();
-				}
+				'.$poolAttach.'
 				magCol.html(mag.toFixed(2));
 				hostCol.html(host.toFixed(0));
 			});
@@ -122,21 +130,29 @@ $webPage->appendScript('
 		}
 	</script>  
 ');
-$projects = '
-	<div class="btn-group rowpad">
+$buttons = '';
+if ($numberOfPools > 1) {
+	$buttons .= '
 		<div class="btn-group rowpad">
-			<div class="btn-group" data-toggle="buttons">
-	  			<label class="btn btn-default active">
-	    			<input onchange="filterCapability();" id="pool1Select" type="checkbox" autocomplete="off" checked>
-					Pool 1
-	  			</label>
-	  			<label class="btn btn-default active">
-	    			<input onchange="filterCapability();" id="pool2Select" type="checkbox" autocomplete="off" checked>
-					Pool 2
-	  			</label>
+			<div class="btn-group rowpad">
+				<div class="btn-group" data-toggle="buttons">
+	';
+	for ($p = 1; $p <= $numberOfPools; $p++) {
+		$buttons .= '
+		  			<label class="btn btn-default active">
+	    				<input onchange="filterCapability();" id="pool'.$p.'Select" type="checkbox" autocomplete="off" checked>
+						Pool '.$p.'
+	  				</label>
+		';	
+	}
+	$buttons .= '
+				</div>
 			</div>
 		</div>
-	</div>
+	';
+}
+$projects = '
+	'.$buttons.'
 	<div class="pull-right">
 		<div class="btn-group rowpad">
 			<div class="btn-group" data-toggle="buttons">
@@ -187,6 +203,7 @@ $projects = '
 			</div>
 		</div>
 	</div>
+	<br clear="all"/>
 	<div class="table-responsive">
 		<table style="padding:3px;" id="projectTable" class="table table-striped table-hover table-condensed tablesorter">
 			<thead>
@@ -216,10 +233,11 @@ foreach ($this->view->accounts as $account) {
 	
 	$mag = 0;
 	$hostCount = 0;
-
+	$hostColData = '';
+	$magColData = '';
 	$attachable = '';
-	
-	for ($p = 1; $p <= Constants::NUMBER_OF_POOLS; $p++) {
+
+	for ($p = 1; $p <= $numberOfPools; $p++) {
 		if ($this->view->poolFilter == 0 || $this->view->poolFilter == $p) {
 			$attachable .= '
 				<span class="fa-stack pool'.$p.'Attach">
@@ -233,8 +251,9 @@ foreach ($this->view->accounts as $account) {
 					$mag += $this->view->projStats[$account->getId()]['mag_'.$p];
 				}
 			}
-			
 		}
+		$hostColData .= 'data-pool-'.$p.'="'.($this->view->projStats[$account->getId()]['hostCount_'.$p]??0).'" ';
+		$magColData .= 'data-pool-'.$p.'="'.($this->view->projStats[$account->getId()]['mag_'.$p]??0).'" ';
 	}
 	
 	$projects .= '
@@ -254,8 +273,12 @@ foreach ($this->view->accounts as $account) {
 			<td style="text-align:center;">'.$attachable.'</td>
 			<td class="text-center">'.Utils::getTimeAgo($account->getLastSeen()).'</td>					
 			<td class="text-right">'.number_format($account->getMinRac(),2).'</td>
-			<td data-pool1="'.($this->view->projStats[$account->getId()]['hostCount_1']??0).'" data-pool2="'.($this->view->projStats[$account->getId()]['hostCount_2']??0).'" class="text-right hostCol">'.$hostCount.'</td>
-			<td data-pool1="'.($this->view->projStats[$account->getId()]['mag_1']??0).'" data-pool2="'.($this->view->projStats[$account->getId()]['mag_2']??0).'" class="text-right magCol">'.number_format($mag,2).'</td>
+			<td 
+				'.$hostColData.'
+				class="text-right hostCol">'.$hostCount.'</td>
+			<td
+				'.$magColData.'
+				class="text-right magCol">'.number_format($mag,2).'</td>
 			<td class="text-right">'.(isset($this->view->tasksToSend[$account->getId()])?number_format($this->view->tasksToSend[$account->getId()]):'').'</td>
 			<td class="text-center">
 				<img class="'.($account->getLinux()?'':'grayscale').' linux" title="Linux" style="height:22px;" src="/assets/images/svg/linux.svg"/>
@@ -279,4 +302,3 @@ $projects .= '</tbody></table></div>';
 $webPage->append('
 	'.$projects.'	
 ');
-

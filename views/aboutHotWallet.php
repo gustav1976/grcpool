@@ -10,7 +10,7 @@ $webPage->append('
 			<ul>
 				'.(implode('',
 					array_map(function($arr,$key) {
-						return '<li><i class="fa fa-external-link"></i> <a href="'.GrcPool_Utils::getGrcAddressUrl($arr).'">'.$arr.'</a></li>';
+						return '<li>'.(count($this->view->hotWallets)>1?'#'.($key+1):'').' <a href="'.GrcPool_Utils::getGrcAddressUrl($arr).'">'.$arr.'</a> <i class="fa fa-external-link"></i></li>';
 					},$this->view->hotWallets,array_keys($this->view->hotWallets))
 				)).'
 			</ul> 

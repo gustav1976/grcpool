@@ -15,4 +15,14 @@ class Property {
 		}
 	}
 
+	public static function getValueFor($name) {
+		if (file_exists(Constants::PROPERTY_FILE)) {
+			$props = json_decode(file_get_contents(Constants::PROPERTY_FILE),true);
+			if (isset($props[$name])) {
+				return $props[$name];
+			}
+		}
+		return null;
+	}
+
 }

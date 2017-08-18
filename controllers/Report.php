@@ -26,8 +26,11 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 		$cache = new Cache();
 		$this->view->superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
 		$settingsDao = new GrcPool_Settings_DAO();
-		$this->view->seed = $settingsDao->getValueWithName(Constants::SETTINGS_SEED);
-		$this->view->seed2 = $settingsDao->getValueWithName(Constants::SETTINGS_SEED.'2');
+		$seeds = array();
+		for ($i = 1; $i <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $i++) {
+			$seeds[$i] = $settingsDao->getValueWithName((Constants::SETTINGS_SEED).($i>1?$i:''));
+		}
+		$this->view->seeds = $seeds;
 	}
 	
 	public function earnDonationAction() {

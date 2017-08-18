@@ -33,8 +33,12 @@ if (!flock($fp, LOCK_EX | LOCK_NB)) {
 }
 
 $id = 0;
+$poolArg = 0;
 if (isset($argv[$idArg])) {
 	$id = $argv[$idArg];
+}
+if (isset($argv[$idArg+1])) {
+	$poolArg = $argv[$idArg+1];
 }
 
 $projectDao = new GrcPool_Boinc_Account_DAO();
@@ -88,7 +92,13 @@ foreach ($projects as $project) {
 	$project->setMinRac(GrcPool_Utils::getMinRac($rac,$poolWhiteListCount));
 	$projectDao->save($project);
 	$hostCount = 0;
-	for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
+	for ($poolId = 1; $poolId <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $poolId++) {
+		
+		if ($poolArg && $poolId != $poolArg) {
+			echo 'SKIPPING POOL: '.$poolId."\n";
+			continue;
+		}
+		
 		echo "%%%%%%%%%%%%%%%%%%% HOSTS FOR POOL #".$poolId."\n";
 		$key = $keyDao->getWithAccountAndPool($project->getId(),$poolId);
 		if (!$key || $key->getStrong() == '') {

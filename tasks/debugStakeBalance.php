@@ -18,16 +18,10 @@ $hostCreditDao = new GrcPool_Member_Host_Credit_DAO();
 $hostDao = new GrcPool_Member_Host_DAO();
 
 
-for ($poolId = 1; $poolId <= Constants::NUMBER_OF_POOLS; $poolId++) {
+for ($poolId = 1; $poolId <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $poolId++) {
 	echo "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POOL # ".$poolId."\n";
 
-	$daemon = null;
-	if ($poolId == 1) {
-		$daemon = GrcPool_Utils::getDaemonForEnvironment();
-	} else if ($poolId == 2) {
-		$daemon = GrcPool_Utils::getDaemonForEnvironment(Constants::DAEMON_POOL_2_PATH,Constants::DAEMON_POOL_2_DATADIR);
-	}
-	
+	$daemon = GrcPool_Utils::getDaemonForPool($poolId);	
 	
 	$basisObj = $walletDao->initWithKey($poolId);
 	$WALLETBASIS = $basisObj->getBasis();

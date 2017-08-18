@@ -8,19 +8,19 @@ class GrcPool_Controller_Home extends GrcPool_Controller {
 	public function indexAction() {
 		
 		$hostCreditDao = new GrcPool_Member_Host_Credit_DAO();
-
+		
+		$cache = new Cache();
+		$superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
+		
 		$this->view->mags = array();
-		for ($i = 1; $i <= Constants::NUMBER_OF_POOLS; $i++) {
+		$this->view->activeHosts = array();
+		for ($i = 1; $i <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $i++) {
 			$this->view->mags[$i] = $hostCreditDao->getTotalMagForPool($i);
 			if ($this->view->mags[$i] == '') {
 				$this->view->mags[$i] = 0;
 			}
+			$this->view->activeHosts[$i] = $hostCreditDao->getNumberOfActiveHostsForPool($i);
 		}
-		
-		$activeHosts = $hostCreditDao->getNumberOfActiveHostsForPool(1);
-		$this->view->numberOfActiveHosts1 = $activeHosts;
-		$activeHosts = $hostCreditDao->getNumberOfActiveHostsForPool(2);
-		$this->view->numberOfActiveHosts2 = $activeHosts;
 		
 		$settingsDao = new GrcPool_Settings_DAO();
 		$this->view->poolWhiteListCount = $settingsDao->getValueWithName(Constants::SETTINGS_POOL_WHITELIST_COUNT);
@@ -29,7 +29,7 @@ class GrcPool_Controller_Home extends GrcPool_Controller {
 		$this->view->minStake = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_STAKE_BALANCE);
 		$this->view->totalPaidOut = $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT);
 		$this->view->cpids = array();
-		for ($i = 1; $i <= Constants::NUMBER_OF_POOLS; $i++) {
+		for ($i = 1; $i <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $i++) {
 			array_push($this->view->cpids,$settingsDao->getValueWithName(Constants::SETTINGS_CPID.($i==1?'':$i)));
 		}
 		$this->view->online = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE);
@@ -37,6 +37,7 @@ class GrcPool_Controller_Home extends GrcPool_Controller {
 		if (!$this->view->online) {
 			$this->view->onlineMessage = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_MESSAGE);
 		}
+		$this->view->superblockData = $superblockData;
 		
 	}
 	

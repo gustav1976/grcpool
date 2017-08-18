@@ -3,10 +3,10 @@
 require_once(dirname(__FILE__).'/../bootstrap.php');
 
 # Details for the account to register
-$username='grcpool.com-3';
-$email= 'admin3@grcpool.com';
-$host = 'localhost:31423';
-$passwd = '474fdc822287d80cb61db25e55d6d672';
+$username='';
+$email= '';
+$host = '';
+$passwd = '';
 
 # Urls for projects
 $dao = new GrcPool_Boinc_Account_DAO();

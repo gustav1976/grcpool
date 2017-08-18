@@ -37,7 +37,7 @@ class GrcPool_Controller_Api extends GrcPool_Controller {
 	}
 
 	public function blockHeightAction() {
-		$daemon = GrcPool_Utils::getDaemonForEnvironment();
+		$daemon = GrcPool_Utils::getDaemonForPool();
 		echo $daemon->getBlockHeight();
 		exit;
 	}

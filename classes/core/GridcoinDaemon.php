@@ -142,7 +142,10 @@ class GridcoinDaemon {
 	public function getMagnitude() {
 		$data = $this->executeDaemon('list mymagnitude');
 		$json = json_decode($data,true);
-		$mag = $json[1]['Magnitude (Last Superblock)'];
+		$mag = 0;
+		if (isset($json[1]) && isset($json[1]['Magnitude (Last Superblock)'])) {
+			$mag = $json[1]['Magnitude (Last Superblock)'];
+		}
 		return trim($mag);
 	}
 	
