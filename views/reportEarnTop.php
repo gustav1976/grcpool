@@ -8,7 +8,7 @@ $panelContent .= '
 		<tr>
 			<th>#</th>
 			<th>Researcher</th>
-			<th class="text-right">Amount</th>
+			<th class="text-right">Total GRC</th>
 			<th class="text-right">%</th>
 		</tr>
 ';

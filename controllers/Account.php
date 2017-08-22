@@ -492,70 +492,17 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$noticeDao = new GrcPool_Member_Notice_DAO();
 		$hostProjectsDao = new GrcPool_Member_Host_Project_DAO();
 		$keyDao = new GrcPool_Boinc_Account_Key_DAO();
-		
 		$host = $hostDao->initWithKey($this->args(0),Controller::VALIDATION_NUMBER);
 		if ($host->getMemberId() != $this->getUser()->getId()) {
 			Server::goHome();
 		}
-		
-		if ($this->args(1) == 'delete') {
-			$proj = $hostProjectsDao->initWithKey($this->args(2,Controller::VALIDATION_NUMBER));
-			if ($proj && $proj->getHostId() == $host->getId() && $proj->getMemberId() == $this->getUser()->getId()) {
-				$hostProjectsDao->delete($proj);
-			}
-		}
-		
 		$this->view->host = $host;
-		
-		$keys = $keyDao->getForPoolId($this->getUser()->getPoolId());
-		$accountKeys = array();
-		foreach ($keys as $key) {
-			$accountKeys[$key->getAccountId()]['weak'] = $key->getWeak();
-			$accountKeys[$key->getAccountId()]['attachable'] = $key->getAttachable();
-		}
-		
-		$projects = $projectDao->fetchAll(array(),array('name'=>'asc'));
-		foreach ($projects as $idx => $project) {
-			if (isset($accountKeys[$project->getId()]) && $accountKeys[$project->getId()]['weak'] != '' && ($this->getUser()->getId() == Constants::ADMIN_USER_ID || ($project->getWhiteList() && $project->getAttachable() && $accountKeys[$project->getId()]['attachable']))) {
-				$projects[$idx]->attachable = true;
-			} else {
-				$projects[$idx]->attachable = false;
-			}
-		}
-		$this->view->projects = $projects;
-		
-		if ($this->post('cmd') == 'saveSettings' && $this->post('ids')) {
-			foreach ($this->post('ids') as $id) {
-				$hostProject = $hostProjectsDao->getActiveProjectForHost($host->getId(),$id,$this->getUser()->getPoolId());
-				if ($hostProject == null) {
-					$hostProject = new GrcPool_Member_Host_Project_OBJ();
-				}
-				$hostProject->setHostId($host->getId());
-				$hostProject->setMemberId($this->getUser()->getId());
-				$hostProject->setAccountId($id);
-				$hostProject->setHostCpid($host->getCpid());
-				$share = $this->post('resourceShare_'.$id);
-				if (is_numeric($share) && $share < 10000) {
-					$hostProject->setResourceShare($share);
-				} else {
-					$hostProject->setResourceShare(100);
-				}
-				$hostProject->setPoolId($this->getUser()->getPoolId());
-				$hostProject->setNoAtiGpu($this->post('noatigpu_'.$id)|0);
-				$hostProject->setNoCpu($this->post('nocpu_'.$id)|0);
-				$hostProject->setNoNvidiaGpu($this->post('nonvidiagpu_'.$id)|0);
-				$hostProject->setNoIntelGpu($this->post('nointelgpu_'.$id)|0);
-				$hostProject->setAttached($this->post('detach_'.$id)==1?0:1);
-				$hostProjectsDao->save($hostProject);
-			}
-			$this->addSuccessMsg('Host settings should be updated.');
-		}
-		
+ 		$projects = $projectDao->fetchAll(array(),array('name'=>'asc'));
+ 		$this->view->projects = $projects;
 		$hostProjects = $hostProjectsDao->getWithMemberIdAndHostId($this->getUser()->getId(),$host->getId());
 		$this->view->hostProjects = $hostProjects;
-		
+		$this->view->json = GrcPool_Json::getHostSettings($this->getUser(),$host);
 		$this->view->hasDeleteNotice = $noticeDao->isNoticeForMembeAndId($this->getUser()->getId(),GrcPool_Member_Notice_OBJ::NOTICE_DELETE);
-
 	}
 	
 	public function passwordEmailAction() {
