@@ -101,8 +101,8 @@ class GridcoinDaemon {
 		$result = array();
 		$result['timestamp'] = str_replace('-','/',$data['Superblock Timestamp']);
 		$result['age'] = $data['Superblock Age'];
-		$result['pending'] = $data['Pending Superblock Height'];
-		$result['block'] = $data['Superblock Block Number'];
+		$result['pending'] = floor($data['Pending Superblock Height']);
+		$result['block'] = floor($data['Superblock Block Number']);
 		$result['ageText'] = Utils::getTimeAgo(time()-$data['Superblock Age']);
 		return $result;
 	}
