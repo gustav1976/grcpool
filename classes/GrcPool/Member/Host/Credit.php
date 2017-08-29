@@ -3,6 +3,7 @@ class GrcPool_Member_Host_Credit_OBJ extends GrcPool_Member_Host_Credit_MODEL {
 	public function __construct() {
 		parent::__construct();
 	}
+
 }
 
 class GrcPool_Member_Host_Credit_DAO extends GrcPool_Member_Host_Credit_MODELDAO {
@@ -14,6 +15,14 @@ class GrcPool_Member_Host_Credit_DAO extends GrcPool_Member_Host_Credit_MODELDAO
 	 */
 	public function initWithAccountIdAndDbid($accountId,$dbid) {
 		return $this->fetch(array($this->where('accountId',$accountId),$this->where('hostDbid',$dbid)));
+	}
+	
+	private function getFieldForCurrency($currency) {
+		if ($currency == Constants::CURRENCY_SPARC) {
+			return 'sparc';
+		} else {
+			return 'owed';
+		}
 	}
 	
 // 	public function getWithCpidAndProjectUrlAndPoolId($hash,$projectUrl,$poolId) {
@@ -58,14 +67,14 @@ class GrcPool_Member_Host_Credit_DAO extends GrcPool_Member_Host_Credit_MODELDAO
 		return $result[0]['totalMag'];
 	}
 	
-    public function getTotalOwed() {
-        $sql = 'select sum(owed) as totalOwed from '.$this->getFullTableName();
+    public function getTotalOwed($currency = Constants::CURRENCY_GRC) {
+        $sql = 'select sum('.$this->getFieldForCurrency($currency).') as totalOwed from '.$this->getFullTableName();
         $result = $this->query($sql);
         return $result[0]['totalOwed'];
 	}
 	
-	public function getTotalOwedForPool($poolId) {
-		$sql = 'select sum(owed) as totalOwed from '.$this->getFullTableName().' where poolId = '.$poolId;
+	public function getTotalOwedForPool($poolId,$currency = Constants::CURRENCY_GRC) {
+		$sql = 'select sum('.$this->getFieldForCurrency($currency).') as totalOwed from '.$this->getFullTableName().' where poolId = '.$poolId;
 		$result = $this->query($sql);
 		return $result[0]['totalOwed'];
 	}

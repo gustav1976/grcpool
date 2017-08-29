@@ -24,10 +24,13 @@ class GrcPool_Controller_LoginHelp extends GrcPool_Controller {
 		if (md5($time.$member->getPassword()) != $hash) {
 			Server::goHome();
 		}
+		$this->view->twoFactor = $member->getTwoFactor();
 		if ($this->post('password') != '') {
 			if (strlen($this->post('password')) < 8 || $this->post('password') !== $this->post('confirmPassword')) {
 				$this->addErrorMsg('Your passwords did not match or was not long enough.');
-			} else {				
+			} else if ($this->view->twoFactor && !UserHelper::authenticate($member,$this->post('authorization'))) {
+				$this->addErrorMsg('Your authorization failed.');
+			} else {
 				$member->setPassword(UserHelper::encodePassword($this->post('password')));
 				if ($this->post('boinc') == 1) {
 					$member->setPasswordHash(md5($this->post('password').strtolower($member->getUsername())));
@@ -67,9 +70,9 @@ class GrcPool_Controller_LoginHelp extends GrcPool_Controller {
 					$hash = md5($time.$member->getPassword());
 					$link = '/loginHelp/password/'.$member->getId().'/'.$time.'/'.$hash;
 					$email = new Email();
-					$email->addFrom('admin@grcpool.com');
+					$email->addFrom(Constants::ADMIN_EMAIL_ADDRESS);
 					$email->addTo($member->getEmail());
-					$email->setSubject('grcpool.com password reset');
+					$email->setSubject(Constants::BOINC_POOL_NAME.' password reset');
 					$email->setMessage(Email::getPasswordResetEmail($member->getUsername(),$link));
 					$email->send();
 					$this->addSuccessMsg('An email has been sent to the email address on file.');

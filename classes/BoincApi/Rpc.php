@@ -70,7 +70,7 @@ class BoincApi_Rpc {
 	 					}
 	 					$this->error = 'BOINC may be submitting invalid data. [1]';
 	 					if ($log) {
-	 	    				file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.error.in.xml',$error."\n\n".'----------------------------'.$xml.'-------------------------------');
+	 	    				file_put_contents(Constants::BOINC_XML_LOG_DIR.'/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.error.in.xml',$error."\n\n".'----------------------------'.$xml.'-------------------------------');
 	 					}
  					}
  				}
@@ -78,11 +78,11 @@ class BoincApi_Rpc {
 		} catch (Throwable $t) {
 			$this->error = 'BOINC may be submitting invalid data. [2]';
 			if ($log) {
-				file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.error.in.xml',$xml);
+				file_put_contents(Constants::BOINC_XML_LOG_DIR.'/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.error.in.xml',$xml);
 			}
 		}
 		if ($log) {
-			file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.in.xml',$xml);
+			file_put_contents(Constants::BOINC_XML_LOG_DIR.'/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.in.xml',$xml);
 		}
 	}
 	
@@ -257,12 +257,12 @@ class BoincApi_Rpc {
 		$xml = '<?xml version="1.0" encoding="UTF-8" ?>';
 		$xml .= '<acct_mgr_reply>
 			<name>'.$config->getName().'</name>
-			<signing_key>'.URL_SIGNING_KEY.'</signing_key>
+			<signing_key>'.Constants::URL_SIGNING_KEY.'</signing_key>
 			<global_preferences></global_preferences>
 			<message>'.$msg.'</message><error>'.$msg.'</error>
 			</acct_mgr_reply>';
 		if ($this->log) {
-			file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.error.out.xml',$xml);
+			file_put_contents(Constants::BOINC_XML_LOG_DIR.'/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.error.out.xml',$xml);
 		}
 		return $xml;
 	}
@@ -277,7 +277,7 @@ class BoincApi_Rpc {
 		$xml = '<?xml version="1.0" encoding="UTF-8" ?>';
 		$xml .= '<acct_mgr_reply>
 			<name>'.$config->getName().'</name>
-			<signing_key>'.URL_SIGNING_KEY.'</signing_key>
+			<signing_key>'.Constants::URL_SIGNING_KEY.'</signing_key>
 			<global_preferences>
 				<mod_time>0.000000</mod_time>
 			</global_preferences>
@@ -340,7 +340,7 @@ class BoincApi_Rpc {
 		//$xml = file_get_contents(dirname(__FILE__).'/../../test/data/Exikutioner.1493218818.out.xml');
 		
 		if ($this->log) {
-			file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.out.xml',$xml);
+			file_put_contents(Constants::BOINC_XML_LOG_DIR.'/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.out.xml',$xml);
 		}
 		return $xml;
 	}

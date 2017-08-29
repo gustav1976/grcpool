@@ -62,7 +62,7 @@ abstract class TableDAO extends DAO {
     			$sql .= ' limit '.$limit.' ';	
     		}
     	}    	 	
-       	//if (Utils_Server::isDevelopment()) {echo '<div style="width:400px;font-size:11px;background-color:lightyellow;padding:5px;border-bottom:1px solid black;">'.$sql.'</div>';}       	
+       	//echo '<div style="width:400px;font-size:11px;background-color:lightyellow;padding:5px;border-bottom:1px solid black;">'.$sql.'</div>';       	
     	$statement = $this->getDb()->prepare($sql);  
     	$this->getWhereBind($statement,$wheres);
    		$this->execute($statement);

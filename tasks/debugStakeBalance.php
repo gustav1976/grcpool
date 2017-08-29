@@ -56,8 +56,8 @@ for ($poolId = 1; $poolId <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF
 		//continue;
 	}
 	
-	$sql = 'update grcpool.member_host_credit set grcpool.member_host_credit.owed = grcpool.member_host_credit.owed + ((grcpool.member_host_credit.mag/'.$totalMag.') * '.($stakeBalance/COIN).'),
-			grcpool.member_host_credit.owedCalc = concat(grcpool.member_host_credit.owedCalc,\'+((\',grcpool.member_host_credit.mag,\'/\','.$totalMag.',\')*\','.($stakeBalance/COIN).',\')\') where mag > 0 and poolId = '.$poolId;
+	$sql = 'update '.Constants::DATABASE_NAME.'.member_host_credit set '.Constants::DATABASE_NAME.'.member_host_credit.owed = '.Constants::DATABASE_NAME.'.member_host_credit.owed + (('.Constants::DATABASE_NAME.'.member_host_credit.mag/'.$totalMag.') * '.($stakeBalance/COIN).'),
+			'.Constants::DATABASE_NAME.'.member_host_credit.owedCalc = concat('.Constants::DATABASE_NAME.'.member_host_credit.owedCalc,\'+((\','.Constants::DATABASE_NAME.'.member_host_credit.mag,\'/\','.$totalMag.',\')*\','.($stakeBalance/COIN).',\')\') where mag > 0 and poolId = '.$poolId;
 	
 	
 	echo "\n\n".$sql."\n\n";

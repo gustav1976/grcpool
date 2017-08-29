@@ -1,5 +1,17 @@
 <?php
 //$webPage->setPageTitle('My Account');
+// <div style="margin-bottom:8px;">
+// '.($this->getUser()->getSparcAddress()!=''?'
+// 		<i class="text-success fa fa-check"></i>
+// 		':'
+// 				<i title="please enter a sparc payout address" data-placement="right" class="bs-tooltip text-danger fa fa-warning"></i>').
+// 			'
+// 						SPARC Address: <a href="/account/payoutAddressSparc">
+// 						'.($this->getUser()->getSparcAddress()!=''?
+// 				$this->getUser()->getSparcAddress():
+// 				'set my address'
+// 			).'</a>
+// 			</div>
 $webPage->appendScript('
 	<script>$(\'.bs-tooltip\').tooltip();</script>	
 ');
@@ -60,7 +72,9 @@ $payoutPanel->setContent('
 		</div>
 		
 		<div style="margin-bottom:8px;">
-			<i class="fa fa-bank"></i> Owed: <a href="/account/payouts">'.number_format($this->view->owed,3).' GRC</a>
+			<i class="fa fa-bank"></i>
+			Owed: <a href="/account/payouts">'.number_format($this->view->owed,3).' GRC</a>,
+			'.number_format($this->view->sparc,3).' SPARC
 		</div>		
 		
 		'.($this->view->orphans?'

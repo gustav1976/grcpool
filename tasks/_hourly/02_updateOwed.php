@@ -75,31 +75,16 @@ for ($poolId = 1; $poolId <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF
 		continue;
 	}
 	
-	$sql = 'update grcpool.member_host_credit set grcpool.member_host_credit.owed = grcpool.member_host_credit.owed + ((grcpool.member_host_credit.mag/'.$totalMag.') * '.($stakeBalance/COIN).'), 
-			grcpool.member_host_credit.owedCalc = concat(grcpool.member_host_credit.owedCalc,\'+((\',grcpool.member_host_credit.mag,\'/\','.$totalMag.',\')*\','.($stakeBalance/COIN).',\')\') where mag > 0 and poolId = '.$poolId;
+	$sql = 'update '.Constants::DATABASE_NAME.'.member_host_credit set '.Constants::DATABASE_NAME.'.member_host_credit.owed = '.Constants::DATABASE_NAME.'.member_host_credit.owed + (('.Constants::DATABASE_NAME.'.member_host_credit.mag/'.$totalMag.') * '.($stakeBalance/COIN).'), 
+			'.Constants::DATABASE_NAME.'.member_host_credit.owedCalc = concat('.Constants::DATABASE_NAME.'.member_host_credit.owedCalc,\'+((\','.Constants::DATABASE_NAME.'.member_host_credit.mag,\'/\','.$totalMag.',\')*\','.($stakeBalance/COIN).',\')\') where mag > 0 and poolId = '.$poolId;
 	//echo "\n\n".$sql."\n\n";
 	$hostCreditDao->executeQuery($sql);
 	
-	// GOING TO MOVE TO THIS METHOD...
-	$sql = '
-		insert into grcpool.member_por (accountId,hostDbid,avgCredit,memberMag,poolMag,totalPor,amount,thetime)
-		select	grcpool.member_host_credit.accountId,
-		grcpool.member_host_credit.hostDbid,
-		grcpool.member_host_credit.avgCredit,
-		grcpool.member_host_credit.mag,
-		'.$totalMag.',
-		'.$stakeBalance.',
-		'.COIN.' * (((grcpool.member_host_credit.mag/'.$totalMag.') * ('.$stakeBalance.'/'.COIN.'))),
-		UNIX_TIMESTAMP(NOW())
-		from 		grcpool.member_host_credit
-		where		grcpool.member_host_credit.mag > 0 and
-		grcpool.member_host_credit.poolId = '.$poolId.'
-	';	
-	$hostCreditDao->executeQuery($sql);
+
 }	
 
 // cleanup rows with a long owedCalc
-$sql = 'update grcpool.member_host_credit set owedCalc = concat(\'+\',owed) where char_length(owedCalc) > 500';
+$sql = 'update '.Constants::DATABASE_NAME.'.member_host_credit set owedCalc = concat(\'+\',owed) where char_length(owedCalc) > 500';
 $hostDao->executeQuery($sql);
 
 

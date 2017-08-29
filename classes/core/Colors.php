@@ -17,7 +17,7 @@ class Colors {
 // 	}
 	
 	public function getAsArray() {
-		return json_decode(file_get_contents(dirname(__FILE__).SEP.'..'.SEP.'..'.SEP.'assets'.SEP.'colors.json'),true);
+		return json_decode(file_get_contents(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'colors.json'),true);
 	}
 	
 }

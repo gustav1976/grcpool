@@ -25,6 +25,7 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 	private $_owed = 0.00000000;
 	private $_owedCalc = '';
 	private $_hostName = '';
+	private $_sparc = 0.00000000;
 	public function setMemberId(int $int) {$this->_memberId=$int;}
 	public function getMemberId():int {return $this->_memberId;}
 	public function setEmail(string $string) {$this->_email=$string;}
@@ -61,6 +62,8 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODEL {
 	public function getOwedCalc():string {return $this->_owedCalc;}
 	public function setHostName(string $string) {$this->_hostName=$string;}
 	public function getHostName():string {return $this->_hostName;}
+	public function setSparc(float $float) {$this->_sparc=$float;}
+	public function getSparc():float {return $this->_sparc;}
 }
 
 abstract class GrcPool_View_Member_Host_Project_Credit_MODELDAO extends TableDAO {
@@ -87,5 +90,6 @@ abstract class GrcPool_View_Member_Host_Project_Credit_MODELDAO extends TableDAO
 		'owed' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
 		'owedCalc' => array('type'=>'STRING','dbType'=>'varchar(4000)'),
 		'hostName' => array('type'=>'STRING','dbType'=>'varchar(100)'),
+		'sparc' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
 	);
 }

@@ -23,6 +23,8 @@ abstract class GrcPool_Member_MODEL {
 	private $_apiKey = '';
 	private $_apiSecret = '';
 	private $_minPayout = 1;
+	private $_sparcAddress = '';
+	private $_minSparcPayout = 500;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setEmail(string $string) {$this->_email=$string;}
@@ -55,6 +57,10 @@ abstract class GrcPool_Member_MODEL {
 	public function getApiSecret():string {return $this->_apiSecret;}
 	public function setMinPayout(int $int) {$this->_minPayout=$int;}
 	public function getMinPayout():int {return $this->_minPayout;}
+	public function setSparcAddress(string $string) {$this->_sparcAddress=$string;}
+	public function getSparcAddress():string {return $this->_sparcAddress;}
+	public function setMinSparcPayout(int $int) {$this->_minSparcPayout=$int;}
+	public function getMinSparcPayout():int {return $this->_minSparcPayout;}
 }
 
 abstract class GrcPool_Member_MODELDAO extends TableDAO {
@@ -79,5 +85,7 @@ abstract class GrcPool_Member_MODELDAO extends TableDAO {
 		'apiKey' => array('type'=>'STRING','dbType'=>'varchar(32)'),
 		'apiSecret' => array('type'=>'STRING','dbType'=>'varchar(88)'),
 		'minPayout' => array('type'=>'INT','dbType'=>'smallint(5)'),
+		'sparcAddress' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'minSparcPayout' => array('type'=>'INT','dbType'=>'int(5)'),
 	);
 }

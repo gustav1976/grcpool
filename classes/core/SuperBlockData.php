@@ -51,6 +51,8 @@ class SuperBlockData {
 			$this->grcOwnerUnknown = $data['grcOwnerUnknown'];
 			$this->magUnit = $data['magUnit'];
 			$this->projects = $data['projects'];
+		} else {
+			$this->mag = array();
 		}
 	}
 	

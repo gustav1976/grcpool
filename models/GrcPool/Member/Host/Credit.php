@@ -21,6 +21,7 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 	private $_memberIdPayout = 0;
 	private $_poolId = 1;
 	private $_memberIdCredit = 0;
+	private $_sparc = 0.00000000;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setHostDbid(int $int) {$this->_hostDbid=$int;}
@@ -49,6 +50,8 @@ abstract class GrcPool_Member_Host_Credit_MODEL {
 	public function getPoolId():int {return $this->_poolId;}
 	public function setMemberIdCredit(int $int) {$this->_memberIdCredit=$int;}
 	public function getMemberIdCredit():int {return $this->_memberIdCredit;}
+	public function setSparc(float $float) {$this->_sparc=$float;}
+	public function getSparc():float {return $this->_sparc;}
 }
 
 abstract class GrcPool_Member_Host_Credit_MODELDAO extends TableDAO {
@@ -71,5 +74,6 @@ abstract class GrcPool_Member_Host_Credit_MODELDAO extends TableDAO {
 		'memberIdPayout' => array('type'=>'INT','dbType'=>'int(11)'),
 		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
 		'memberIdCredit' => array('type'=>'INT','dbType'=>'int(11)'),
+		'sparc' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
 	);
 }

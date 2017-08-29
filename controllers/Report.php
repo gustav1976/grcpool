@@ -13,6 +13,7 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 				(strstr($_SERVER['REQUEST_URI'],'/report/earnTop')?'<i class="fa fa-check"></i> ':'').'Top Earners'=>'/report/earnTop',
 				(strstr($_SERVER['REQUEST_URI'],'/report/earnDonation')?'<i class="fa fa-check"></i> ':'').'Top Donators'=>'/report/earnDonation'
 		),strstr($_SERVER['REQUEST_URI'],'/report/earn'));
+		$pills->addPill('Pool Charts','/report/poolChart',strstr($_SERVER['REQUEST_URI'],'/report/poolChart'));
 		$pills->addPill('Pool Financials','/report/poolBalance',strstr($_SERVER['REQUEST_URI'],'/report/poolBalance'));
 		$this->getWebPage()->setSecondaryNav($pills->render());
 		
@@ -31,6 +32,10 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 			$seeds[$i] = $settingsDao->getValueWithName((Constants::SETTINGS_SEED).($i>1?$i:''));
 		}
 		$this->view->seeds = $seeds;
+	}
+	
+	public function poolChartAction() {
+		
 	}
 	
 	public function earnDonationAction() {

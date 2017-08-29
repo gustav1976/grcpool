@@ -225,9 +225,9 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 			$key = md5(UserHelper::generateRandomString(100).microtime());
 		}
 		$email = new Email();
-		$email->addFrom('admin@grcpool.com');
+		$email->addFrom(Constants::ADMIN_EMAIL_ADDRESS);
 		$email->addTo($this->getUser()->getEmail());
-		$email->setSubject('grcpool.com verification email');
+		$email->setSubject(Constants::BOINC_POOL_NAME.' verification email');
 		$email->setMessage(Email::getVerificationMessage($key,$this->getUser()->getId()));
 		$email->send();
 		$key = time().'_'.$key;
@@ -289,10 +289,61 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 			}
 		}
 		
-		$this->view->qrCode = $google2fa->getQRCodeInline('grcpool.com',$member->getEmail(),$this->getUser()->getTwoFactorKey()); 
+		$this->view->qrCode = $google2fa->getQRCodeInline(Constants::BOINC_POOL_NAME,$member->getEmail(),$this->getUser()->getTwoFactorKey()); 
 		$this->view->twoFactor = $this->getUser()->getTwoFactor()?true:false;
 		$this->view->key = $this->getUser()->getTwoFactorKey();
 	}
+	
+	public function payoutAddressSparcAction() {
+		
+		if ($this->post('cmd') == 'sparcAddress') {
+			$newAddr = $this->post('sparcAddress');
+			$charCheck = $newAddr==''||ctype_alnum($newAddr)?$newAddr:null;
+			$message = '';
+			if ($charCheck === null) {
+				$this->addErrorMsg('The SPARC Address you entered has inappropriate characters.');
+			} else {
+				$authCheck = UserHelper::authenticate($this->getUser(),$this->post('password'));
+				if (!$authCheck) {
+					$this->addErrorMsg('Your authorization for this change failed');
+				} else {
+					$usrDao = new GrcPool_Member_DAO();
+					$this->getUser()->setSparcAddress($newAddr);
+					$usr = $this->getUser();
+					$usrDao->save($usr);
+					$this->addSuccessMsg('SPARC Address is updated');
+					$email = new Email();
+					$email->addFrom('admin@grcpool.com');
+					$email->addTo($this->getUser()->getEmail());
+					$email->setSubject('grcpool.com SPARC Payout Address Changed');
+					$email->setMessage('The SPARC payout address on your grcpool.com account was changed.<br/><br/>Sincerely, your friendly GRC pool...');
+					try {
+						$email->send();
+					} catch(Exception $e) {
+
+					}
+				}
+			}
+		} else if ($this->post('cmd') == 'minAmount') {
+			$input = $this->post('minimumAmount');
+			if (is_numeric($input) && $input >= 10 and $input <= 1000) {
+				$usrDao = new GrcPool_Member_DAO();
+				$this->getUser()->setMinSparcPayout(floor($input));
+				$usr = $this->getUser();
+				$usrDao->save($usr);
+				$this->addSuccessMsg('SPARC Minimum Payout is Updated');
+			} else {
+				$this->addErrorMsg('The Minimum Payout update Failed, check your values and try again.');
+			}
+		} 
+	
+		$settingsDao = new GrcPool_Settings_DAO();
+		$this->view->sparcFee = $settingsDao->getValueWithName(Constants::SETTINGS_SPARC_FEE);
+		$this->view->minAmount = $this->getUser()->getMinSparcPayout();
+		$this->view->twoFactor = $this->getUser()->getTwoFactor();
+		$this->view->sparcAddress = $this->getUser()->getSparcAddress();
+	}
+	
 	
 	public function payoutAddressAction() {
 		$settingsDao = new GrcPool_Settings_DAO();
@@ -318,10 +369,10 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 						$usrDao->save($usr);
 						$this->addSuccessMsg('GRC Address is updated');
 						$email = new Email();
-						$email->addFrom('admin@grcpool.com');
+						$email->addFrom(Constants::ADMIN_EMAIL_ADDRESS);
 						$email->addTo($this->getUser()->getEmail());
-						$email->setSubject('grcpool.com GRC Payout Address Changed');
-						$email->setMessage('The GRC payout address on your grcpool.com account was changed.<br/><br/>Sincerely, your friendly GRC pool...');
+						$email->setSubject(Constants::BOINC_POOL_NAME.' GRC Payout Address Changed');
+						$email->setMessage('The GRC payout address on your '.Constants::BOINC_POOL_NAME.' account was changed.<br/><br/>Sincerely, your friendly GRC pool...');
 						try {
 							$email->send();
 						} catch(Exception $e) {
@@ -410,9 +461,11 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$credits = $creditDao->getWithMemberId($this->getUser()->getId());
 		$mag = 0;
 		$owed = 0;
+		$sparc = 0;
 		foreach ($credits as $credit) {
 			$mag += $credit->getMag();
 			$owed += $credit->getOwed();
+			$sparc += $credit->getSparc();
 		}
 		
 		$payoutDao = new GrcPool_Member_Payout_DAO();
@@ -481,6 +534,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$this->view->numberOfTasks = count($tasks);
 		$this->view->totalMag = $mag;
 		$this->view->owed = $owed;
+		$this->view->sparc = $sparc;
 		$this->view->numberOfHosts = $numberOfHosts;
 		$this->view->messages = $messages;
 		

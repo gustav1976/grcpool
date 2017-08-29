@@ -37,6 +37,14 @@ if ($this->view->showForm) {
 	');
 	$form->addField($input);
 	
+	if ($this->view->twoFactor) {
+		$input = new Bootstrap_TextInput();
+		$input->setLabel('Two Factor Token');
+		$input->setId('authorization');
+		$input->setPlaceholder('######');
+		$form->addField($input);
+	}
+	
 	$form->setButtons(
 		'<button id="submitButton" type="submit" class="btn btn-primary">Change My Password</button>'
 	);

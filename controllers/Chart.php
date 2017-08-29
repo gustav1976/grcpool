@@ -56,39 +56,73 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 	
 	public function memberRegistrationAction() {
 		$memberDao = new GrcPool_Member_DAO();
+		$poolStatDao = new GrcPool_Pool_Stat_DAO();
+		
+		$activeMembers = $poolStatDao->getWithName('ACTIVE_MEMBERS');
 		$members = $memberDao->fetchAll(array(),array('regTime'=>'asc'));
+
+		$allDates = array();
 		$dates = array();
 		foreach ($members as $member) {
-			$date = date('Y-m-d',$member->getRegTime());
+			if ($member->getRegTime() < strtotime('2017-01-01')) continue;
+			$date = strtotime(date('Y-m-d',$member->getRegTime()));
 			if (!isset($dates[$date])) {
 				$dates[$date] = 0;
+				$allDates[$date] = 0;
 			}
 			$dates[$date]++;
 		}
-		$sums = array();
-		$sums[0] = 0;
-		foreach ($dates as $date) {
-			array_push($sums,$date + $sums[count($sums)-1] );
+		$memberDates = array();
+		foreach ($activeMembers as $member) {
+			$date = strtotime(date('Y-m-d',$member->getTheTime()));
+			if (!isset($memberDates[$date])) {
+				$memberDates[$date] = 0;
+			}
+			if (!isset($allDates[$date])) {
+				$allDates[$date] = 0;
+			}
+			$memberDates[$date] = $member->getValue();
 		}
+		ksort($allDates);
+		$sums = array();
+		$sums['total'] = array(0);
+		$sums['active'] = array(0);
+		$totalMembers = 0;
+		$lastActive = 0;
+		$lastTotal = 0;
+ 		foreach ($allDates as $date => $junk) {
+ 			//echo $date."\n";
+			if (isset($dates[$date])) {
+				$lastTotal += $dates[$date];
+			}
+			if (isset($memberDates[$date])) {
+				$lastActive = $memberDates[$date];
+			}
+			array_push($sums['total'],$lastTotal);
+			array_push($sums['active'],$lastActive);
+ 		}
+
 		require(dirname(__FILE__).'/../classes/SVGGraph/SVGGraph.php');
 		$settings = array(
 				'back_colour'       => '#fff',    'stroke_colour'      => '#000',
 				'back_stroke_width' => 0,         'back_stroke_colour' => '#eee',
 				'axis_font'         => 'Georgia', 'axis_font_size'     => 10,
 				'pad_right'         => 20,        'pad_left'           => 20,
-				'fill_under'        => array(true, false),
+				'fill_under'        => array(true,true),
 				'marker_size'       => 3,
-				'marker_type'       => array('circle', 'square'),
+				'marker_type'       => array('circle', 'circle'),
 				'marker_colour'     => array('blue', 'red'),
 				'label_h' 			=> 'day',
 				'label_v'			=> 'members',
+				'legend_position'   => 'top left 3 -3',
 				'graph_title'		=> 'grcpool.com membership'
 		);
+		$settings['legend_entries'] = array('Total Members','Active Members');
 		$this->view->taskGraph= new SVGGraph($this->args(0,Controller::VALIDATION_NUMBER)??1000,$this->args(1,Controller::VALIDATION_NUMBER)??500,$settings);
 		$this->view->taskGraph->auto_fit = true;
 		$this->view->taskGraph->colours = array('#ffaaaa','#aaffaa','#aaaaff','#fffa67','#67ffef');
 		$this->view->taskGraph->Values($sums);
-		$this->view->taskGraph->Render('LineGraph');
+		$this->view->taskGraph->Render('MultiLineGraph');
 		exit;
 	}
 	

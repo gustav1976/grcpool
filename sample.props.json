@@ -8,6 +8,7 @@
     "emailPassword" : "",
 	"googleCaptchaPublic" : "",
 	"googleCaptchaPrivate" : "",
+	"cacheDir" : "",
 	"daemons" : [
 		{
 			"path" : "",

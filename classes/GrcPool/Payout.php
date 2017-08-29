@@ -36,9 +36,9 @@ class GrcPool_Payout {
 		}
 		
 		$payoutData->owed = $group->getOwed();
-		$amount = $group->getOwed()*Constants::COIN;
+		$amount = $group->getOwed()*COIN;
 		$donation = 0;
-		$fee = $this->payoutFee*Constants::COIN;
+		$fee = $this->payoutFee*COIN;
 		
 		if ($group->getDonation() > 0) {
 			if ($group->getDonation() >= 100) {
@@ -49,9 +49,9 @@ class GrcPool_Payout {
 			}
 		}
 
-		$payoutData->amount = Utils::truncate(($amount-$donation-$fee)/Constants::COIN,8);
-		$payoutData->donation = Utils::truncate($donation/Constants::COIN,8);
-		$payoutData->fee = $fee/Constants::COIN;
+		$payoutData->amount = Utils::truncate(($amount-$donation-$fee)/COIN,8);
+		$payoutData->donation = Utils::truncate($donation/COIN,8);
+		$payoutData->fee = $fee/COIN;
 		
 		if ($payoutData->amount <> 0 && $payoutData->amount < $this->payoutFee * 2) {
 			$payoutData->error = Constants::PAYOUT_ERROR_MIN_CALC_AMOUNT_NOT_MET;

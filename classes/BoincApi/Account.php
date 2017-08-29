@@ -5,17 +5,13 @@ class BoincApi_Account {
 	private $url_signature = '';
 	private $authenticator = '';
  	private $detach = '';
-// 	private $update = '';
-// 	private $dont_request_more_work = '';
  	private $detach_when_done = '';
-// 	private $suspend = '';
-// 	private $abort_not_started = '';
  	private $resource_share = '';
  	private $no_cpu = '';
  	private $no_cuda = '';
  	private $no_ati = '';
 	private $no_intel = ''; 	
- 	//private $no_rsc = '';
+	
 	public function getUrl() {return $this->url;}
 	public function setUrl($s) {$this->url = $s;}
 	public function getUrl_signature() {return $this->url_signature;}
@@ -24,16 +20,8 @@ class BoincApi_Account {
 	public function setAuthenticator($s) {$this->authenticator = $s;}
  	public function getDetach() {return $this->detach;}
  	public function setDetach($s) {$this->detach = $s;}
-// 	public function getUpdate() {return $this->update;}
-// 	public function setUpdate($s) {$this->update = $s;}
-// 	public function getDont_request_more_work() {return $this->dont_request_more_work;}
-// 	public function setDont_request_more_work($s) {$this->dont_request_more_work = $s;}
  	public function getDetach_when_done() {return $this->detach_when_done;}
  	public function setDetach_when_done($s) {$this->detach_when_done = $s;}
-// 	public function getSuspend() {return $this->suspend;}
-// 	public function setSuspend($s) {$this->suspend = $s;}
-// 	public function getAbort_not_started() {return $this->abort_not_started;}
-// 	public function setAbort_not_started($s) {$this->abort_not_started = $s;}
  	public function getResource_share() {return $this->resource_share;}
  	public function setResource_share($s) {$this->resource_share = $s;}
  	public function getNo_cpu() {return $this->no_cpu;}
@@ -44,8 +32,6 @@ class BoincApi_Account {
  	public function setNo_ati($s) {$this->no_ati = $s;}
  	public function setNo_intel($s) {$this->no_intel = $s;}
  	public function getNo_intel() {return $this->no_intel;}
-// 	public function getNo_rsc() {return $this->no_rsc;}
-// 	public function setNo_rsc($s) {$this->no_rsc = $s;}
 	
 	public function toXml() {
 		$fields = get_object_vars($this);
@@ -68,6 +54,4 @@ class BoincApi_Account {
 		$xml .= '</account>'."\n";
 		return $xml;
 	}
-	
-	
 }

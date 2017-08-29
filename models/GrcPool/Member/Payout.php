@@ -18,6 +18,7 @@ abstract class GrcPool_Member_Payout_MODEL {
 	private $_calculation = '';
 	private $_poolId = 1;
 	private $_address = '';
+	private $_currency = 'GRC';
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setMemberId(int $int) {$this->_memberId=$int;}
@@ -40,6 +41,8 @@ abstract class GrcPool_Member_Payout_MODEL {
 	public function getPoolId():int {return $this->_poolId;}
 	public function setAddress(string $string) {$this->_address=$string;}
 	public function getAddress():string {return $this->_address;}
+	public function setCurrency(string $string) {$this->_currency=$string;}
+	public function getCurrency():string {return $this->_currency;}
 }
 
 abstract class GrcPool_Member_Payout_MODELDAO extends TableDAO {
@@ -59,5 +62,6 @@ abstract class GrcPool_Member_Payout_MODELDAO extends TableDAO {
 		'calculation' => array('type'=>'STRING','dbType'=>'varchar(4000)'),
 		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
 		'address' => array('type'=>'STRING','dbType'=>'varchar(40)'),
+		'currency' => array('type'=>'STRING','dbType'=>'varchar(10)'),
 	);
 }

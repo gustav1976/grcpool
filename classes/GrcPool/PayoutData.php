@@ -9,10 +9,10 @@ class GrcPool_PayoutData {
 	
 	public function sum() {
 		return (
-			$this->donation*Constants::COIN	+
-			$this->amount*Constants::COIN +
-			$this->fee*Constants::COIN
-		)/Constants::COIN;
+			$this->donation*COIN	+
+			$this->amount*COIN +
+			$this->fee*COIN
+		)/COIN;
 	}
 
 }

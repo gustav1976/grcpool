@@ -90,7 +90,7 @@ if ($this->view->payouts) {
 			<tr>
 				<td>'.date('Y-m-d H:i:s',$payout->getTheTime()).'<br/><small>'.Utils::getTimeAgo($payout->getTheTime()).'</small></td>
 				<td class="text-center">'.$payout->getPoolId().'</td>
-				<td><a href="https://www.gridcoinstats.eu/tx/'.$payout->getTx().'">'.substr($payout->getTx(),0,10).'...</a></td>
+				<td><a href="'.GrcPool_Utils::getTxUrl($payout->getTx()).'">'.substr($payout->getTx(),0,10).'...</a></td>
 				<td><small>'.GrcPool_Utils::displayCalculation($payout->getCalculation()).'</small></td>
 				<td style="text-align:right;">'.$payout->getAmount().'</td>
 				<td style="text-align:right;">'.$payout->getFee().'</td>

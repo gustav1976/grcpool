@@ -34,9 +34,9 @@ class Email {
 	
 	public static function getVerificationMessage($key,$userid) {
 		return '
-			Hi and welcome to grcpool.com.<br/><br/>
+			Hi and welcome to '.Constants::BOINC_POOL_NAME.'.<br/><br/>
 			Thank you for taking the time to verify your email address. This will help to keep grcpool running smoothly and keep you informed of very important updates. 
-			Your email address will not be used outside of grcpool.com and only for things you should find very important to your involvement with the pool.<br/><br/>
+			Your email address will not be used outside of '.Constants::BOINC_POOL_NAME.' and only for things you should find very important to your involvement with the pool.<br/><br/>
 			Your verification link is:<br/>
 			<a href="https://'.getenv("SERVER_NAME").'/emailVerification/index/'.$userid.'/'.$key.'">https://'.getenv("SERVER_NAME").'/emailVerification/index/'.$userid.'/'.$key.'</a>
 			<br/><br/>
