@@ -82,7 +82,7 @@ $webPage->appendHead('
 				} else if (proj.inClient) {
 					var row = $("<tr></tr>");
 					row.append("<td><input type=\"hidden\" id=\"project_"+proj.id+"\" name=\"ids[]\" value=\""+proj.id+"\"/>"+proj.name+"</td>");
-					row.append("<td class=\"text-center\"><input style=\"width:80px;height:24px;line-height:24px;\" class=\"form-control\" type=\"text\" name=\"resourceShare_"+proj.id+"\" value=\""+(proj.resourceShare||100)+"\"/></td>");
+					row.append("<td class=\"text-center\"><input style=\"width:80px;height:24px;line-height:24px;\" class=\"form-control\" type=\"text\" name=\"resourceShare_"+proj.id+"\" value=\""+(proj.resourceShare)+"\"/></td>");
 					row.append("<td style=\"text-align:center;\"><input "+(proj.noCpu?"checked":"")+" type=\"checkbox\" name=\"nocpu_"+proj.id+"\" value=\"1\"/></td>");
 					row.append("<td style=\"text-align:center;\"><input "+(proj.noNvidiaGpu?"checked":"")+" type=\"checkbox\" name=\"nonvidiagpu_"+proj.id+"\" value=\"1\"/></td>");
 					row.append("<td style=\"text-align:center;\"><input "+(proj.noAtiGpu?"checked":"")+" type=\"checkbox\" name=\"noatigpu_"+proj.id+"\" value=\"1\"/></td>");
