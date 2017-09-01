@@ -226,8 +226,25 @@ class BoincApi_Rpc {
 	 					// dbid changing, so lets validate it is not duplicate
 	 					$testObj = $hostProjectDao->getWithHostDbIdAndAccountId($dbid, $account->getId());
 	 					if (count($testObj)) {
-	 						$this->error .= $account->getName().' appears to already be in the pool. Please remove the prior project before trying to add with this host.';
+	 						$this->error .= $account->getName().' host already exists in the pool. You may need to contact support '.Constants::ADMIN_EMAIL_ADDRESS.' for help.';
 	 						continue;
+	 					}
+	 					$blackListDao = new GrcPool_Boinc_Host_Blacklist_DAO();
+	 					$blackList = $blackListDao->initWithAccountIdAndDbid($account->getId(),$dbid);
+	 					if ($blackList) {
+	 						// this will cause the project dbid to stay zero, so warning message will persist on site
+	 						$this->error .= $account->getName().' host has been blacklisted, please contact '.Constants::ADMIN_EMAIL_ADDRESS.' for support.';
+	 						continue;
+	 					}
+	 					// if changing a non zero hostdbid, the prevoius dbid should be blacklisted
+	 					if ($obj->getHostDbid() != 0) {
+	 						// lets black list this id
+	 						$blackListObj = new GrcPool_Boinc_Host_Blacklist_OBJ();
+	 						$blackListObj->setAccountId($account->getId());
+	 						$blackListObj->setHostDbid($obj->getHostDbid());
+	 						$blackListObj->setMemberId($this->member->getId());
+	 						$blackListObj->setThetime(time());
+	 						$blackListDao->save($blackListObj);
 	 					}
 	 				}
 	 				$obj->setHostDbid((String)$project->hostid);
