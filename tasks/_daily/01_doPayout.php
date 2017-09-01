@@ -19,13 +19,12 @@ if (!$FORCE && $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONL
 }
 $MINOWEPAYOUT = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_OWE_PAYOUT);
 
-$lockFile = Constants::PAYOUT_LOCK_FILE;
-
-$fp = fopen(dirname(__FILE__).'/../'.$lockFile,"w");
+$fp = fopen(Constants::PAYOUT_LOCK_FILE,"w");
 if (!flock($fp, LOCK_EX | LOCK_NB)) {
 	echo('CRITICAL: !!!!!!!!!!!! LOCKED !!!!!!!!!!!!!');
 	exit;
 }
+
 
 // DAO OBJECTS
 $walletDao = new GrcPool_Wallet_Basis_DAO();

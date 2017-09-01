@@ -40,7 +40,7 @@ e73144ac178b785f677e320166041f165e777160ceaea2952f5ee4914c875d7b
 	const GRC_MAG_MULTIPLIER = 115000;
 	const MIN_MAG_MAG_FOR_MIN_RAC = .01;
 	
-	const PAYOUT_LOCK_FILE = 'payout.lock';
+	const PAYOUT_LOCK_FILE = '/var/www/www.grcpool.com/tasks/payout.lock';
 
 	const SETTINGS_TOTAL_PAID_OUT = "TOTAL_PAID_OUT";
 	const SETTINGS_CPID = 'CPID';
