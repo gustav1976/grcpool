@@ -99,11 +99,23 @@ class GrcPool_Controller_Api extends GrcPool_Controller {
 	public function blockHeightAction() {
 		$numberOfPools = Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS);
 		$blocks = array();
+		$lowestHeight = 0;
+		for ($i = 1; $i <= $numberOfPools; $i++) {
+			$blocks[$i] = array();
+			$daemon = GrcPool_Utils::getDaemonForPool($i);
+			$blocks[$i]['height'] = trim($daemon->getBlockHeight());
+			$blocks[$i]['hash'] = trim($daemon->getBlockHash($blocks[$i]['height']));
+			$blocks[$i]['version'] = trim($daemon->getVersion());
+			if ($blocks[$i]['height'] < $lowestHeight || $lowestHeight == 0) {
+				$lowestHeight = $blocks[$i]['height'];
+			}
+		}
+		$blocks[$lowestHeight] = array();
 		for ($i = 1; $i <= $numberOfPools; $i++) {
 			$daemon = GrcPool_Utils::getDaemonForPool($i);
-			$blocks[$i] = trim($daemon->getBlockHeight());
+			$blocks[$lowestHeight][$i] = trim($daemon->getBlockHash($lowestHeight));
 		}
-		echo json_encode($blocks);
+		echo json_encode($blocks,JSON_PRETTY_PRINT);
 		exit;
 	}
 	

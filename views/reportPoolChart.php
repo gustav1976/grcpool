@@ -9,6 +9,15 @@ $webPage->append('
 		</div>
 		<div class="pull-right"><a href="/chart/memberRegistration">full screen &raquo;</a></div>
 	</div>
+		
+	<div style="background-color:white;">
+		<div class="embed-responsive embed-responsive-16by9">
+			<iframe class="embed-responsive-item" src="/chart/poolMag/"></iframe>
+		</div>
+		<div class="pull-right"><a href="/chart/poolMag">full screen &raquo;</a></div>
+	</div>
+		
+		
 ');
 
 

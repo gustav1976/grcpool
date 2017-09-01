@@ -31,7 +31,7 @@ $webPage->append('
 					<tr><td>Version</td><td style="text-align:right;" id="version">'.$this->view->superblockData->version.'</td></tr>
 					<tr><td>Last Superblock</td><td style="text-align:right;" id="lastSuperblock">'.$this->view->superblockData->block.'</td></tr>
 					<tr><td>Superblock Age</td><td style="text-align:right;" id="superblockAge">'.$this->view->superblockData->ageText.'</td></tr>
-					<tr><td>Pending Superblock</td><td style="text-align:right;" id="pendingSuperblock">'.$this->view->superblockData->pending.'</td></tr>
+					<tr><td>Pending Superblock</td><td style="text-align:right;" id="pendingSuperblock">'.($this->view->superblockData->pending==0?'':$this->view->superblockData->pending).'</td></tr>
 					<tr><td>Network Magnitude</td><td id="poolMag" style="text-align:right;">
 						'.implode('<br/>',array_map(function($arr,$key) {
 						return (count($this->view->superblockData->mag)>1?'#'.($key+1):'').' '.$arr.'';

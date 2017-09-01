@@ -158,13 +158,17 @@ class GridcoinDaemon {
 		}
 	}
 	
+	public function getBlockHash($block) {
+		return $this->executeDaemon('getblockhash '.$block);
+	}
+	
 	public function getWhitelistedProjects($block = '') {
 		if ($block == '') {
 			$data = $this->getSuperBlockAge();
 			$block = $data['block'];
 		}
 		if ($block == '') return;
-		$blockHash = $this->executeDaemon('getblockhash '.$block);
+		$blockHash = $this->getBlockHash($block);
 		if ($blockHash == '') return;
 		$blockData = json_decode($this->executeDaemon('getblock '.$blockHash),true);
 		if ($blockData['IsSuperBlock'] == '') return;

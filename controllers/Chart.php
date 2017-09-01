@@ -4,6 +4,48 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 		parent::__construct();
 	}
 
+	public function poolMagAction() {
+		$statDao = new GrcPool_Pool_Stat_DAO();
+		$datas = array();
+		require(dirname(__FILE__).'/../classes/SVGGraph/SVGGraph.php');
+		$settings = array(
+				'back_colour'       => '#fff',    'stroke_colour'      => '#000',
+				'back_stroke_width' => 0,         'back_stroke_colour' => '#eee',
+				'axis_font'         => 'Georgia', 'axis_font_size'     => 10,
+				'pad_right'         => 20,        'pad_left'           => 20,
+				'fill_under'        => array(true,true,true),
+				'marker_size'       => 3,
+				//'marker_type'       => array('circle', 'circle'),
+				'marker_colour'     => array('#ffaaaa','#aaffaa','#aaaaff','#fffa67','#67ffef'),
+				'label_h' 			=> 'days ago',
+				'label_v'			=> 'magnitude',
+				'legend_position'   => 'top left 3 -3',
+				'graph_title'		=> 'grcpool.com magnitudes',
+				'force_assoc' 		=> true,
+		);
+		$settings['legend_entries'] = array();
+		for ($poolId = 1; $poolId <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $poolId++) {
+			array_push($settings['legend_entries'],'Pool '.$poolId);
+			$datas[$poolId] = $statDao->getDailyStats('MAG_'.$poolId,0);
+		}
+		$graphData = array();
+		//echo '<pre>';print_r($data);exit;
+		foreach ($datas as $poolId => $data) {
+			$g = array();
+			foreach ($data as $d) {
+				$key = floor(time()-strtotime($d['theDay']))/86400;
+				$g[$key] = floor($d['value']);
+			}
+			$graphData[$poolId] = $g;
+		}
+		$graph = new SVGGraph($this->args(0,Controller::VALIDATION_NUMBER)??1280,$this->args(1,Controller::VALIDATION_NUMBER)??720,$settings);
+		$graph->auto_fit = true;
+		$graph->colours = array('#ffaaaa','#aaffaa','#aaaaff','#fffa67','#67ffef');
+		$graph->Values($graphData);
+		$graph->Render('MultiLineGraph');
+		exit;
+	}
+	
 	public function memberEarningsChartAction() {
 		require(dirname(__FILE__).'/../classes/SVGGraph/SVGGraph.php');
 		$memberId = $this->args(0);
@@ -45,7 +87,7 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 			$runningTotal += $dp;
 		}
 		
-		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1000,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1200,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
 		$this->view->taskGraph->auto_fit = true;
 		$this->view->taskGraph->Values($projData);
 		header('Content-type: image/svg+xml');
@@ -118,7 +160,7 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 				'graph_title'		=> 'grcpool.com membership'
 		);
 		$settings['legend_entries'] = array('Total Members','Active Members');
-		$this->view->taskGraph= new SVGGraph($this->args(0,Controller::VALIDATION_NUMBER)??1000,$this->args(1,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($this->args(0,Controller::VALIDATION_NUMBER)??1280,$this->args(1,Controller::VALIDATION_NUMBER)??720,$settings);
 		$this->view->taskGraph->auto_fit = true;
 		$this->view->taskGraph->colours = array('#ffaaaa','#aaffaa','#aaaaff','#fffa67','#67ffef');
 		$this->view->taskGraph->Values($sums);
@@ -201,7 +243,7 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 			}
 		}
 		$settings['legend_entries'] = array_keys($projData);
-		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1000,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1200,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
 		if ($colours) {
 			$this->view->taskGraph->Colours($colours);
 		}
@@ -256,7 +298,7 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 			$settings['axis_max_v'] = 1;
 		}
 
-		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1000,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1200,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
 		$this->view->taskGraph->auto_fit = true;
 		$this->view->taskGraph->Values($projData);
 		header('Content-type: image/svg+xml');
@@ -338,7 +380,7 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 			}
 		}
 		$settings['legend_entries'] = array_keys($projData);
-		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1000,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1200,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
 		if ($colours) {
 			$this->view->taskGraph->Colours($colours);
 		}
