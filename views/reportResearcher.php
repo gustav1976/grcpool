@@ -6,7 +6,7 @@ $panelContent = '';
 if ($this->view->hosts) {
 	$panelContent .= '
 		<table class="table table-striped table-hover table-condensed">
-			<tr><th>Host</th><th class="text-right">Mag</th></tr>
+			<tr><th>Host</th><th>Hardware</th><th class="text-right">Mag</th></tr>
 	';
 	$magGrandTotal = 0;
 	foreach ($this->view->hosts as $host) {
