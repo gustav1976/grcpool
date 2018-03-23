@@ -10,7 +10,7 @@ $webPage->append('
 		
 			At regular intervals throughout a day, the average credit for team Gridcoin is gathered from each project (TRAC). 
 			Also the average credit for all hosts on the pool is gathered from the project (HRAC). 
-			The final parameter needed to create a host magnitude is the number of whitelisted proejcts (W). This value is pulled 
+			The final parameter needed to create a host magnitude is the number of whitelisted projects (W). This value is pulled 
 			from the gridcoin daemon using <i>list projects</i>. Therefore, a hosts magnitude calculation for each project is:<br/>
 			<br/>
 			<i>HMAG = '.Constants::GRC_MAG_MULTIPLIER.' * ( ( HRAC / TRAC ) / W )</i>
@@ -55,7 +55,7 @@ $webPage->append('
    			<h3 class="panel-title"><i class="fa fa-money"></i> Payouts</h3>
 		</div>
 		<div class="panel-body">
-			A pool payout will be triggered at least once a day. If your owed balance meets a mimimum threshold you will receive GRC to your payout address.
+			A pool payout will be triggered at least once a day. If your owed balance meets a minimum threshold you will receive GRC to your payout address.
 			The payout amount is determined by taking the amount you are owed (above) and subtracting a flat fee and any donation amount you may have specified.
 			The equation for this looks like:<br/>
 			<br/>
@@ -63,5 +63,4 @@ $webPage->append('
 			<br/>
 		</div>
 	</div>		
-		
 ');

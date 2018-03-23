@@ -15,14 +15,16 @@ $panelContent .= '
 		</tr>
 ';
 $pos = 1;
-foreach ($this->view->hosts as $host) {
+foreach ($this->view->hosts as $data) {
+	$host = $data['host'];
+	$account = $data['account'];
 	if ($host->getMag() > 0) {
 		$panelContent .= '
 			<tr>
 				<td>'.$pos++.'</td>
 				<td><a href="/report/researcher/'.$host->getMemberId().'/'.$host->getHostId().'">'.$host->getUsername().'</a></td>
 				<td class="text-center">'.$host->getPoolId().'</td>
-				<td>'.$this->view->accounts[$host->getAccountId()]->getName().'</td>
+				<td>'.$account->getName().'</td>
 				<td class="text-right">'.$host->getAvgCredit().'</td>
 				<td class="text-right">'.number_format($host->getMag(),2).'</td>
 			</tr>

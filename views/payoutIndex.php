@@ -1,10 +1,9 @@
 <?php
 $webPage->appendTitle('Pool Payouts');
+$webPage->setPageTitle($this->view->currency.' Payouts');
 if ($this->view->payouts) {
 	$webPage->append('
 		<div class="pull-right">'.$this->view->pagination.'</div>
-		<div class="rowpad"><em>Calculation Definition: totalAmount = ( ( hostMagnitude / totalPoolMagnitude ) * availablePayoutBalance )</em></div>
-			
 		<table class="table table-striped table-hover">
 			<tr>
 				<th>Researcher</th>
@@ -23,7 +22,7 @@ if ($this->view->payouts) {
 				<td>'.($payout->getUsername()==''?'<em>unknown</em>':$payout->getUsername()).'</td>
 				<td class="text-center">'.$payout->getPoolId().'</td>
 				<td>'.date('Y-m-d H:i:s',$payout->getTheTime()).'<br/>'.Utils::getTimeAgo($payout->getTheTime()).'</td>
-				<td><a target="_blank" href="'.GrcPool_Utils::getTxUrl($payout->getTx()).'">'.substr($payout->getTx(),0,10).'...</a><i class="fa fa-external-link"></i></td>
+				<td><a target="_blank" href="'.GrcPool_Utils::getTxUrl($payout->getTx(),$payout->getCurrency()).'">'.substr($payout->getTx(),0,10).'...</a><i class="fa fa-external-link"></i></td>
 				<td><small>'.GrcPool_Utils::displayCalculation($payout->getCalculation()).'</small></td>				
 				<td style="text-align:right;">'.$payout->getAmount().'</td>
 				<td style="text-align:right;">'.$payout->getFee().'</td>

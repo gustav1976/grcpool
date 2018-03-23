@@ -22,73 +22,77 @@ $webPage->appendHomeBody('
 		</div>
 	</div>
 ');
+
+$cpids = '';
+for ($i = 1; $i <= count($this->view->mags); $i++) {
+	if (isset($this->view->cpids[$i-1])) {
+		$cpids .= '
+			<tr>
+				<td>'.$i.'</td>
+				<td>'.substr($this->view->cpids[$i-1],0,5).'...</td>
+				<td class="text-center"><a target="_blank" href="'.GrcPool_Utils::getCpidUrl($this->view->cpids[$i-1]).'"><i class="fa fa-external-link"></i></a></td>
+				<td class="text-center"><a target="_blank" href="http://boinc.netsoft-online.com/e107_plugins/boinc/get_user.php?cpid='.$this->view->cpids[$i-1].'&format=xml"><i class="fa fa-external-link"></i></a></td>
+				<td class="text-right">'.number_format($this->view->activeHosts[$i],0).'</td>
+				<td class="text-right">'.number_format(isset($this->view->superblockData->mag[$i-1])?$this->view->superblockData->mag[$i-1]:0,0).'</td>
+				<td class="text-right">'.number_format($this->view->mags[$i],0).'</td>
+			</tr>		
+		';
+	}
+}
 $webPage->append('
 	<div class="row rowpad">
 		<div class="col-sm-6">
 			'.Bootstrap_Callout::info('
 				<h3>Gridcoin Client</h3>
 				<table class="table table-striped table-hover table-condensed">
-					<tr><td>Version</td><td style="text-align:right;" id="version">'.$this->view->superblockData->version.'</td></tr>
 					<tr><td>Last Superblock</td><td style="text-align:right;" id="lastSuperblock">'.$this->view->superblockData->block.'</td></tr>
 					<tr><td>Superblock Age</td><td style="text-align:right;" id="superblockAge">'.$this->view->superblockData->ageText.'</td></tr>
-					<tr><td>Pending Superblock</td><td style="text-align:right;" id="pendingSuperblock">'.($this->view->superblockData->pending==0?'':$this->view->superblockData->pending).'</td></tr>
-					<tr><td>Network Magnitude</td><td id="poolMag" style="text-align:right;">
-						'.implode('<br/>',array_map(function($arr,$key) {
-						return (count($this->view->superblockData->mag)>1?'#'.($key+1):'').' '.$arr.'';
-						},$this->view->superblockData->mag,array_keys($this->view->superblockData->mag)))
-					.'</td></tr>
+					'.($this->view->superblockData->pending==0?'':'
+						<tr><td>Pending Superblock</td><td style="text-align:right;" id="pendingSuperblock">'.$this->view->superblockData->pending.'</td></tr>
+					').'
 					<tr><td>Network Whitelist Count</td><td id="whiteListCount" class="text-right">'.$this->view->superblockData->whiteListCount.'</td></tr>
 				</table>					
 			',true).'		
 		</div>
 		<div class="col-sm-6">
 			'.Bootstrap_Callout::info('		
-				<h3>Pool Details</h3>
+				<h3>Pool Settings</h3>
 				<table class="table table-striped table-hover table-condensed rowpad">
-					<tr><td>Pool CPIDs</td><td style="text-align:right;">
-						'.implode('<br/>',array_map(function($arr,$key) {
-							return '#'.($key+1).' '.$arr.'<br/>
-								<i class="fa fa-external-link"></i> <a href="'.GrcPool_Utils::getCpidUrl($arr).'">stats</a>
-								|
-								<i class="fa fa-external-link"></i> <a href="http://boinc.netsoft-online.com/e107_plugins/boinc/get_user.php?cpid='.$arr.'&format=xml">Netsoft</a>
-							';
-						},$this->view->cpids,array_keys($this->view->cpids))).'						
-					</td></tr>					
-					<tr><td>Magnitude</td><td style="text-align:right;">
-						'.implode('<br/>',array_map(function($arr,$key) {
-						return (count($this->view->mags)>1?'#'.($key):'').' '.$arr.'';
-						},$this->view->mags,array_keys($this->view->mags))).'
-						'.(count($this->view->mags)>1?'<div style="border-top:1px solid black;"><strong>'.array_sum($this->view->mags).'</strong></div>':'').'
-					</td></tr>					
 					<tr><td>Total Paid Out</td><td class="text-right">'.$this->view->totalPaidOut.' GRC</td></tr>
 					<tr><td>Pool Fee</td><td style="text-align:right;">'.$this->view->txFee.' GRC per payout</td></tr>
 					<tr><td>Min Pool Payout</td><td style="text-align:right;">'.$this->view->minPayout.' GRC</td></tr>
-					<tr><td>Min POR Balance <a href="#" data-toggle="tooltip" title="This is the minimum balance from POR needed to update the amount owed."><i style="color:black;" class="fa fa-info-circle"></i></a></td><td style="text-align:right;">'.$this->view->minStake.' GRC</td></tr>
 					<tr><td>Pool Whitelist Count</td><td style="text-align:right;">'.$this->view->poolWhiteListCount.'</td></tr>
-					<tr><td>Number of Active Projects</td><td style="text-align:right;">
-						'.implode('<br/>',array_map(function($arr,$key) {
-						return (count($this->view->activeHosts)>1?'#'.($key):'').' '.number_format($arr,0).'';
-						},$this->view->activeHosts,array_keys($this->view->activeHosts))).'
-					</td></tr>
 				</table>
-				<div class="text-right"><a href="/report/poolBalance">pool financials &raquo;</a></div>
+			',true).'
+		</div>
+	</div>
+	<div class="row rowpad">
+		<div class="col-sm-12">
+			'.Bootstrap_Callout::info('
+				<h3>Pool Details</h3>
+				<table class="table table-striped">
+					<tr>
+						<th>Pool #</th>
+						<th>CPID</th>
+						<th class="text-center">Stats</th>
+						<th class="text-center">Netsoft</th>
+						<th class="text-right">Hosts + Projects</th>
+						<th class="text-right">Net Mag</th>
+						<th class="text-right">Pool Mag</th>
+					</tr>
+					'.$cpids.'
+					'.(count($this->view->mags)>1?'<tr class="text-right"><td></td><td></td><td></td><td></td>
+						<td class="text-right"><strong>'.number_format(array_sum($this->view->activeHosts),0).'</td>
+						<td class="text-right"><strong>'.number_format(array_sum($this->view->superblockData->mag),0).'</td>
+						<td class="text-right"><strong>'.number_format(array_sum($this->view->mags),0).'</td></tr>':''
+					).'
+				</table>
 			',true).'
 		</div>
 	</div>
 ');
-// SOME DAY PUSH THE DATA VIA NODEJS												
-// $webPage->appendScript('
-// 	<script>
-// 		$.get( "/api/superBlockAge", function( data ) {
-// 			$("#version").html(data.version);
-// 			$("#lastSuperblock").html(data.block);
-// 			$("#superblockAge").html(data.ageText);
-// 			$("#poolMag").html("#1 "+data.mag[0]+"<br/>#2 "+data.mag[1]);
-// 			$("#whiteListCount").html(data.whiteListCount);
-// 			if (data.pending) {
-// 				$("#pendingSuperblock").html(data.pending);
-// 			}
-// 		});
-// 		$(\'[data-toggle="tooltip"]\').tooltip();		
-// 	</script>
-// ');
+ $webPage->appendScript('
+ 	<script>
+ 		$(\'[data-toggle="tooltip"]\').tooltip();		
+ 	</script>
+');

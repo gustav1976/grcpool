@@ -2,6 +2,7 @@
 $numberOfPools = Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS);
 $webPage->appendTitle('Pool Status');
 $webPage->appendHead('
+	<link rel="stylesheet" href="/assets/libs/bootstrapToggle/css/bootstrap-toggle.min.css">
 	<link rel="stylesheet" href="/assets/libs/tablesorter/2.28.7/theme.bootstrap.css">
 ');
 $poolFilters = '';
@@ -27,6 +28,7 @@ if ($numberOfPools > 1) {
 	';
 }
 $webPage->appendScript('
+	<script src="/assets/libs/bootstrapToggle/js/bootstrap-toggle.min.js"></script>
 	<script src="/assets/libs/tablesorter/2.28.7/jquery.tablesorter.min.js"></script>
 	<script src="/assets/libs/tablesorter/2.28.7/jquery.tablesorter.widgets.js"></script>
   	<script>
@@ -88,6 +90,8 @@ $webPage->appendScript('
 		$(\'[data-toggle="tooltip"]\').tooltip();
 		function filterCapability() {
 			var filter = [];
+			//var mode = $("#mode").is(":checked");
+			var mode = true;
 			if ($("#linuxSelect").is(":checked")) filter.push("linux");
 			if ($("#windowsSelect").is(":checked")) filter.push("windows");
 			if ($("#macSelect").is(":checked")) filter.push("mac");
@@ -103,11 +107,18 @@ $webPage->appendScript('
 				if (filter.length) {
 					var show = true;
 					for (var i =0 ; i < filter.length; i++) {
-						var check = $(this).find("."+filter[i]);
-						if (check.hasClass("grayscale")) {
-							show = false;
-							break;
-						}						
+						if (mode) {
+							var check = $(this).find("."+filter[i]);
+							if (check.hasClass("grayscale")) {
+								show = false;
+								break;
+							}							
+						} else {
+							var check = $(this).find("."+filter[i]);
+							if (!check.hasClass("grayscale")) {
+								show = false;
+							}							
+						}
 					}
 					if (show) {
 						$(this).show();
@@ -154,6 +165,11 @@ if ($numberOfPools > 1) {
 $projects = '
 	'.$buttons.'
 	<div class="pull-right">
+		<!--
+		<div class="btn-group rowpad">
+   			<input onchange="filterCapability();" id="mode" type="checkbox" checked autocomplete="off" data-toggle="toggle" data-on="include" data-off="exclude" data-onstyle="success" data-offstyle="danger">
+		</div>
+		-->
 		<div class="btn-group rowpad">
 			<div class="btn-group" data-toggle="buttons">
 	  			<label class="btn btn-default">
@@ -210,6 +226,7 @@ $projects = '
 				<tr>
 					<th>Project</th>
 					<th style="text-align:center;" title="Project is in the Gridcoin network.">GRC</th>
+					<th style="text-align:center;" title="Project is in the SPARC network.">SPARC</th>
 					<th style="text-align:center;" title="Project is in the pool white list.">Pool</th>
 					<th style="text-align:center;" title="Project is attachable in the pool to your host.">Attach</th>
 					<th class="text-center">Updated</th>
@@ -227,9 +244,9 @@ $projects = '
 
 foreach ($this->view->accounts as $account) {
 	
-	if ($account->getLastSeen() < time()-60*60*24*60) {
-		continue;
-	}
+ 	if ($account->getLastSeen() < time()-60*60*24*60 && $account->getSparc() == 0) {
+ 		continue;
+ 	}
 	
 	$mag = 0;
 	$hostCount = 0;
@@ -268,6 +285,9 @@ foreach ($this->view->accounts as $account) {
 				<i class="fa fa-circle fa-2x text-'.(array_search($account->getGrcName(),$this->view->networkProjects)!==false?'success':'danger').'"></i>
 			</td>
 			<td style="text-align:center;">
+				<i class="fa fa-circle fa-2x text-'.($account->getSparc()==1?'success':'danger').'"></i>
+			</td>			
+			<td style="text-align:center;">
 				<i class="fa fa-circle fa-2x text-'.($account->getWhiteList()?'success':'danger').'"></i>
 			</td>
 			<td style="text-align:center;">'.$attachable.'</td>
@@ -283,7 +303,7 @@ foreach ($this->view->accounts as $account) {
 			<td class="text-center">
 				<img class="'.($account->getLinux()?'':'grayscale').' linux" title="Linux" style="height:22px;" src="/assets/images/svg/linux.svg"/>
 				<img class="'.($account->getWindows()?'':'grayscale').' windows" title="Windows" style="height:22px;" src="/assets/images/svg/windows.svg"/>
-				<img class="'.($account->getMac()?'':'grayscale').' mac" title="Windows" style="height:22px;" src="/assets/images/svg/mac.svg"/>
+				<img class="'.($account->getMac()?'':'grayscale').' mac" title="Mac" style="height:22px;" src="/assets/images/svg/mac.svg"/>
 			</td>
 			<td class="text-center">
 				<img class="'.($account->getIntel()?'':'grayscale').' intel" title="Intel GPU" style="height:22px;" src="/assets/images/svg/intel.svg"/>

@@ -1,4 +1,7 @@
 <?php
+
+$webPage->appendHead("<script src='https://www.google.com/recaptcha/api.js'></script>");
+
 $webPage->setPageTitle('Pool Login');
 
 $form = new Bootstrap_Form();
@@ -25,6 +28,13 @@ $input->setDefault('');
 $input->setMaxSize(6);
 $input->setPlaceholder('if you have 2fa enabled');
 $form->addField($input);
+
+if ($this->view->captcha) {
+	$property = new Property(Constants::PROPERTY_FILE);
+	$input = new Bootstrap_ReCaptchaInput();
+	$input->setSiteKey($property->get('googleCaptchaPublic'));
+	$form->addField($input);
+}
 
 $input = new Bootstrap_CheckboxInput();
 $input->setId('rememberMe');

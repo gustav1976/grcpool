@@ -4,7 +4,6 @@ $webPage->appendHead("<script src='https://www.google.com/recaptcha/api.js'></sc
 
 $webPage->setPageTitle('Pool Registration');
 
-
 if (false) {
 	$webPage->append('
 		'.Bootstrap_Callout::info('
@@ -20,9 +19,7 @@ if (false) {
 } else {
 	$webPage->append('
 		'.Bootstrap_Callout::info('
-		Please take a moment to read how this pool\'s <a href="/about/fees">fees</a>, <a href="/about/calculations">calculations</a>, and <a href="/about/hotWallet">staking wallet</a> works.
-		<br/><br/>
-		You will be joining <strong>Pool #'.$this->view->poolSignup.'</strong>. <a href="/about/poolTwo">What does this mean?</a>
+			You will be joining <strong>Pool #'.$this->view->poolSignup.'</strong>. <!--<a href="/about/poolTwo">What does this mean?</a>-->
 		').'	
 	');
 	
@@ -49,7 +46,7 @@ if (false) {
 	$input = new Bootstrap_TextInput();
 	$input->setId('password');
 	$input->setLabel('Password');
-	$input->setHelp('8 characters minimum');
+	$input->setHelp('8 characters minimum - BOINC has problems with special characters');
 	$input->setPassword(true);
 	$input->setDefault('');
 	$form->addField($input);

@@ -93,4 +93,3 @@ $panel->setContent('
 	$form->render()
 );
 $webPage->append('<a name="donation"></a>'.$panel->render());
-

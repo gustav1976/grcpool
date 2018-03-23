@@ -10,6 +10,49 @@ if ($this->view->twoFactor) {
 	$input = new Bootstrap_StaticInput();
 	$input->setLabel('');
 	$input->setInputSize(8);
+	$input->setDefault('
+		2FA will always be needed for making account changes (password, grc address, etc...) but you have the option
+		to disable it for login.
+	');
+	$form->addField($input);
+	
+	$input = new Bootstrap_CheckboxInput();
+	$input->setLabel('Use for login');
+	$input->setId('login');
+	$input->setValue(1);
+	$input->setDefault($this->view->login);
+	$form->addField($input);
+	
+	$input = new Bootstrap_TextInput();
+	$input->setId('token');
+	$input->setLabel('Token');
+	$input->setMaxSize(6);
+	$input->setHelp('the code from your 2FA device');
+	$input->setDefault('');
+	$form->addField($input);
+
+	$form->setButtons('
+		<input type="hidden" name="cmd" value="options"/>
+		<button id="" class="btn btn-primary type="submit">Update 2FA Option</button>
+	');
+	
+	$panel = new Bootstrap_Panel();
+	$panel->setContext('info');
+	$panel->setHeader('Two Factor Options');
+	$panel->setContent(
+		$form->render()
+	);
+	$webPage->append('
+		'.$panel->render().'
+	');
+	
+
+	$form = new Bootstrap_Form();
+	$form->setAction('/account/twoFactorAuth');
+	
+	$input = new Bootstrap_StaticInput();
+	$input->setLabel('');
+	$input->setInputSize(8);
 	$input->setDefault('	
 		Your two factor authentication is currently enabled.
 		<br/><br/>
@@ -24,7 +67,7 @@ if ($this->view->twoFactor) {
 
 	$input = new Bootstrap_TextInput();
 	$input->setId('password');
-	$input->setLabel('Accont Password');
+	$input->setLabel('Account Password');
 	$input->setPassword(true);
 	$input->setDefault('');
 	$form->addField($input);
@@ -39,7 +82,7 @@ if ($this->view->twoFactor) {
 	
 	$panel = new Bootstrap_Panel();
 	$panel->setContext('info');
-	$panel->setHeader('Two Factor Authentication');
+	$panel->setHeader('Disable Two Factor Authentication');
 	$panel->setContent($form->render());
 	
 	$webPage->append('
@@ -79,7 +122,7 @@ if ($this->view->twoFactor) {
 
 	$input = new Bootstrap_TextInput();
 	$input->setId('password');
-	$input->setLabel('Accont Password');
+	$input->setLabel('Account Password');
 	$input->setPassword(true);
 	$input->setDefault('');
 	$form->addField($input);

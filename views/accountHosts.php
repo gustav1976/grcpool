@@ -90,12 +90,14 @@ if ($this->view->memHosts) {
 					$magCalc = Constants::GRC_MAG_MULTIPLIER.' * ( ( '.$a->getAvgCredit().' / '.$this->view->accounts[$a->getAccountId()]->getRac().' ) / '.$this->view->poolWhiteListCount.' )';
 					$projectContent .= '
 						<tr class="accordion'.$hostId.' collapse">
-							<td><a 
+							<td>'.($this->view->accounts[$a->getAccountId()]->getGrcName()!= Constants::GRCNAME_WORLD_COMMUNITY_GRID?'<a 
 								style="margin-left:10px;"
 								title="go to your host details and tasks"
 								target="_blank"
 								href="'.$this->view->accounts[$a->getAccountId()]->getBaseUrl().'/show_host_detail.php?hostid='.$a->getHostDbid().'"
-							>'.$this->view->accounts[$a->getAccountId()]->getName().'</a>&nbsp;<small><i class="fa fa-external-link"></i></small></a>
+							>'.$this->view->accounts[$a->getAccountId()]->getName().'</a>&nbsp;<small><i class="fa fa-external-link"></i></small></a>':'
+								<span style="margin-left:10px;">'.$this->view->accounts[$a->getAccountId()]->getName().'</span>
+							').'
 							</td>
 							<td class="text-center">'.$a->getProjectPoolId().'</td>
 							<td class="text-right">'.$a->getAvgCredit().'</td>							

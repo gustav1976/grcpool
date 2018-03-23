@@ -8,19 +8,22 @@ $webPage->appendHead('
 
 $table = '';
 $totalOwed = 0;
+$totalOwedSparc = 0;
 $totalMag = 0;
 foreach ($this->view->orphans as $orphan) {
 	$table .= '
 		<tr>
-			<td>'.$this->view->accounts[$orphan->getAccountId()]->getName().'</td>
+			<td><a target="_blank" href="'.$this->view->accounts[$orphan->getAccountId()]->getBaseUrl().'show_host_detail.php?hostid='.$orphan->getHostDbid().'">'.$this->view->accounts[$orphan->getAccountId()]->getName().'</a> <i class="fa fa-external-link"></i></td>
 			<td class="text-center">'.$orphan->getPoolId().'</td>
 			<td class="text-right">'.$orphan->getAvgCredit().'</td>
 			<td class="text-right">'.$orphan->getMag().'</td>
 			<td class="text-right">'.$orphan->getOwed().'</td>
+			<td class="text-right">'.$orphan->getSparc().'</td>
 		</tr>
 	';
 	$totalMag += $orphan->getMag();
 	$totalOwed += $orphan->getOwed();
+	$totalOwedSparc += $orphan->getSparc();
 }
 
 $panel = new Bootstrap_Panel();
@@ -45,7 +48,8 @@ $panel->setContent('
 			<th class="text-center">Pool</th>
 			<th class="text-right">RAC</th>
 			<th class="text-right">Mag</th>
-			<th class="text-right">Owed</th>
+			<th class="text-right">GRC</th>
+			<th class="text-right">SPARC</th>
 		</tr>
 		'.$table.'
 		<tr>
@@ -54,6 +58,7 @@ $panel->setContent('
 			<td style="background-color:#f0f0f0;font-weight:bold;"></td>
 			<td class="text-right" style="background-color:#f0f0f0;font-weight:bold;">'.$totalMag.'</td>
 			<td class="text-right" style="background-color:#f0f0f0;font-weight:bold;">'.$totalOwed.'</td>
+			<td class="text-right" style="background-color:#f0f0f0;font-weight:bold;">'.$totalOwedSparc.'</td>
 		</tr>
 	</table>
 ');

@@ -4,8 +4,13 @@ $numberOfPools = Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS);
 $profits = array();
 $stakeBalances = array();
 for ($i = 1; $i <= $numberOfPools; $i++) {
-	$stakeBalance = (($this->view->superblockData->balance[$i-1]*COIN)-($this->view->superblockData->owed[$i-1]*COIN)-($this->view->superblockData->interest[$i-1]*COIN)-($this->view->superblockData->basis[$i-1]))/COIN;
-	$profit = (($this->view->superblockData->balance[$i-1]*COIN)-($this->view->seeds[$i]*COIN)-($this->view->superblockData->interest[$i-1]*COIN)-($stakeBalance<0?0:$stakeBalance*COIN)-($this->view->superblockData->owed[$i-1]*COIN))/COIN;
+	if ($this->view->walletMode=='SINGLE') {
+		$stakeBalance = (($this->view->superblockData->balance[$i-1]*COIN)-($this->view->superblockData->owed[$i-1]*COIN)-($this->view->superblockData->interest[$i-1]*COIN)-($this->view->superblockData->basis[$i-1]))/COIN;
+		$profit = (($this->view->superblockData->balance[$i-1]*COIN)-($this->view->seeds[$i]*COIN)-($this->view->superblockData->interest[$i-1]*COIN)-($stakeBalance<0?0:$stakeBalance*COIN)-($this->view->superblockData->owed[$i-1]*COIN))/COIN;
+	} else {
+		$stakeBalance = (($this->view->superblockData->balance[$i-1]*COIN)-($this->view->superblockData->owed[$i-1]*COIN)-($this->view->superblockData->basis[$i-1]))/COIN;
+		$profit = (($this->view->superblockData->balance[$i-1]*COIN)-($this->view->seeds[$i]*COIN)-($stakeBalance<0?0:$stakeBalance*COIN)-($this->view->superblockData->owed[$i-1]*COIN))/COIN;
+	}
 	$profits[$i] = $profit;
 	$stakeBalances[$i] = $stakeBalance;
 }
@@ -36,6 +41,8 @@ for ($i = $startIdx; $i <= $numberOfPools; $i++) {
 	$seed = $i?$this->view->seeds[$i]:array_sum($this->view->seeds);
 	$interest = $i?$this->view->superblockData->interest[$i-1]:array_sum($this->view->superblockData->interest);
 	$profit = $i?$profits[$i]:array_sum($profits);
+	$withdrawnProfit = $i?$this->view->profits[$i]:array_sum($this->view->profits);
+	$profit += $withdrawnProfit;
 	
 	$tab->setContent('
 		<table class="table table-striped table-hover">
@@ -49,7 +56,7 @@ for ($i = $startIdx; $i <= $numberOfPools; $i++) {
 
 			<tr><th colspan="2">Financials</th></tr>
 			<tr><td>Balance</td><td class="text-right">'.$balance.'</td></tr>
-			<tr><td>Interest</td><td class="text-right">'.$interest.'</td></tr>
+			'.($this->view->walletMode=='SINGLE'?'<tr><td>Interest</td><td class="text-right">'.$interest.'</td></tr>':'').'
 			<tr><td>Research Awards</td><td class="text-right">'.$research.'</td></tr>
 			<tr><td>Total Owed to Researchers</td><td class="text-right">'.$owed.'</td></tr>
 			<tr><td>&nbsp;&nbsp;&nbsp;Owed to No GRC Address</td><td class="text-right">'.$grcNoAddress.'</td></tr>
@@ -63,9 +70,10 @@ for ($i = $startIdx; $i <= $numberOfPools; $i++) {
 			<tr><th colspan="2">Pool Profit</th></tr>
 			<tr><td>Balance</td><td class="text-right">'.$balance.'</td></tr>
 			<tr><td>Seed</td><td class="text-right">-'.$seed.'</td></tr>
-			<tr><td>Interest</td><td class="text-right">-'.$interest.'</td></tr>
+			'.($this->view->walletMode=='SINGLE'?'<tr><td>Interest</td><td class="text-right">-'.$interest.'</td></tr>':'').'
 			<tr><td>POR Available</td><td class="text-right">-'.($stakeBalance<0?'0':$stakeBalance).'</td></tr>
 			<tr><td>Owed to Researchers</td><td class="text-right">-'.$owed.'</td></tr>
+			<tr><td>Withdrawn Profit</td><td class="text-right">'.$withdrawnProfit.'</td></tr>
 			<tr><td><strong>Pool Profit from fees &amp; donations</strong></td><td class="text-right"><strong>'.Utils::truncate($profit,8).' GRC</strong></td></tr>
 		</table>
 	');

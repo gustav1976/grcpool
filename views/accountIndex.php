@@ -13,7 +13,23 @@
 // 			).'</a>
 // 			</div>
 $webPage->appendScript('
-	<script>$(\'.bs-tooltip\').tooltip();</script>	
+	<script>
+		$(\'.bs-tooltip\').tooltip();
+		$( "#loginNotification" ).click(function() {
+			var change = $(this).html() == "on"?0:1;
+			$.ajax({
+  				type: "POST",
+  				url: "/api/loginNotification/"+change,
+				success: function(data) {
+					$("#loginNotification").html(data.loginEmail==0?"off":"on");
+				},
+				error: function(data) {  },
+				contentType: "application/json",
+  				dataType: "json"
+			});  			
+		});
+	</script>	
+
 ');
 if ($this->view->messages) {
 	foreach ($this->view->messages as $msg) {
@@ -45,7 +61,9 @@ $accountPanel->setContent('
 		<div style="margin-bottom:8px;">
 			<i class="fa fa-shield"></i> <a href="/account/twoFactorAuth">Two Factor Authentication</a> 
 		</div>
-
+		<div style="margin-bottom:8px;">
+			<i class="fa fa-power-off"></i> Login Notification (<a id="loginNotification" href="javascript:void(0);">'.($this->getUser()->getLoginEmail()?'on':'off').'</a>)
+		</div>
 		<div style="margin-bottom:8px;">
 			<i class="fa fa-trash"></i> <a href="/account/delete">Delete Account</a> 
 		</div>		
@@ -54,7 +72,10 @@ $accountPanel->setContent('
 $payoutPanel = new Bootstrap_Panel();
 $payoutPanel->setContent('
 	<div style="color:#555;">
-		<div class="pull-right text-success" style="font-size:2.5em;"><a class="text-success" href="/account/payouts">'.$this->view->totalPaid.'</a></div>
+		<div class="pull-right text-success text-right">
+			<a style="font-size:2.5em;" class="text-success" href="/account/payouts">'.$this->view->totalPaid.'</a>
+			'.($this->view->totalPaidSparc?'<small><br/>'.$this->view->totalPaidSparc.' SPARC</small>':'').'
+		</div>
 		<div style=""><span style="font-size:2.0em;">Earnings</span></div>
 		<br clear="all"/>
 
@@ -73,13 +94,18 @@ $payoutPanel->setContent('
 		
 		<div style="margin-bottom:8px;">
 			<i class="fa fa-bank"></i>
-			Owed: <a href="/account/payouts">'.number_format($this->view->owed,3).' GRC</a>,
-			'.number_format($this->view->sparc,3).' SPARC
+			Owed: <a href="/account/owed">'.number_format($this->view->owed,3).' GRC</a>, &nbsp;
+			<a href="/about/sparc" title="'.number_format($this->view->sparc,8).'">'.number_format($this->view->sparc,3).' SPARC</a>
 		</div>		
 		
 		'.($this->view->orphans?'
 			<div style="margin-bottom:8px;">
-				<i class="fa fa-chain-broken"></i> Orphans: <a href="/account/orphans">'.count($this->view->orphans).' for '.number_format($this->view->orphansOwed,2).'</a>
+				<i class="fa fa-chain-broken"></i> Orphans:
+				<a href="/account/orphans">
+					'.count($this->view->orphans).' for
+					'.number_format($this->view->orphansOwed,2).' GRC &amp;
+					'.number_format($this->view->orpphansSparcOwed,2).' SPARC
+				</a>
 			</div>':''
 		).'
 
@@ -219,8 +245,13 @@ $tab->setActive(false);
 $tab->setTitle('Earnings');
 $tab->setContent('
 	<div style="background-color:white;">
-		<div class="embed-responsive embed-responsive-16by9">
-			<iframe class="embed-responsive-item" src="/chart/memberEarningsChart/'.$this->getUser()->getId().'"></iframe>
+		<div class="pull-right">
+			<button onclick="$(\'#earningsChart\').attr(\'src\',\'/chart/memberEarningsChart/'.$this->getUser()->getId().'/day\')" class="btn btn-link">day</button>
+			<button onclick="$(\'#earningsChart\').attr(\'src\',\'/chart/memberEarningsChart/'.$this->getUser()->getId().'/week\')" class="btn btn-link">week</button>
+		</div>
+		<br clear="all"/>
+		<div class="embed-responsive embed-responsive-16by9">	
+			<iframe id="earningsChart" class="embed-responsive-item" src="/chart/memberEarningsChart/'.$this->getUser()->getId().'/day"></iframe>
 		</div>
 		<div class="pull-right"><a href="/chart/memberEarningsChart/'.$this->getUser()->getId().'">full screen &raquo;</a></div>
 	</div>
