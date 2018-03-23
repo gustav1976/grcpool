@@ -16,6 +16,34 @@ class GrcPool_Member_Host_Credit_DAO extends GrcPool_Member_Host_Credit_MODELDAO
 	public function initWithAccountIdAndDbid($accountId,$dbid) {
 		return $this->fetch(array($this->where('accountId',$accountId),$this->where('hostDbid',$dbid)));
 	}
+
+	public function getTotalsForMemberId($memberId) {
+		//select sum(mag) as magSum,sum(owed) as owedSum from member_host_credit where memberIdPayout = 9389 or memberIdCredit = 9389
+		//select sum(mag) as magSum,sum(owed) as owedSum from (
+		//	(select mag,owed from member_host_credit where memberIdPayout = 9389) UNION
+		//	(select mag,owed from member_host_credit where memberIdCredit = 9389)
+		//) t1
+		$sql = 'select sum(mag) as magSum,sum(owed) as owedSum from '.$this->getFullTableName().' where memberIdPayout = '.$memberId.' or memberIdCredit = '.$memberId;
+		//$sql = '
+		//	select mag,owed from '.$this->getFullTableName().' where memberIdPayout = '.$memberId.' UNION
+		//	select mag,owed from '.$this->getFullTableName().' where memberIdCredit = '.$memberId.'
+		//';
+		$result = $this->query($sql);
+		return array('mag' => $result[0]['magSum'],'owed' => $result[0]['owedSum']);
+	}
+	
+	
+	public function getTotalMagForMemberId($memberId) {
+		$sql = 'select sum(mag) as howMany from '.$this->getFullTableName().' where memberIdPayout = '.$memberId.' or memberIdCredit = '.$memberId;
+		$result = $this->query($sql);
+		return $result[0]['howMany'];
+	}
+	
+	public function getTotalOwedForMemberId($memberId) {
+		$sql = 'select sum(owed) as howMany from '.$this->getFullTableName().' where memberIdPayout = '.$memberId.' or memberIdCredit = '.$memberId;
+		$result = $this->query($sql);
+		return $result[0]['howMany'];
+	}
 	
 	private function getFieldForCurrency($currency) {
 		if ($currency == Constants::CURRENCY_SPARC) {
@@ -78,6 +106,18 @@ class GrcPool_Member_Host_Credit_DAO extends GrcPool_Member_Host_Credit_MODELDAO
 		$result = $this->query($sql);
 		return $result[0]['totalOwed'];
 	}
+	
+	public function getTotalMagForPoolAndAccount($id,$accountId) {
+		$sql = 'select sum(mag) as totalMag from '.$this->getFullTableName() .' where poolId = '.$id.' and accountId = '.$accountId;
+		$result = $this->query($sql);
+		return $result[0]['totalMag'];
+	}
+	
+	public function getTotalRacForPoolAndAccount($id,$accountId) {
+		$sql = 'select sum(avgCredit) as totalRac from '.$this->getFullTableName() .' where poolId = '.$id.' and accountId = '.$accountId;
+		$result = $this->query($sql);
+		return $result[0]['totalRac'];
+	}
 
 	public function getProjectStats($limit = 0) {
 		$sql = 'select accountId,poolId,sum(mag) as totalMag,count(*) as howMany from '.$this->getFullTableName().' where mag > 0 group by accountId,poolId order by totalMag desc '.($limit?'limit '.$limit:'');
@@ -113,3 +153,4 @@ class GrcPool_Member_Host_Credit_DAO extends GrcPool_Member_Host_Credit_MODELDAO
  	}
 
 }
+

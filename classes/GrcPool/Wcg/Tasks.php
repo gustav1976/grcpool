@@ -32,6 +32,11 @@ class GrcPool_Wcg_Tasks_DAO extends GrcPool_Wcg_Tasks_MODELDAO {
 		return $this->fetchAll(array($this->where('deviceId',$deviceId)));
 	}
 	
+	public function getCountWithDeviceIds($deviceIds,$where=array()) {
+		array_push($where,$this->where('deviceId',$deviceIds));
+		return $this->getCount($where);
+	}
+	
 	public function getWithDeviceIds($deviceIds,$where=array(),$orderby = array(),$limit = array()) {
 		if (!$orderby) {
 			$orderby = array('modTime'=>'desc');
@@ -39,5 +44,18 @@ class GrcPool_Wcg_Tasks_DAO extends GrcPool_Wcg_Tasks_MODELDAO {
 		array_push($where,$this->where('deviceId',$deviceIds));
 		return $this->fetchAll($where,$orderby,$limit);
 	}
+	
+	public function getStatusWithDeviceIds($deviceIds) {
+		$in = '';
+		foreach ($deviceIds as $d) {
+			if ($in != '') {
+				$in .= ',';
+			}
+			$in .= addslashes($d);
+		}
+		$sql = 'select outcome,serverState,validateState from '.$this->getFullTableName().' where deviceId in ('.$in.')';
+		return $this->query($sql);
+	}
+	
 	
 }

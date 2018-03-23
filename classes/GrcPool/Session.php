@@ -21,5 +21,15 @@ class GrcPool_Session_DAO extends GrcPool_Session_MODELDAO {
 	public function getWithUserId($memberId) {
 		return $this->fetch(array($this->where('userid',$memberId)));
 	}
+
+	public function getActiveSession($memberId) {
+		return $this->fetch(array($this->where('userid',$memberId),$this->where('disable',0)));
+	}
+	
+	
+	public function disableWithUserId($userid) {
+		$sql = 'update '.$this->getFullTableName().' set disable = 1 where userid = '.$userid;
+		$this->executeQuery($sql);
+	}
 	
 }

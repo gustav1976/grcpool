@@ -13,7 +13,16 @@ class GrcPool_View_All_Orphans_DAO extends GrcPool_View_All_Orphans_MODELDAO {
 	}
 	
 	public function getOrphansForMember($memberId) {
-		return $this->fetchAll(array($this->where('memberIdPayout',$memberId),$this->where('mag',0,'>')));
+		//return $this->fetchAll(array($this->where('memberIdPayout',$memberId),$this->where('owed',0,'>')));
+		$sql = "
+			select 	*
+			from 	".$this->getFullTableName()."
+			where 	(
+						memberIdPayout = '".addslashes($memberId)."' or
+						memberIdCredit = '".addslashes($memberId)."'
+					)
+					and ( owed > 0 or sparc > 0 )";
+		return $this->queryObjects($sql);
 	}
 	
 }
