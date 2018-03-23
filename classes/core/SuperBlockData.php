@@ -53,6 +53,7 @@ class SuperBlockData {
 			$this->projects = $data['projects'];
 		} else {
 			$this->mag = array();
+			$this->projects = array();
 		}
 	}
 	

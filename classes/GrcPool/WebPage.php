@@ -51,6 +51,7 @@ class GrcPool_WebPage {
 	private function getUserBar() {
 		global $USER;
 		$cache = new Cache();
+		$blockData = new BlockData($cache->get(Constants::CACHE_BLOCK_DATA));
 		$dao = new GrcPool_View_Member_Host_Project_Credit_DAO();
 		$owed = '';
 		if ($USER->getId() != 0) {
@@ -74,11 +75,12 @@ class GrcPool_WebPage {
 						').'
  						'.($USER->getUsername()).'</a>
 						|
-						Owed: <a href="/account/payouts">'.number_format($owed,3,'.','').'</a>
+						Owed: <a href="/account/owed">'.number_format($owed,3,'.','').'</a>
 					').'
 				</div>
 				<div>
 					<small>
+						<a href="/content/block" style="color:black;text-decoration:underline;"><span id="blockHeight">'.$blockData->block.'</span></a> | 
 						grc: <i class="fa fa-bitcoin"></i><span id="btc_grc">'.$cache->get(Constants::CACHE_POLONIEX_GRC_VALUE).'</span>
 						|
 						btc: <i class="fa fa-dollar"></i><span id="btc_usd">'.$cache->get(Constants::CACHE_COINBASE_BTC_VALUE).'</span>
@@ -89,17 +91,41 @@ class GrcPool_WebPage {
 	}
 
 	private function getTestBanner() {
-		if (getenv("SERVER_NAME") == 'test.grcpool.com') {
-			$PROPERTY = new Property(Constants::PROPERTY_FILE);
-			if ($PROPERTY->get('test')) {
-				return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">This is the TEST System - All coins are testnet coins</div>';
-			}
+		if (getenv("SERVER_NAME") == 'test.grcpool.com' || PROPERTY::getValueFor('test')) {
+			return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">This is the TEST System - All coins are testnet coins</div>';
 		} else {
-			//return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">Pool #3 projects are currently being added...</div>';
+			$settingsDao = new GrcPool_Settings_DAO();
+			$online = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE);
+			$return = '';
+			if (!$online) {
+				$return .= '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">'.$settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_MESSAGE).'</div>';
+			}
+			$message = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_MESSAGE);
+			if ($message != '') {
+				$return .= '<div style="padding:11px;color:white;font-weight:bold;background-color:#333;text-align:center;">'.$message.'</div>';
+			}
+			return $return;
 		}
 	}
 	
 	public function display() {
+		global $USER;
+		$numberOfPolls = 0;
+		$pollDao = new GrcPool_Poll_Question_DAO();
+		$polls = $pollDao->getActivePolls();
+		$numberOfPolls = count($polls);
+		if ($USER->getId() != 0) {
+			$voteDao = new GrcPool_Poll_Vote_DAO();
+			$ids = $voteDao->getPollsVotedIn($USER->getId());
+			foreach ($polls as $poll) {
+				if (array_search($poll->getId(),$ids) !== false) {
+					$numberOfPolls--;
+				}
+			}
+		}
+		if ($numberOfPolls < 0) {
+			$numberOfPolls = 0;
+		}
 		echo '<!DOCTYPE html>
  		<html>
  			<head>
@@ -158,9 +184,10 @@ class GrcPool_WebPage {
 			            						<li><a href="/about/fees">Fees and Donations</a></li>
 		 										<li><a href="/about/calculations">Calculations</a></li>
 		 										<li><a href="/about/hotWallet">Pool Staking Wallet</a></li>
-			         							</ul>
+												<li><a href="/about/sparc">SPARC Network</a></li>
+		 										<li><a href="/about/system">System Status</a></li>
+			         						</ul>
 								        </li>
-		 								<li class=""><a href="/report">Reports</a></li>
 		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/project')?'active':'').'">
 			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
 			          						<ul class="dropdown-menu">
@@ -168,8 +195,22 @@ class GrcPool_WebPage {
 		 										<li><a href="/project/poolStats">Pool Status</a></li>
 		         							</ul>
 								        </li>		 								
-		 										
-		        						<li class=""><a href="/payout">Payouts</a></li>
+		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/polls')?'active':'').'">
+			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Polls '.($numberOfPolls?'<span class="badge">'.$numberOfPolls.'</span>':'').'<span class="caret"></span></a>
+			          						<ul class="dropdown-menu">
+			            						<li><a href="/polls/index">Current Polls</a></li>
+		 										<li><a href="/polls/complete">Completed Polls</a></li>
+		         							</ul>
+								        </li>		 								
+		 								<li class="'.(strstr($_SERVER['REQUEST_URI'],'/report')?'active':'').'"><a href="/report">Reports</a></li>	 								
+		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/payout')?'active':'').'">
+			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Payouts <span class="caret"></span></a>
+			          						<ul class="dropdown-menu">
+												<li><a href="/payout/grc">Gridcoin</a></li>
+			            						<li><a href="/payout/sparc">SPARC</a></li>
+		         							</ul>
+								        </li>
+
 		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/help')?'active':'').'">
 			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Help <span class="caret"></span></a>
 			          						<ul class="dropdown-menu">
@@ -207,16 +248,15 @@ class GrcPool_WebPage {
 					'.($this->isHome?$this->body:'').'
 	 					<hr/>
 	 					<div class="pull-right" style="margin-left:50px;"><a href="mailto:admin@grcpool.com">admin@grcpool.com</a></div>
-	 					<span style="white-space: nowrap;"><a href="http://www.gridcoin.us/">Gridcoin Website</a> |</span>
+	 					<span style="white-space: nowrap;"><a href="https://www.gridcoin.us/">Gridcoin Website</a> |</span>
 	 					<span style="white-space: nowrap;"><a href="http://www.gridresearchcorp.com/gridcoin/">Gridcoin Block Explorer</a> |</span>
-	 					<span style="white-space: nowrap;"><a href="https://kiwiirc.com/client/irc.freenode.net:6667/#gridcoin-help">Gridcoin Help Chat</a> |</span>
-	 					<span style="white-space: nowrap;"><a href="http://cryptocointalk.com/topic/1331-new-coin-launch-announcement-grc-gridcoin/?view=getnewpost">Gridcoin Forum</a></span>
+	 					<span style="white-space: nowrap;"><a href="http://teamgridcoin.slack.com">Gridcoin Slack</a> |</span>
+	 					<span style="white-space: nowrap;"><a href="https://cryptocurrencytalk.com/topic/1331-new-coin-launch-announcement-grc-gridcoin/?view=getnewpost">Gridcoin Forum</a></span>
 	 					<br/><br/><br/><br/><br/><br/><br/><br/>
 	 				</div>
 	 	
  				<script src="/assets/libs/jQuery/jquery-1.11.3.min.js" type="text/javascript"></script>
 				<script type="text/javascript" src="/assets/libs/bootstrap/3.3.5/js/bootstrap.min.js"></script>
- 				'.$this->script.'
 				<script src="/socket.io/socket.io.js"></script>
         		<script>
 	                var connected = false;
@@ -224,12 +264,17 @@ class GrcPool_WebPage {
                     socket.on("connect", function() {
 						connected = true;
 					});
+					socket.on("updateBlock",function(data) {
+						let json = jQuery.parseJSON(data);
+						$("#blockHeight").animate({"opacity": 0}, 1000, function () {$(this).text(json.block);}).animate({"opacity": 1}, 1000);
+					});
 					socket.on("updateTicker",function(data) {
                     	let json = jQuery.parseJSON(data);
                     	$("#btc_grc").animate({"opacity": 0}, 1000, function () {$(this).text(json.poloniex);}).animate({"opacity": 1}, 1000);
                     	$("#btc_usd").animate({"opacity": 0}, 1000, function () {$(this).text(json.coinbase);}).animate({"opacity": 1}, 1000);
 					});
  				</script>
+ 				'.$this->script.'
 				<script>
 				  (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){
 				  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

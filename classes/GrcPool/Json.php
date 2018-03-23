@@ -1,6 +1,5 @@
 <?php
 class GrcPool_Json {
-	
 	public static function getHostSettings(GrcPool_Member_OBJ $user,GrcPool_Member_Host_OBJ $host) {
 		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$keyDao = new GrcPool_Boinc_Account_Key_DAO();
@@ -37,10 +36,13 @@ class GrcPool_Json {
 					$project['noIntelGpu'] = $proj->getNoIntelGpu()?true:false;
 					$project['resourceShare'] = $proj->getResourceShare();
 					$project['hostDbid'] = $proj->getHostDbId();
+					$project['message'] = '';
 					if ($proj->getHostDbId()==0) {
-						$project['warning'] = '<a href="/help/topics/1">This project may not be attached correctly or needs to be syncronized from your client.</a>';
+						$project['warning'] = '<a href="/help/topics/1">This project may not be attached correctly or needs to be synchronized from your client.</a>';
 					} else {
- 						$project['message'] = '<a target="_blank" href="'.$account->getBaseUrl().'show_host_detail.php?hostid='.$proj->getHostDbid().'">host &amp; task details</a> <i class="fa fa-external-link"></i>';
+						if ($account->getGrcName() != Constants::GRCNAME_WORLD_COMMUNITY_GRID) {
+ 							$project['message'] = '<a target="_blank" href="'.$account->getBaseUrl().'show_host_detail.php?hostid='.$proj->getHostDbid().'">host &amp; task details</a> <i class="fa fa-external-link"></i>';
+						}
 					}
 				}
 			}

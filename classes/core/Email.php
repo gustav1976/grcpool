@@ -44,31 +44,64 @@ class Email {
 		';
 	}
 	
+	
+	
 	function send() {
-		$property = new Property(Constants::PROPERTY_FILE);
-		if ($this->secure) {
-			$transport = Swift_SmtpTransport::newInstance($property->get('emailServer'),$property->get('emailSslPort'),'ssl')
-				->setUsername($property->get('emailUsername'))
-				->setPassword($property->get('emailPassword'));
-			;
-		} else {
-			$transport = Swift_SmtpTransport::newInstance($property->get('emailServer'),$property->get('emailPort'))
-				->setUsername($property->get('emailUsername'))
-				->setPassword($property->get('emailPassword'));
-			;
+		$email = array();
+		$email['api_key'] = Property::getValueFor('emailKey');
+		$email['to'] = $this->to;
+		$email['sender'] = $this->from[0];
+		$email['subject'] = $this->subject;
+		$email['text_body'] = strip_tags($this->message);
+		$email['html_body'] = $this->message;
+		$email['custom_heders'] = array();
+		if ($this->replyTo) {
+			array_push($email['custom_headers'],array(
+				'header' => 'Reply-To',
+				'value' => $this->replyTo
+			));
 		}
-		$mailer = Swift_Mailer::newInstance($transport);
-		$message = Swift_Message::newInstance($this->subject)
-			->setFrom($this->from)
-			->setTo($this->to)
-			->setBody($this->message,'text/html')
-			->setReplyTo($this->replyTo);
-		;
-		if ($mailer->send($message)) {
+		$data_string = json_encode($email);		 
+		$ch = curl_init(Property::getValueFor('emailRest').'email/send');
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+			'Content-Length: ' . strlen($data_string))
+		);
+		$result = curl_exec($ch);
+		curl_close($ch);
+		$response = json_decode($result,true);
+		if (isset($response['data']) && isset($response['data']['succeeded'])) {
 			return true;
 		} else {
 			return false;
 		}
+// 		$property = new Property(Constants::PROPERTY_FILE);
+// 		if ($this->secure) {
+// 			$transport = Swift_SmtpTransport::newInstance($property->get('emailServer'),$property->get('emailSslPort'),'ssl')
+// 				->setUsername($property->get('emailUsername'))
+// 				->setPassword($property->get('emailPassword'));
+// 			;
+// 		} else {
+// 			$transport = Swift_SmtpTransport::newInstance($property->get('emailServer'),$property->get('emailPort'))
+// 				->setUsername($property->get('emailUsername'))
+// 				->setPassword($property->get('emailPassword'));
+// 			;
+// 		}
+// 		$mailer = Swift_Mailer::newInstance($transport);
+// 		$message = Swift_Message::newInstance($this->subject)
+// 			->setFrom($this->from)
+// 			->setTo($this->to)
+// 			->setBody($this->message,'text/html')
+// 			->setReplyTo($this->replyTo);
+// 		;
+// 		if ($mailer->send($message)) {
+// 			return true;
+// 		} else {
+// 			return false;
+// 		}
 	}
 
 }

@@ -54,7 +54,7 @@ abstract class Router {
 			if (count($this->_uriParts) == $startIdx+1) {
 				$this->_uriParts[$startIdx+1] = 'index';	
 			}
-			$routeXml = '<routes><route><module>'.$module.'</module><controller>'.ucfirst($this->_uriParts[$startIdx]).'</controller><action>'.ucfirst($this->_uriParts[$startIdx+1]).'</action><params>';
+			$routeXml = '<routes><route><module>'.$module.'</module><controller>'.ucfirst(preg_replace("/[^A-Za-z0-9]/","",$this->_uriParts[$startIdx])).'</controller><action>'.ucfirst(preg_replace("/[^A-Za-z0-9]/","",$this->_uriParts[$startIdx+1])).'</action><params>';
 			$arg = 0;
 			for ($i = $startIdx+2; $i < count($this->_uriParts); $i++) {
 				$routeXml .= '<param><name>arg'.($arg++).'</name><default>'.$this->_uriParts[$i].'</default><type>string</type></param>';

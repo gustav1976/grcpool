@@ -10,7 +10,7 @@ class WebSocket {
 
 	}
 	
-	private function post($cmd,$json) {
+	private function post($cmd,$json = '') {
 		$ch = curl_init();
 		$url = 'http://127.0.0.1:3001/'.$cmd;
 		curl_setopt($ch,CURLOPT_URL,$url);
@@ -34,5 +34,12 @@ class WebSocket {
 		$this->post('updateTicker',json_encode($array));
 	}
 	
+	public function updateBlock($json) {
+		$this->post('updateBlock',$json);
+	}
+	
+	public function updatePoolBlocks() {
+		$this->post('updatePoolBlocks');
+	}
 	
 }

@@ -1,6 +1,26 @@
 <?php
 class GrcPool_Utils {
 	
+	public static function isHuman($value) {
+		$property = new Property(Constants::PROPERTY_FILE);
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+				CURLOPT_SSL_VERIFYPEER => false,
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_URL => 'https://www.google.com/recaptcha/api/siteverify?secret='.$property->get('googleCaptchaPrivate').'&response='.$value,
+		));
+		$gResult = json_decode(curl_exec($curl),true);
+		if (!$gResult['success']) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public static function getVoteWeight($mag,$balance,$moneySupply) {
+		return (($mag * ($moneySupply/Constants::GRC_MAG_MULTIPLIER + 0.01)/5.67) + $balance);
+	}
+	
 	public static function calculateMag($hostRac,$projRac,$numberOfProjects,$precision) {
 		return Utils::truncate(Constants::GRC_MAG_MULTIPLIER*(($hostRac/$projRac)/$numberOfProjects),$precision);
 	}
@@ -13,8 +33,12 @@ class GrcPool_Utils {
 		return 'http://www.gridcoinstats.eu/cpid/'.$cpid;
 	}
 	
-	public static function getTxUrl($tx) {
-		return 'http://www.gridcoinstats.eu/tx/'.$tx;
+	public static function getTxUrl($tx,$currency = Constants::CURRENCY_GRC) {
+		if ($currency == Constants::CURRENCY_SPARC) {
+			return 'https://etherscan.io/tx/'.$tx;
+		} else {
+			return 'http://www.gridcoinstats.eu/tx/'.$tx;
+		}
 	}
 	
 	public static function getGrcAddressUrl($addr) {
