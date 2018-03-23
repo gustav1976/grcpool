@@ -21,10 +21,36 @@ if (!$FORCE && $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONL
 	exit;
 }
 
+$taskDao = new GrcPool_Task_DAO();
+$taskObj = new GrcPool_Task_OBJ();
+$taskMessage = '';
+$taskInfo = '';
+$taskObj->setName(GrcPool_TaskEnum::UPDATE_OWED);
+$taskObj->setMessage('Running');
+$taskObj->setSuccess(0);
+$taskObj->setTheTime(time());
+$taskObj->setInfo('');
+$taskObj->setTimeStarted(microtime(true));
+$taskDao->save($taskObj);
+
 $fp = fopen(Constants::PAYOUT_LOCK_FILE,"w");
 if (!flock($fp, LOCK_EX | LOCK_NB)) {
+	$taskObj->setMessage('Payout Was Locked');
+	$taskDao->save($taskObj);
 	echo('CRITICAL: !!!!!!!!!!!! LOCKED !!!!!!!!!!!!!');
 	exit;
+}
+
+$dao = new GrcPool_Status_DAO();
+if (!$dao->isInSync()) {
+	echo "WALLETS ARE NOT IN SYNC LETS WAIT 5 SECONDS";
+	sleep(5);
+	if (!$dao->isInSync()) {
+		$taskObj->setMessage('Wallets Out Of Sync');
+		$taskDao->save($taskObj);
+		echo "WALLETS ARE NOT IN SYNC AGAIN LETS DIE";
+		exit;
+	}
 }
 
 
@@ -72,22 +98,29 @@ for ($poolId = 1; $poolId <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF
 	echo 'Total Mag: '.$totalMag."\n";
 	
 	if ($stakeBalance < $minStakeBalance) {
+		$taskMessage .= 'pool '.$poolId .' not enough to distribute -- ';
 		echo 'not enough stake balance  '.($minStakeBalance/COIN).'  >  '.number_format($stakeBalance/COIN,8)."\n";
 		continue;
 	}
+	
+	$taskInfo .= 'pool '.$poolId.' distributing '.($stakeBalance/COIN).' -- ';
 	
 	$sql = 'update '.Constants::DATABASE_NAME.'.member_host_credit set '.Constants::DATABASE_NAME.'.member_host_credit.owed = '.Constants::DATABASE_NAME.'.member_host_credit.owed + (('.Constants::DATABASE_NAME.'.member_host_credit.mag/'.$totalMag.') * '.($stakeBalance/COIN).'), 
 			'.Constants::DATABASE_NAME.'.member_host_credit.owedCalc = concat('.Constants::DATABASE_NAME.'.member_host_credit.owedCalc,\'+((\','.Constants::DATABASE_NAME.'.member_host_credit.mag,\'/\','.$totalMag.',\')*\','.($stakeBalance/COIN).',\')\') where mag > 0 and poolId = '.$poolId;
 	//echo "\n\n".$sql."\n\n";
 	$hostCreditDao->executeQuery($sql);
 	
-
 }	
 
 // cleanup rows with a long owedCalc
 $sql = 'update '.Constants::DATABASE_NAME.'.member_host_credit set owedCalc = concat(\'+\',owed) where char_length(owedCalc) > 500';
 $hostDao->executeQuery($sql);
 
+$taskObj->setInfo($taskInfo);
+$taskObj->setSuccess(1);
+$taskObj->setMessage($taskMessage==''?'OK':$taskMessage);
+$taskObj->setTimeCompleted(microtime(true));
+$taskDao->save($taskObj);
 
 // $sql = 'update grcpool.member_host_credit set grcpool.member_host_credit.owed = grcpool.member_host_credit.owed + ((grcpool.member_host_credit.mag/'.$totalMag.') * '.($stakeBalance/COIN).')';
 // $hostCreditDao->executeQuery($sql);

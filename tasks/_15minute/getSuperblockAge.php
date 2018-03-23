@@ -23,6 +23,10 @@ $superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DAT
 $hostDao = new GrcPool_Member_Host_Credit_DAO();
 
 $result = $daemon->getSuperBlockAge();
+if (!isset($result['timestamp']) || $result['timestamp'] == '') {
+        echo "WALLET DOWN";
+        exit;
+}
 $superblockData->timestamp = $result['timestamp'];
 $superblockData->age = $result['age'];
 $superblockData->pending = $result['pending'];
@@ -53,9 +57,10 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 	$superblockData->version = $version;
 
 	$wl = $daemon->getWhitelistedProjects();
-	$superblockData->whiteListCount = count($wl);
-	$superblockData->projects = $wl;
-	
+	if ($wl) {
+		$superblockData->whiteListCount = count($wl);
+		$superblockData->projects = $wl;
+	}	
 	////////////////////
 	// WHITE LIST STUFF
 	$projectDao = new GrcPool_Boinc_Account_DAO();
@@ -106,14 +111,14 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 
 	// POOL 1
 
-	$mag = $daemon->getMagnitude();
+	$mag = $daemon->getMagnitude($settingsDao->getValueWithName((Constants::SETTINGS_CPID)));
 	$superblockData->mag[0] = $mag;
 	
 	$basisDao = new GrcPool_Wallet_Basis_DAO();
 	$basisObj = $basisDao->initWithKey(1);
 	$superblockData->basis[0] = $basisObj->getBasis();
 	
-	$rsaData = $daemon->getRsa();
+	$rsaData = $daemon->getRsa($settingsDao->getValueWithName((Constants::SETTINGS_CPID)));
 	$superblockData->expectedDailyEarnings[0] = $rsaData[1]['Expected Earnings (Daily)']??0;
 	$superblockData->fulfillment[0] = $rsaData[1]['Fulfillment %']??0;
 	$superblockData->interest[0] = $rsaData[1]['CPID Lifetime Interest Paid']??0;
@@ -136,17 +141,18 @@ if ($FORCE || ($superblockData->pending == 0 && $superblockData->lastBlock != $s
 		$basisObj = $basisDao->initWithKey($poolId);
 		$superblockData->basis[$poolId-1] = $basisObj->getBasis();
 	
-		$rsaData = $daemon2->getRsa();
-		$superblockData->expectedDailyEarnings[$poolId-1] = $rsaData[$poolId-1]['Expected Earnings (Daily)']??0;
-		$superblockData->fulfillment[$poolId-1] = $rsaData[$poolId-1]['Fulfillment %']??0;
-		$superblockData->interest[$poolId-1] = $rsaData[$poolId-1]['CPID Lifetime Interest Paid']??0;
-		$superblockData->research[$poolId-1] = $rsaData[$poolId-1]['CPID Lifetime Research Paid']??0;
-		$superblockData->txCount[$poolId-1] = $rsaData[$poolId-1]['Tx Count']??0;
+		$cpid = $settingsDao->getValueWithName((Constants::SETTINGS_CPID).$poolId);
+		$rsaData = $daemon2->getRsa($cpid);
+		$superblockData->expectedDailyEarnings[$poolId-1] = $rsaData[1]['Expected Earnings (Daily)']??0;
+		$superblockData->fulfillment[$poolId-1] = $rsaData[1]['Fulfillment %']??0;
+		$superblockData->interest[$poolId-1] = $rsaData[1]['CPID Lifetime Interest Paid']??0;
+		$superblockData->research[$poolId-1] = $rsaData[1]['CPID Lifetime Research Paid']??0;
+		$superblockData->txCount[$poolId-1] = $rsaData[1]['Tx Count']??0;
 		
 		$balance = $daemon2->getTotalBalance();
 		$superblockData->balance[$poolId-1] = $balance;
 	
-		$mag = $daemon2->getMagnitude();
+		$mag = $daemon2->getMagnitude($settingsDao->getValueWithName((Constants::SETTINGS_CPID).$poolId));
 		$superblockData->mag[$poolId-1] = $mag;
 	}
 	
