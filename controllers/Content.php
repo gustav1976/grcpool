@@ -5,6 +5,10 @@ class GrcPool_Controller_Content extends GrcPool_Controller {
 		parent::__construct();
 	}
 	
+	public function blockAction() {
+ 
+	}
+	
 
 
 }

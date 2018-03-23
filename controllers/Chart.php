@@ -4,6 +4,43 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 		parent::__construct();
 	}
 
+	public function projectSparcAction() {
+		$sparcDao = new GrcPool_Sparc_DAO();
+		require(dirname(__FILE__).'/../classes/SVGGraph/SVGGraph.php');
+		$colors = json_decode(file_get_contents(dirname(__FILE__).'/../assets/colors.json'),true);
+		$settings = array(
+				'back_colour'       => '#fff',    'stroke_colour'      => '#000',
+				'back_stroke_width' => 0,         'back_stroke_colour' => '#eee',
+				'axis_font'         => 'Georgia', 'axis_font_size'     => 12,
+				'pad_right'         => 10,        'pad_left'           => 10,
+				//'fill_under'        => array(true,true,true),
+				//'marker_size'       => 3,
+				//'marker_type'       => array('circle', 'circle'),
+				//'marker_colour'     => array('#ffaaaa','#aaffaa','#aaaaff','#fffa67','#67ffef'),
+				'label_h' 			=> 'sparc',
+				'label_v'			=> 'project',
+				//'legend_position'   => 'outer left 0 40',
+				'graph_title'		=> 'sparc distributed per project',
+				//'force_assoc' 		=> true,
+				//'show_axis_text_h'  => false,
+		);
+		$datas = $sparcDao->getTotalPerProject();
+		$datas = array_reverse($datas);
+		$chartData = array();
+		foreach ($datas as $data) {
+			if ($data['sparc'] == 0) continue;
+			//array_push($chartData,$data['sparc']);
+			$chartData[$data['name']] = $data['sparc'];
+			//array_push($settings['legend_entries'],$data['name']);
+		}
+ 		$graph = new SVGGraph($this->args(0,Controller::VALIDATION_NUMBER)??1280,$this->args(1,Controller::VALIDATION_NUMBER)??720,$settings);
+ 		$graph->auto_fit = true;
+ 		$graph->colours = $colors;
+ 		$graph->Values($chartData);
+ 		$graph->Render('HorizontalBarGraph');
+		exit;
+	}
+	
 	public function poolMagAction() {
 		$statDao = new GrcPool_Pool_Stat_DAO();
 		$datas = array();
@@ -50,8 +87,27 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 		require(dirname(__FILE__).'/../classes/SVGGraph/SVGGraph.php');
 		$memberId = $this->args(0);
 		$dao = new GrcPool_Member_Payout_DAO();
-		$lookBack = 180;
-		$data = $dao->getWithMemberIdSince($memberId,time()-86400*$lookBack);
+		$grouping = 'day';
+		$dimIdx = 1;
+		$arg1 = $this->args(1);
+		if ($arg1 == 'week') {
+			$dimIdx++;
+			$grouping = 'week';
+			$lookBack = time()-500*86400;
+			$titleLabel = 'Weeks';
+			$xLabel = 'year.week';
+		} else {
+			if ($arg1 == 'day') {
+				$dimIdx++;
+			}
+			$xLabel = 'days ago';
+			$titleLabel = 'Days';
+			$grouping = 'day';
+			$lookBack = time()-180*86400;
+		}
+		$width = $this->args($dimIdx,Controller::VALIDATION_NUMBER)??1280;
+		$height = $this->args($dimIdx+1,Controller::VALIDATION_NUMBER)??720;
+		$data = $dao->getEarningsStats($grouping, $memberId,$lookBack,Constants::CURRENCY_GRC);
 		$dataPoints = array();
 		$projData = array();
 		$settings = array(
@@ -60,34 +116,56 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 				'axis_font'         => 'Georgia', 'axis_font_size'     => 10,
 				'pad_right'         => 20,        'pad_left'           => 20,
 				'marker_size'       => 3,
-				'label_h' 			=> 'days ago',
+				'label_h' 			=> $xLabel,
 				'label_v'			=> 'grc',
-				'graph_title'		=> 'earnings per day',
+				'graph_title'		=> 'Cumulative Earnings per Recent '.($titleLabel),
 				'force_assoc' 		=> true,
 		);
 		if (!$data) {
 			$projData = array('' => array(0 => 0,1 => 0));
 			$settings['axis_max_v'] = 1;
 		}
-		for ($i = 0; $i <= $lookBack; $i++) {
-			$time = strtotime(date('m/d/Y',time()-86400*$i));
-			$dataPoints[$time] = 0;
-		}
-		foreach ($data as $d) {
-			$time = strtotime(date('m/d/Y',$d->getTheTime()));
-			$dataPoints[$time]+= $d->getAmount();
+		$now = time();
+		if ($grouping == 'day') {
+			for ($i = $lookBack; $i <= $now; $i+=86400) {
+				$time = date('Y-m-d',$i);
+				$dataPoints[$time] = 0;
+			}
+			foreach ($data as $d) {
+				$time = $d['theTime'];
+				$dataPoints[$time]+= $d['amount'];
+			}
+		} else if ($grouping == 'week') {
+			for ($i = $lookBack; $i <= $now; $i+=86400) {
+				$time = date('YW',$i);
+				$dataPoints[$time] = 0;
+			}
+			foreach ($data as $d) {
+				$time = $d['theTime'];
+				//if (substr($time,4,2) == 53) {
+				//	$time = (substr($time,0,4)-1).'53';
+				//}
+				if (!isset($dataPoints[$time])) {
+					$dataPoints[$time] = 0;
+				}
+				$dataPoints[$time]+= $d['amount'];
+			}
 		}
 		ksort($dataPoints);
+		//echo '<pre>';print_r($dataPoints);exit;
 		$keep = false;
 		$runningTotal = 0;
 		foreach ($dataPoints as $time => $dp) {
 			if ($dp == 0 && !$keep) {continue;}
 			$keep = true;
-			$projData[floor((time()-$time)/86400)] = number_format($dp+$runningTotal,2,'.','');
+			if ($grouping == 'day') {
+				$projData[floor((time()-strtotime($time))/86400)] = number_format($dp+$runningTotal,2,'.','');
+			} else if ($grouping == 'week') {
+				$projData[$time] = number_format($dp+$runningTotal,2,'.','');
+			}
 			$runningTotal += $dp;
 		}
-		
-		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1200,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($width,$height,$settings);
 		$this->view->taskGraph->auto_fit = true;
 		$this->view->taskGraph->Values($projData);
 		header('Content-type: image/svg+xml');
@@ -243,7 +321,7 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 			}
 		}
 		$settings['legend_entries'] = array_keys($projData);
-		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1200,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1280,$this->args(2,Controller::VALIDATION_NUMBER)??720,$settings);
 		if ($colours) {
 			$this->view->taskGraph->Colours($colours);
 		}
@@ -261,7 +339,25 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 		$dao = new GrcPool_Member_Host_Stat_Mag_DAO();
 		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$accounts = $accountDao->fetchAll(array(),array('name'=>'asc'));
-		$data = $dao->getWithMemberId($memberId,time()-86400*45);
+		$grouping = 'day';
+		$dimIdx = 1;
+		$arg1 = $this->args(1);
+		if ($arg1 == 'week') {
+			$dimIdx++;
+			$grouping = 'week';
+			$lookBack = time()-500*86400;
+			$titleLabel = 'Weeks';
+		} else {
+			if ($arg1 == 'day') {
+				$dimIdx++;
+			}
+			$titleLabel = 'Days';
+			$grouping = 'day';
+			$lookBack = time()-180*86400;
+		}
+		$width = $this->args($dimIdx,Controller::VALIDATION_NUMBER)??1280;
+		$height = $this->args($dimIdx+1,Controller::VALIDATION_NUMBER)??720;
+		$data = $dao->getMagStatsWithMemberId('date',$memberId,$lookBack);
 		$dataPoints = array();
 		$projData = array();
 		$settings = array(
@@ -276,13 +372,13 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 				'force_assoc' 		=> true,
 		);
 		foreach ($data as $d) {
-			if ($d->getMag() == 0) {continue;}
-			$time = strtotime(date('m/d/Y',$d->getTheTime()));
+			if ($d['mag'] == 0) {continue;}
+			$time = strtotime($d['theTime']);
 			if (!isset($dataPoints[$time])) {
 				$dataPoints[$time] = array();
 				$dataPoints[$time]['mag'] = 0;
 			}
-			$dataPoints[$time]['mag'] += $d->getMag();
+			$dataPoints[$time]['mag'] += $d['mag'];
 		}
 		if ($dataPoints) {
 			ksort($dataPoints);
@@ -297,8 +393,7 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 			$projData = array('' => array(0 => 0,1 => 0));
 			$settings['axis_max_v'] = 1;
 		}
-
-		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1200,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1280,$this->args(2,Controller::VALIDATION_NUMBER)??720,$settings);
 		$this->view->taskGraph->auto_fit = true;
 		$this->view->taskGraph->Values($projData);
 		header('Content-type: image/svg+xml');
@@ -380,7 +475,7 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 			}
 		}
 		$settings['legend_entries'] = array_keys($projData);
-		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1200,$this->args(2,Controller::VALIDATION_NUMBER)??500,$settings);
+		$this->view->taskGraph= new SVGGraph($this->args(1,Controller::VALIDATION_NUMBER)??1280,$this->args(2,Controller::VALIDATION_NUMBER)??720,$settings);
 		if ($colours) {
 			$this->view->taskGraph->Colours($colours);
 		}
@@ -392,4 +487,3 @@ class GrcPool_Controller_Chart extends GrcPool_Controller {
 	}
 
 }
-

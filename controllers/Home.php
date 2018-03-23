@@ -27,10 +27,11 @@ class GrcPool_Controller_Home extends GrcPool_Controller {
 		$this->view->txFee = $settingsDao->getValueWithName(Constants::SETTINGS_PAYOUT_FEE);
 		$this->view->minPayout = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_OWE_PAYOUT);
 		$this->view->minStake = $settingsDao->getValueWithName(Constants::SETTINGS_MIN_STAKE_BALANCE);
-		$this->view->totalPaidOut = $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT);
+		$this->view->totalPaidOut = 0;
 		$this->view->cpids = array();
 		for ($i = 1; $i <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $i++) {
 			array_push($this->view->cpids,$settingsDao->getValueWithName(Constants::SETTINGS_CPID.($i==1?'':$i)));
+			$this->view->totalPaidOut += $settingsDao->getValueWithName(Constants::SETTINGS_TOTAL_PAID_OUT.($i==1?'':$i));
 		}
 		$this->view->online = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE);
 		$this->view->onlineMessage = '';

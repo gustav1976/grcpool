@@ -15,7 +15,8 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 		),strstr($_SERVER['REQUEST_URI'],'/report/earn'));
 		$pills->addPill('Pool Charts','/report/poolChart',strstr($_SERVER['REQUEST_URI'],'/report/poolChart'));
 		$pills->addPill('Pool Financials','/report/poolBalance',strstr($_SERVER['REQUEST_URI'],'/report/poolBalance'));
-		$this->getWebPage()->setSecondaryNav($pills->render());
+		$pills->addPill('SPARC','/report/sparc',strstr($_SERVER['REQUEST_URI'],'/report/sparc'));
+		$this->getWebPage()->setSecondaryNav('<div style="border:1px solid #ddd;padding-top:20px;border-radius:5px;background-color:#fafafa;">'.$pills->render().'</div>');
 		
 	}
 	
@@ -27,10 +28,14 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 		$cache = new Cache();
 		$this->view->superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
 		$settingsDao = new GrcPool_Settings_DAO();
+		$this->view->walletMode = $settingsDao->getValueWithName(Constants::SETTINGS_WALLET_MODE)??'SINGLE';
 		$seeds = array();
+		$profits = array();
 		for ($i = 1; $i <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $i++) {
 			$seeds[$i] = $settingsDao->getValueWithName((Constants::SETTINGS_SEED).($i>1?$i:''));
+			$profits[$i] = $settingsDao->getValueWithName((Constants::SETTINGS_PROFIT_WITHDRAWN).($i>1?$i:''));
 		}
+		$this->view->profits = $profits;
 		$this->view->seeds = $seeds;
 	}
 	
@@ -39,26 +44,25 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 	}
 	
 	public function earnDonationAction() {
-		$dao = new GrcPool_Member_Payout_DAO();
-		$this->view->members = $dao->getTopDonators(100);
+		$cache = new Cache();
+		$this->view->members = $cache->get(Constants::CACHE_REPORT_EARNDONATE);
 	}
 	
 	public function earnTopAction() {
-		$dao = new GrcPool_Member_Payout_DAO();
-		$this->view->members = $dao->getTopEarners(100);
-		$this->view->totalGrc = $dao->getTotalAmount();
+		$cache = new Cache();
+		$data = $cache->get(Constants::CACHE_REPORT_EARNTOP);
+		$this->view->members = $data['members'];
+		$this->view->totalGrc = $data['totalGrc'];
 	}
 	
 	public function magAccountAction() {
-		$dao = new GrcPool_View_Member_Host_Project_Credit_DAO();
-		$this->view->hosts = $dao->getTopAccounts(100);
+		$cache = new Cache();
+		$this->view->hosts = $cache->get(Constants::CACHE_REPORT_MAGACCOUNT);
 	}
 	
 	public function magProjectHostAction() {
-		$accountDao = new GrcPool_Boinc_Account_DAO();
-		$this->view->accounts = $accountDao->fetchAll();
-		$dao = new GrcPool_View_Member_Host_Project_Credit_DAO();
-		$this->view->hosts = $dao->fetchAll(array(),array('mag'=>'desc'),100);
+		$cache = new Cache();
+		$this->view->hosts = $cache->get(Constants::CACHE_REPORT_PROJECTHOST);
 	}
 	
 	public function researcherAction() {
@@ -84,18 +88,18 @@ class GrcPool_Controller_Report extends GrcPool_Controller {
 		}
 	}
 	
+	public function sparcAction() {
+		$creditDao = new GrcPool_Member_Host_Credit_DAO();
+		$sparcOwed = array();
+		for ($i = 1; $i <= Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS); $i++) {
+			$sparcOwed[$i] = $creditDao->getTotalOwedForPool($i,Constants::CURRENCY_SPARC);
+		}
+		$this->view->sparcOwed = $sparcOwed;
+		
+	}
+	
 	public function magHostAction() {
-		$dao = new GrcPool_View_Member_Host_Project_Credit_DAO();
-		$this->view->hosts = $dao->getTopHosts(100);
-		$hostDao = new GrcPool_Member_Host_DAO();
-		$keys = array();
-		$projects = array();
-		foreach ($this->view->hosts as $host) {
-			$keys[$host['hostId']] = $host;
-		}
-		$hostDetails = $hostDao->initWithKeys(array_keys($keys));
-		foreach ($this->view->hosts as $idx => $host) {
-			$this->view->hosts[$idx]['detail'] = $hostDetails[$host['hostId']];
-		}
+		$cache = new Cache();
+		$this->view->hosts = $cache->get(Constants::CACHE_REPORT_HOSTMAG);
 	}
 }

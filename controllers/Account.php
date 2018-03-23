@@ -4,6 +4,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 	
 	public function __construct() {
 		parent::__construct();
+		//ini_set('memory_limit','128M');
 		if ($this->getUser()->getId() == 0) {
 			Server::goHome();			
 		}
@@ -26,6 +27,8 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 				$dao->deleteWithMemberId($usr->getId());
 				$dao = new GrcPool_Session_DAO();
 				$dao->deleteWithUserId($usr->getId());
+				$dao = new GrcPool_Poll_Vote_DAO();
+				$dao->deleteWithMemberId($usr->getId());
 				$dao = new GrcPool_Member_DAO();
 				$dao->delete($usr);
 				Server::goHome();
@@ -37,7 +40,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 	public function tasksAction() {
 		
 		$numberToShow = 50;
-		$page = $this->args(0,COntroller::VALIDATION_NUMBER);
+		$page = $this->args(0,Controller::VALIDATION_NUMBER);
 		if ($page == null) {
 			$page = 0;
 		}
@@ -57,6 +60,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		
 		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$wcgAccount = $accountDao->getWithGrcName(Constants::GRCNAME_WORLD_COMMUNITY_GRID);
+		
 		$wcgIds = array();
 		foreach ($projects as $project) {
 			if ($wcgAccount && $project->getAccountId() == $wcgAccount->getId() && $project->getHostDbid()) {
@@ -72,6 +76,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		if (!isset($hostIdx[$this->view->filter_host])) {
 			$this->view->filter_host = '';
 		}
+
 		$this->view->hostNames = array();
 		foreach ($hosts as $host) {
 			if ($host->getMemberId() == $this->getUser()->getId()) {
@@ -104,20 +109,23 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		if ($this->view->filter_valid) {
 			array_push($where,$taskDao->where('validateState',GrcPool_Boinc_ValidationEnum::keyToCode($this->view->filter_valid)));
 		}
-		$limit = array();
-		
+		$limit = array($numberToShow*$page,$numberToShow);
+ 
 		$tasks = $taskDao->getWithDeviceIds($wcgIds,$where,$sortBy,$limit);
+		$numberOfTasks = $taskDao->getCountWithDeviceIds($wcgIds,$where);
+		
 		$pagination = new Bootstrap_Pagination();
 		$pagination->setGroup($numberToShow);
 		$pagination->setHref('/account/tasks/?');
 		$pagination->setQueryString(true);
-		$pagination->setHowMany(count($tasks));
+		$pagination->setHowMany($numberOfTasks);
 		$pagination->setArrows(false);
 		$pagination->setAdjacents(2);
 		$pagination->setStart($page);
 		
 		$this->view->pagination = $pagination->render();
-		$this->view->tasks = array_slice($tasks,$numberToShow*$page,$numberToShow);
+		//$this->view->tasks = array_slice($tasks,$numberToShow*$page,$numberToShow);
+		$this->view->tasks = $tasks;
 		
 	}
 	
@@ -169,10 +177,23 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		
 	}
 	
-	public function payoutsAction() {
-		$dao = new GrcPool_Member_Payout_DAO();
+	public function owedAction() {
 		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$hostDao = new GrcPool_Member_Host_DAO();
+		
+		$hosts = $hostDao->getWithMemberId($this->getUser()->getId());
+		$this->view->hosts = $hosts;
+	
+		$accounts = $accountDao->fetchAll();
+		$this->view->accounts = $accounts;
+		
+		$creditDao = new GrcPool_View_Member_Host_Project_Credit_DAO();
+		$owed = $creditDao->getWithMemberId($this->getUser()->getId());
+		$this->view->owed = $owed;
+	}
+	
+	public function payoutsAction() {
+		$dao = new GrcPool_Member_Payout_DAO();
 		
 		$numberToShow = 25;		
 		$start = 0;
@@ -180,13 +201,6 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		if (is_numeric($this->args(0))) {
 			$start = $this->args(0,Controller::VALIDATION_NUMBER);
 		}
-
-		$hosts = $hostDao->getWithMemberId($this->getUser()->getId());
-		$this->view->hosts = $hosts;
-		
-		$accounts = $accountDao->fetchAll();
-		$this->view->accounts = $accounts;//array();
-
 		
 		$numberOfPayouts = $dao->getCountForUser($this->getUser()->getId());
 		$pagination = new Bootstrap_Pagination();
@@ -204,10 +218,6 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$this->view->payoutTotal = $dao->getPayoutTotalForUser($this->getUser()->getId());
 		$this->view->numberOfPayouts = $numberOfPayouts;
 		$this->view->payouts = $payouts;
-		
-		$creditDao = new GrcPool_View_Member_Host_Project_Credit_DAO();
-		$owed = $creditDao->getWithMemberId($this->getUser()->getId());
-		$this->view->owed = $owed;
 	}
 	
 	public function verifyAction() {
@@ -262,6 +272,18 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 				}
 			}
 		}
+		if ($this->post('cmd') == 'options') {
+			$token = $this->post('token');
+			$valid = $google2fa->verifyKey($this->getUser()->getTwoFactorKey(),$token);
+			if (!$valid) {
+				$this->addErrorMsg('Your token was not correct.');
+			} else {
+				$val = $this->post('login')==1?1:0;
+				$this->getUser()->set2faLogin($val);
+				$usr = $this->getUser();
+				$dao->save($usr);
+			}
+		}
 		if ($member->getTwoFactorKey() == '') {
 			$key = $google2fa->generateSecretKey(16);
 			$member->setTwoFactorKey($key);
@@ -289,6 +311,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 			}
 		}
 		
+		$this->view->login = $this->getUser()->get2faLogin();
 		$this->view->qrCode = $google2fa->getQRCodeInline(Constants::BOINC_POOL_NAME,$member->getEmail(),$this->getUser()->getTwoFactorKey()); 
 		$this->view->twoFactor = $this->getUser()->getTwoFactor()?true:false;
 		$this->view->key = $this->getUser()->getTwoFactorKey();
@@ -364,6 +387,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 						$this->addErrorMsg('GRC Address was not formatted properly.');
 					} else {
 						$usrDao = new GrcPool_Member_DAO();
+						$oldAddr = $this->getUser()->getGrcAddress();
 						$this->getUser()->setGrcAddress($newAddr);
 						$usr = $this->getUser();
 						$usrDao->save($usr);
@@ -372,7 +396,13 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 						$email->addFrom(Constants::ADMIN_EMAIL_ADDRESS);
 						$email->addTo($this->getUser()->getEmail());
 						$email->setSubject(Constants::BOINC_POOL_NAME.' GRC Payout Address Changed');
-						$email->setMessage('The GRC payout address on your '.Constants::BOINC_POOL_NAME.' account was changed.<br/><br/>Sincerely, your friendly GRC pool...');
+						$email->setMessage('
+							The GRC payout address on your '.Constants::BOINC_POOL_NAME.' account was changed '.($oldAddr == ''?'':'from '.$oldAddr).' to '.$newAddr.'.
+							<br/><br/>
+							Sincerely, your friendly GRC pool...
+							<br/><br/>
+							'.$_SERVER['REMOTE_ADDR'].'
+						');
 						try {
 							$email->send();
 						} catch(Exception $e) {
@@ -434,6 +464,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 	}
 	
 	public function indexAction() {
+		
 		$usrDao = new GrcPool_Member_DAO();
 		
 		$messages = array();
@@ -447,7 +478,7 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		$projects = $projectDao->getWithMemberId($this->getUser()->getId());
 		foreach ($projects as $project) {
 			if ($project->getHostDbid() == 0) {			
-				array_push($messages,'There appears to be projects that are not yet attached correctly, you may want to review your host projects.');
+				array_push($messages,'Projects may not be attached correctly.');
 				break;
 			}
 		}
@@ -469,14 +500,17 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 		}
 		
 		$payoutDao = new GrcPool_Member_Payout_DAO();
-		$this->view->totalPaid = number_format($payoutDao->getTotalForMemberId($this->getUser()->getId()),3);
+		$this->view->totalPaid = number_format($payoutDao->getTotalForMemberId($this->getUser()->getId(),Constants::CURRENCY_GRC),3);
+		$this->view->totalPaidSparc = number_format($payoutDao->getTotalForMemberId($this->getUser()->getId(),Constants::CURRENCY_SPARC),3);
 
 		$orphanDao = new GrcPool_View_All_Orphans_DAO();
 		$orphans = $orphanDao->getOrphansForMember($this->getUser()->getId());
 		$this->view->orphans = $orphans;
 		$this->view->orphansOwed= 0;
+		$this->view->orpphansSparcOwed = 0;
 		foreach ($this->view->orphans as $orphan) {
 			$this->view->orphansOwed+= $orphan->getOwed();
+			$this->view->orpphansSparcOwed += $orphan->getSparc();
 		}
 				
 		$cache = new Cache();
@@ -492,32 +526,36 @@ class GrcPool_Controller_Account extends GrcPool_Controller {
 				array_push($wcgIds,$project->getHostDbId());
 			}
 		}
-		$tasks = $taskDao->getWithDeviceIds($wcgIds);
-
+		
+		
 		$serverStates = array();
 		$outcomes = array();
 		$validations = array();
 		$validEnum = new GrcPool_Boinc_ValidationEnum();
 		$outcomeEnum = new GrcPool_Boinc_OutcomeEnum();
 		$serverEnum = new GrcPool_Boinc_ServerStateEnum();
-		foreach ($tasks as $task) {
-			$key = $serverEnum->codeToText($task->getServerState());
-			if (!isset($serverStates[$key])) {
-				$serverStates[$key] = 0;
+		$tasks = array();
+		if ($wcgIds) {
+			$tasks = $taskDao->getStatusWithDeviceIds($wcgIds);
+			foreach ($tasks as $task) {
+				$key = $serverEnum->codeToText($task['serverState']);
+				if (!isset($serverStates[$key])) {
+					$serverStates[$key] = 0;
+				}
+				$serverStates[$key]++;
+				
+				$key = $outcomeEnum->codeToText($task['outcome']);
+				if (!isset($outcomes[$key])) {
+					$outcomes[$key] = 0;
+				}
+				$outcomes[$key]++;
+				
+				$key = $validEnum->codeToText($task['validateState']);
+				if (!isset($validations[$key])) {
+					$validations[$key] = 0;
+				}
+				$validations[$key]++;
 			}
-			$serverStates[$key]++;
-			
-			$key = $outcomeEnum->codeToText($task->getOutcome());
-			if (!isset($outcomes[$key])) {
-				$outcomes[$key] = 0;
-			}
-			$outcomes[$key]++;
-			
-			$key = $validEnum->codeToText($task->getValidateState());
-			if (!isset($validations[$key])) {
-				$validations[$key] = 0;
-			}
-			$validations[$key]++;
 		}
 // 		$this->view->tasks = $tasks;
 // 		$this->view->validations = $validations;

@@ -9,6 +9,18 @@ class GrcPool_Controller_About extends GrcPool_Controller {
 		Server::go('/about/fees');
 	}
 	
+	public function systemAction() {
+		$taskDao = new GrcPool_Task_DAO();
+		if ($this->args(0,Controller::VALIDATION_NUMBER)) {
+			$obj = $taskDao->initWithKey($this->args(0));
+			$this->view->details = true;
+			$this->view->tasks = $taskDao->getWithname($obj->getName());
+		} else {
+			$this->view->details = false;
+			$this->view->tasks = $taskDao->getLatestTasksByName();
+		}
+	}
+	
 	public function feesAction() {
 		$settingsDao = new GrcPool_Settings_DAO();
 		$this->view->payoutFee = $settingsDao->getValueWithName(Constants::SETTINGS_PAYOUT_FEE);
@@ -31,6 +43,10 @@ class GrcPool_Controller_About extends GrcPool_Controller {
 	}
 	
 	public function poolTwoAction() {
+		
+	}
+	
+	public function sparcAction() {
 		
 	}
 }

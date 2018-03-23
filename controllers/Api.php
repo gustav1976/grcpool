@@ -4,6 +4,80 @@ class GrcPool_Controller_Api extends GrcPool_Controller {
 		parent::__construct();
 	}
 	
+	public function memberAction() {
+		$body = file_get_contents('php://input');
+		$json = json_decode($body,true);
+		$output = array();
+		if (Property::getValueFor('environment') == 'dev') {
+			if ($this->get('apiKey')) {
+				$json['apiKey'] = $this->get('apiKey');
+			}
+		}
+		if (isset($json['apiKey']) && $json['apiKey'] != '') {
+			$usrDao = new GrcPool_Member_DAO();
+			$usr = $usrDao->getWithApiKey($json['apiKey']);
+			if ($usr == null || $usr->getId() == 0) {
+				$output['error'] = 'unknown api key';
+			} else {
+				if ($this->args(0) == 'stats') {
+					$numberOfHosts = 0;
+					$hostDao = new GrcPool_Member_Host_DAO();
+					$hosts = $hostDao->getWithMemberId($usr->getId());
+					$output['numberOfHosts'] = count($hosts);
+					
+					$creditDao = new GrcPool_View_Member_Host_Project_Credit_DAO();
+					$credits = $creditDao->getWithMemberId($usr->getId());
+					
+					$output['mag'] = 0;
+					$output['grcOwed'] = 0;
+					$output['sparcOwed'] = 0;
+					foreach ($credits as $credit) {
+						$output['mag'] += $credit->getMag();
+						$output['grcOwed'] += $credit->getOwed();
+						$output['sparcOwed'] += $credit->getSparc();
+					}
+					
+					$payoutDao = new GrcPool_Member_Payout_DAO();
+					$output['grcEarned'] = number_format($payoutDao->getTotalForMemberId($usr->getId(),Constants::CURRENCY_GRC),3);
+					$output['sparcEarned'] = number_format($payoutDao->getTotalForMemberId($usr->getId(),Constants::CURRENCY_SPARC),3);
+					
+					$orphanDao = new GrcPool_View_All_Orphans_DAO();
+					$orphans = $orphanDao->getOrphansForMember($usr->getId());
+					$output['grcOrphansOwed'] = 0;
+					$output['sparcOrphansOwed'] = 0;
+					foreach ($orphans as $orphan) {
+						$output['grcOrphansOwed'] += $orphan->getOwed();
+						$output['sparcOrphansOwed'] += $orphan->getSparc();
+					}
+					
+					$cache = new Cache();
+					$superblockData = new SuperBlockData($cache->get(Constants::CACHE_SUPERBLOCK_DATA));
+					$magUnit = $superblockData->magUnit;
+					$output['estimatedDailyGrc'] = number_format($magUnit*$output['mag'],2,'.','');
+				}
+			}
+		}
+		header('Content-Type: application/json');
+		echo json_encode($output);
+		exit;
+	}
+	
+	public function loginNotificationAction() {
+		header('Content-Type: application/json');
+		if ($this->getUser()->getId()) {
+			$change = $this->args(0,Controller::VALIDATION_NUMBER);
+			if ($change !== null) {
+				$this->getUser()->setLoginEmail($change?1:0);
+				$dao = new GrcPool_Member_DAO();
+				$usr = $this->getUser();
+				$dao->save($usr);
+			}
+			$json= array();
+			$json['loginEmail'] = $this->getUser()->getLoginEmail();
+			echo json_encode($json);
+		}
+		exit;
+	}
 	
 	public function hostNameAction() {
 		$hostDao = new GrcPool_Member_Host_DAO();
@@ -100,20 +174,35 @@ class GrcPool_Controller_Api extends GrcPool_Controller {
 		$numberOfPools = Property::getValueFor(Constants::PROPERTY_NUMBER_OF_POOLS);
 		$blocks = array();
 		$lowestHeight = 0;
+		$checkBlocks = array();
+		if ($this->args(0)) {
+			$daemon = GrcPool_Utils::getDaemonForPool();
+			$blockHeight = $this->args(0,Controller::VALIDATION_NUMBER);
+			if ($blockHeight) {
+				$blocks['height'] = $this->args(0);
+				$blocks['hash'] = $daemon->getBlockHash($blocks['height']);
+				$blocks['version'] = trim($daemon->getVersion());
+				echo json_encode($blocks,JSON_PRETTY_PRINT);
+				exit;
+			}
+		}
 		for ($i = 1; $i <= $numberOfPools; $i++) {
 			$blocks[$i] = array();
 			$daemon = GrcPool_Utils::getDaemonForPool($i);
 			$blocks[$i]['height'] = trim($daemon->getBlockHeight());
+			$checkBlocks[$blocks[$i]['height']] = 1;
 			$blocks[$i]['hash'] = trim($daemon->getBlockHash($blocks[$i]['height']));
 			$blocks[$i]['version'] = trim($daemon->getVersion());
 			if ($blocks[$i]['height'] < $lowestHeight || $lowestHeight == 0) {
 				$lowestHeight = $blocks[$i]['height'];
 			}
 		}
-		$blocks[$lowestHeight] = array();
-		for ($i = 1; $i <= $numberOfPools; $i++) {
-			$daemon = GrcPool_Utils::getDaemonForPool($i);
-			$blocks[$lowestHeight][$i] = trim($daemon->getBlockHash($lowestHeight));
+		if (count($checkBlocks) > 1) {
+			$blocks[$lowestHeight] = array();
+			for ($i = 1; $i <= $numberOfPools; $i++) {
+				$daemon = GrcPool_Utils::getDaemonForPool($i);
+				$blocks[$lowestHeight][$i] = trim($daemon->getBlockHash($lowestHeight));
+			}
 		}
 		echo json_encode($blocks,JSON_PRETTY_PRINT);
 		exit;
