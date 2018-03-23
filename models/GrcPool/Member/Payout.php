@@ -61,7 +61,7 @@ abstract class GrcPool_Member_Payout_MODELDAO extends TableDAO {
 		'thetime' => array('type'=>'INT','dbType'=>'int(11)'),
 		'calculation' => array('type'=>'STRING','dbType'=>'varchar(4000)'),
 		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
-		'address' => array('type'=>'STRING','dbType'=>'varchar(40)'),
+		'address' => array('type'=>'STRING','dbType'=>'varchar(60)'),
 		'currency' => array('type'=>'STRING','dbType'=>'varchar(10)'),
 	);
 }

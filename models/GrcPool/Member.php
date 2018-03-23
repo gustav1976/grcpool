@@ -25,6 +25,9 @@ abstract class GrcPool_Member_MODEL {
 	private $_minPayout = 1;
 	private $_sparcAddress = '';
 	private $_minSparcPayout = 500;
+	private $_failCount = 0;
+	private $_loginEmail = 1;
+	private $_2faLogin = 1;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setEmail(string $string) {$this->_email=$string;}
@@ -61,6 +64,12 @@ abstract class GrcPool_Member_MODEL {
 	public function getSparcAddress():string {return $this->_sparcAddress;}
 	public function setMinSparcPayout(int $int) {$this->_minSparcPayout=$int;}
 	public function getMinSparcPayout():int {return $this->_minSparcPayout;}
+	public function setFailCount(int $int) {$this->_failCount=$int;}
+	public function getFailCount():int {return $this->_failCount;}
+	public function setLoginEmail(int $int) {$this->_loginEmail=$int;}
+	public function getLoginEmail():int {return $this->_loginEmail;}
+	public function set2faLogin(int $int) {$this->_2faLogin=$int;}
+	public function get2faLogin():int {return $this->_2faLogin;}
 }
 
 abstract class GrcPool_Member_MODELDAO extends TableDAO {
@@ -87,5 +96,8 @@ abstract class GrcPool_Member_MODELDAO extends TableDAO {
 		'minPayout' => array('type'=>'INT','dbType'=>'smallint(5)'),
 		'sparcAddress' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'minSparcPayout' => array('type'=>'INT','dbType'=>'int(5)'),
+		'failCount' => array('type'=>'INT','dbType'=>'smallint(1)'),
+		'loginEmail' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'2faLogin' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 	);
 }

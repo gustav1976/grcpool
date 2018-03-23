@@ -12,6 +12,8 @@ abstract class GrcPool_Boinc_Host_Blacklist_MODEL {
 	private $_hostDbid = 0;
 	private $_thetime = 0;
 	private $_memberId = 0;
+	private $_owed = 0.00000000;
+	private $_blockMemberId = 0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setAccountId(int $int) {$this->_accountId=$int;}
@@ -22,6 +24,10 @@ abstract class GrcPool_Boinc_Host_Blacklist_MODEL {
 	public function getThetime():int {return $this->_thetime;}
 	public function setMemberId(int $int) {$this->_memberId=$int;}
 	public function getMemberId():int {return $this->_memberId;}
+	public function setOwed(float $float) {$this->_owed=$float;}
+	public function getOwed():float {return $this->_owed;}
+	public function setBlockMemberId(int $int) {$this->_blockMemberId=$int;}
+	public function getBlockMemberId():int {return $this->_blockMemberId;}
 }
 
 abstract class GrcPool_Boinc_Host_Blacklist_MODELDAO extends TableDAO {
@@ -35,5 +41,7 @@ abstract class GrcPool_Boinc_Host_Blacklist_MODELDAO extends TableDAO {
 		'hostDbid' => array('type'=>'INT','dbType'=>'int(11)'),
 		'thetime' => array('type'=>'INT','dbType'=>'int(11)'),
 		'memberId' => array('type'=>'INT','dbType'=>'int(11)'),
+		'owed' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
+		'blockMemberId' => array('type'=>'INT','dbType'=>'int(8)'),
 	);
 }

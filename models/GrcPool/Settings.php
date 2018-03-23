@@ -26,6 +26,6 @@ abstract class GrcPool_Settings_MODELDAO extends TableDAO {
 	protected $_fields = array(
 		'id' => array('type'=>'INT','dbType'=>'int(3)'),
 		'theName' => array('type'=>'STRING','dbType'=>'varchar(50)'),
-		'theValue' => array('type'=>'STRING','dbType'=>'varchar(100)'),
+		'theValue' => array('type'=>'STRING','dbType'=>'varchar(200)'),
 	);
 }

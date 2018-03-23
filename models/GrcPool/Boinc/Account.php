@@ -30,6 +30,7 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	private $_amd = 0;
 	private $_nvidia = 0;
 	private $_mac = 0;
+	private $_sparc = 0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setName(string $string) {$this->_name=$string;}
@@ -76,6 +77,8 @@ abstract class GrcPool_Boinc_Account_MODEL {
 	public function getNvidia():int {return $this->_nvidia;}
 	public function setMac(int $int) {$this->_mac=$int;}
 	public function getMac():int {return $this->_mac;}
+	public function setSparc(int $int) {$this->_sparc=$int;}
+	public function getSparc():int {return $this->_sparc;}
 }
 
 abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
@@ -107,5 +110,6 @@ abstract class GrcPool_Boinc_Account_MODELDAO extends TableDAO {
 		'amd' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 		'nvidia' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 		'mac' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'sparc' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 	);
 }

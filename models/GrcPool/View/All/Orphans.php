@@ -17,6 +17,7 @@ abstract class GrcPool_View_All_Orphans_MODEL {
 	private $_mag = 0;
 	private $_magTotalCredit = 0;
 	private $_owed = 0.00000000;
+	private $_sparc = 0.00000000;
 	private $_owedCalc = '';
 	private $_memberIdPayout = 0;
 	private $_poolId = 1;
@@ -41,6 +42,8 @@ abstract class GrcPool_View_All_Orphans_MODEL {
 	public function getMagTotalCredit():float {return $this->_magTotalCredit;}
 	public function setOwed(float $float) {$this->_owed=$float;}
 	public function getOwed():float {return $this->_owed;}
+	public function setSparc(float $float) {$this->_sparc=$float;}
+	public function getSparc():float {return $this->_sparc;}
 	public function setOwedCalc(string $string) {$this->_owedCalc=$string;}
 	public function getOwedCalc():string {return $this->_owedCalc;}
 	public function setMemberIdPayout(int $int) {$this->_memberIdPayout=$int;}
@@ -67,6 +70,7 @@ abstract class GrcPool_View_All_Orphans_MODELDAO extends TableDAO {
 		'mag' => array('type'=>'FLOAT','dbType'=>'decimal(9,2)'),
 		'magTotalCredit' => array('type'=>'FLOAT','dbType'=>'decimal(22,6)'),
 		'owed' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
+		'sparc' => array('type'=>'FLOAT','dbType'=>'decimal(16,8)'),
 		'owedCalc' => array('type'=>'STRING','dbType'=>'varchar(4000)'),
 		'memberIdPayout' => array('type'=>'INT','dbType'=>'int(11)'),
 		'poolId' => array('type'=>'INT','dbType'=>'smallint(2)'),
