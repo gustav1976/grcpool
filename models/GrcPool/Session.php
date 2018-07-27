@@ -1,4 +1,8 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Session_MODEL {
 
 	public function __construct() { }
@@ -11,6 +15,7 @@ abstract class GrcPool_Session_MODEL {
 	private $_username = '';
 	private $_lastUsed = 0;
 	private $_remember = 0;
+	private $_disable = 0;
 	public function setId(int $int) {$this->_id=$int;}
 	public function getId():int {return $this->_id;}
 	public function setUserid(int $int) {$this->_userid=$int;}
@@ -26,10 +31,12 @@ abstract class GrcPool_Session_MODEL {
 	public function getLastUsed():int {return $this->_lastUsed;}
 	public function setRemember(int $int) {$this->_remember=$int;}
 	public function getRemember():int {return $this->_remember;}
+	public function setDisable(int $int) {$this->_disable=$int;}
+	public function getDisable():int {return $this->_disable;}
 }
 
 abstract class GrcPool_Session_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'session';
 	protected $_model = 'GrcPool_Session_OBJ';
 	protected $_primaryKey = 'id';
@@ -41,5 +48,6 @@ abstract class GrcPool_Session_MODELDAO extends TableDAO {
 		'username' => array('type'=>'STRING','dbType'=>'varchar(255)'),
 		'lastUsed' => array('type'=>'INT','dbType'=>'int(11)'),
 		'remember' => array('type'=>'INT','dbType'=>'tinyint(1)'),
+		'disable' => array('type'=>'INT','dbType'=>'tinyint(1)'),
 	);
 }

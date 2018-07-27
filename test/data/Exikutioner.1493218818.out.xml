@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?><acct_mgr_reply>
+			<name>grcpool.com</name>
+			<signing_key>1024
+b0bc5bc6722bd70d333b401ada9a9565c807e775ffc27f124fc54714d5ee7f4f
+0ba76ab0cdca1276799c03278c798522dc0054c0db49f118b5755bc7310a56fc
+e73144ac178b785f677e320166041f165e777160ceaea2952f5ee4914c875d7b
+55d93d4ba3a34663f9921fc95eaddd21408ba1e0f9facce691a3b6b1792107e9
+0000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000010001
+.</signing_key>
+			<global_preferences>
+				<mod_time>0.000000</mod_time>
+			</global_preferences>
+		<opaque><hostId>799</hostId></opaque>
+<account>
+<url>http://einstein.phys.uwm.edu/</url>
+<url_signature>7dc604a196d974856c76a446a2294b7b381a864898e70a1e58da9f227f4ea381
+3081fd1027b1ea3946884cd99db5ed5bfd56d5e31c991b7ee5dde8a9c6fd1d33
+35db3a9933f687aca53216e428d51b3fba742a94c956d613238af3eb59a53d28
+dbd79db28cdd1bfbfd6a56348a7145b432643a9d14c5b854e07066047ac6282e
+.</url_signature>
+<authenticator>939810_ad8c12f70297297fa781c8a4720fcc84</authenticator>
+<resource_share>1000</resource_share>
+<no_ati>1</no_ati>
+<no_rsc>ATI</no_rsc>
+<no_intel>1</no_intel>
+<no_rsc>intel_gpu</no_rsc>
+</account>
+
+<account>
+<url>http://srbase.my-firewall.org/sr5/</url>
+<url_signature>71803e1d5455810760f782bb2160bc23ba1e362f342f9e4141730b11120f9e47
+bf6b6b076b00422555201937cd6d8b915f654e22c6339de1c6abe53417b8aa79
+7d5fae7e12f8666233d5249f1e0b7d787e20f872c945169d3e4a71c565a69e96
+2f89d7592fb2ea8324848fd46698b9042ef25f3393d2c43f6ef0fdfef69b668e
+.</url_signature>
+<authenticator>947_06fdd48db05266464a5df579561e89e9</authenticator>
+<resource_share>1000</resource_share>
+<no_ati>1</no_ati>
+<no_rsc>ATI</no_rsc>
+<no_intel>1</no_intel>
+<no_rsc>intel_gpu</no_rsc>
+</account>
+
+<account>
+<url>http://www.cosmologyathome.org/</url>
+<url_signature>89b7e8a9990391bfb122f2f2111bfcd437a8edd060f569fd320228f4664c63ed
+b6a73322ed604bdb27152b3bcd15b1bb46284ae8179e4bc54d777f8086ce7f23
+4a1040d9d5b9a5a1467211fb981c60514f25be7c4d0c769891d4bce012d1621c
+bafdf6883b5839b86da5c74d92c842e1cfe0a22b04a18d2e3776c23b462074fc
+.</url_signature>
+<authenticator>1452051_77cfe37cc21b0c33b3e7233c825d0da9</authenticator>
+<resource_share>1000</resource_share>
+<no_ati>1</no_ati>
+<no_rsc>ATI</no_rsc>
+<no_intel>1</no_intel>
+<no_rsc>intel_gpu</no_rsc>
+</account>
+
+<account>
+<url>http://yafu.myfirewall.org/yafu/</url>
+<url_signature>3c31d391a692fee4a2a757d01c747d51059872ee622c368efc064b0858cd252d
+d04fce50028ab062c481fedaccfd27d5d1f210d73a09485d41f8c60871590c48
+b792de36e594b80c8ec082270a9aa9ebea6f1200b88b35998ca6526f13355469
+9703f455886fa26753cad2494df340cddae04ee9697d203841d7df177bc81988
+.</url_signature>
+<authenticator>76013_814dbae8132fa4f9fc5000e4587c3b89</authenticator>
+<resource_share>1000</resource_share>
+<no_ati>1</no_ati>
+<no_rsc>ATI</no_rsc>
+<no_intel>1</no_intel>
+<no_rsc>intel_gpu</no_rsc>
+</account>
+</acct_mgr_reply>

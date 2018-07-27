@@ -13,7 +13,8 @@ $input->setLabel('username');
 $form->addField($input);
 
 $input = new Bootstrap_ReCaptchaInput();
-$input->setSiteKey(GOOGLE_RECAPTCHA_PUBLIC);
+$property = new Property(Constants::PROPERTY_FILE);
+$input->setSiteKey($property->get('googleCaptchaPublic'));
 $form->addField($input);
 
 $form->setButtons(

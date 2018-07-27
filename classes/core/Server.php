@@ -15,13 +15,6 @@ class Server {
  	static function goHome() {
  		header("Location: ".getenv("SERFVER_NAME").'/');exit;	
  	}
- 	static function isDevelopment() {
- 		if (strstr(dirname(__FILE__),"sandbox")) {
- 			return true;
- 		} else {
- 			return false;
- 		}
- 	}	
  	static function go($path,$perm = false) {
  		if ($perm) {
  			header("HTTP/1.1 301 Moved Permanently"); 	

@@ -1,6 +1,26 @@
 <?php
 class GrcPool_Utils {
 	
+	public static function isHuman($value) {
+		$property = new Property(Constants::PROPERTY_FILE);
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+				CURLOPT_SSL_VERIFYPEER => false,
+				CURLOPT_RETURNTRANSFER => 1,
+				CURLOPT_URL => 'https://www.google.com/recaptcha/api/siteverify?secret='.$property->get('googleCaptchaPrivate').'&response='.$value,
+		));
+		$gResult = json_decode(curl_exec($curl),true);
+		if (!$gResult['success']) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public static function getVoteWeight($mag,$balance,$moneySupply) {
+		return (($mag * ($moneySupply/Constants::GRC_MAG_MULTIPLIER + 0.01)/5.67) + $balance);
+	}
+	
 	public static function calculateMag($hostRac,$projRac,$numberOfProjects,$precision) {
 		return Utils::truncate(Constants::GRC_MAG_MULTIPLIER*(($hostRac/$projRac)/$numberOfProjects),$precision);
 	}
@@ -10,15 +30,19 @@ class GrcPool_Utils {
 	}
 	
 	public static function getCpidUrl($cpid) {
-		return 'http://gridcoinstats.eu/cpid.php?a=view&id='.$cpid;
+		return 'http://www.gridcoinstats.eu/cpid/'.$cpid;
 	}
 	
-	public static function getTxUrl($tx) {
-		return 'http://gridcoinstats.eu/tx.php?id='.$tx;
+	public static function getTxUrl($tx,$currency = Constants::CURRENCY_GRC) {
+		if ($currency == Constants::CURRENCY_SPARC) {
+			return 'https://etherscan.io/tx/'.$tx;
+		} else {
+			return 'http://www.gridcoinstats.eu/tx/'.$tx;
+		}
 	}
 	
 	public static function getGrcAddressUrl($addr) {
-		return 'http://gridcoinstats.eu/addresses.php?a=view&id='.$addr;
+		return 'http://www.gridcoinstats.eu/address/'.$addr;
 	}
 	
 	public static function displayCalculation($str) {
@@ -26,30 +50,24 @@ class GrcPool_Utils {
 		if (strlen($str) > 200) {
 			$str = '<textarea style="width:100%;height:100px;">'.$str.'</textarea>';
 		} else {
-			$str = str_replace('+','+<br/>',substr($str,1));
+			$str = str_replace('+','+<br/>',$str);
 		}
 		return $str;
 	}
 	
-	public static function getDaemonForEnvironment() {
-	
+	public static function getDaemonForPool($poolId = 1) {
 		$daemon = new GridcoinDaemon();
-		if (PHP_OS == 'WINNT' || PHP_OS == 'Darwin') {
-			$daemon->setPath('C:\PROGRA~2\GridcoinResearch\gridcoinresearchd.exe');
-			$daemon->setDataDir('c:\users\brianb~1\appdata\roaming\gridcoinresearch');
-		} else {
-			$PROPERTY = new Property(dirname(__FILE__).'/../../../properties/grcpool.props.json');
-			if ($PROPERTY->get('test')) {
-				$daemon->setPath('/usr/bin/gridcoinresearchd');
-				$daemon->setDataDir('/home/bgb/.GridcoinResearch');
+		$props = Property::getValueFor(Constants::PROPERTY_DAEMONS);
+		if (isset($props[$poolId-1])) {
+			$daemon->setPath($props[$poolId-1]['path']);
+			$daemon->setDataDir($props[$poolId-1]['datadir']);
+			if (isset($props[$poolId-1]['testnet']) && $props[$poolId-1]['testnet']) {
 				$daemon->setTestnet(true);
-			} else {
-				$daemon->setPath('/usr/bin/gridcoinresearchd');
-				$daemon->setDataDir('/home/bgb/.GridcoinResearch');
 			}
+		} else {
+			return null;
 		}
 		return $daemon;
-		
 	}
 	
 }

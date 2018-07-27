@@ -1,4 +1,8 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Member_Host_MODEL {
 
 	public function __construct() { }
@@ -7,6 +11,7 @@ abstract class GrcPool_Member_Host_MODEL {
 	private $_memberId = 0;
 	private $_cpId = '';
 	private $_hostName = '';
+	private $_customName = '';
 	private $_clientVersion = '';
 	private $_model = '';
 	private $_osName = '';
@@ -27,6 +32,8 @@ abstract class GrcPool_Member_Host_MODEL {
 	public function getCpId():string {return $this->_cpId;}
 	public function setHostName(string $string) {$this->_hostName=$string;}
 	public function getHostName():string {return $this->_hostName;}
+	public function setCustomName(string $string) {$this->_customName=$string;}
+	public function getCustomName():string {return $this->_customName;}
 	public function setClientVersion(string $string) {$this->_clientVersion=$string;}
 	public function getClientVersion():string {return $this->_clientVersion;}
 	public function setModel(string $string) {$this->_model=$string;}
@@ -54,7 +61,7 @@ abstract class GrcPool_Member_Host_MODEL {
 }
 
 abstract class GrcPool_Member_Host_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'member_host';
 	protected $_model = 'GrcPool_Member_Host_OBJ';
 	protected $_primaryKey = 'id';
@@ -63,6 +70,7 @@ abstract class GrcPool_Member_Host_MODELDAO extends TableDAO {
 		'memberId' => array('type'=>'INT','dbType'=>'int(11)'),
 		'cpId' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'hostName' => array('type'=>'STRING','dbType'=>'varchar(100)'),
+		'customName' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'clientVersion' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'model' => array('type'=>'STRING','dbType'=>'varchar(200)'),
 		'osName' => array('type'=>'STRING','dbType'=>'varchar(200)'),

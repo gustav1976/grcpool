@@ -1,8 +1,52 @@
 <?php
-$webPage->setPageTitle('Two Factor Authentication');
+
+$webPage->addBreadcrumb('account','user','/account');
 
 if ($this->view->twoFactor) {
 	
+	$form = new Bootstrap_Form();
+	$form->setAction('/account/twoFactorAuth');
+	
+	$input = new Bootstrap_StaticInput();
+	$input->setLabel('');
+	$input->setInputSize(8);
+	$input->setDefault('
+		2FA will always be needed for making account changes (password, grc address, etc...) but you have the option
+		to disable it for login.
+	');
+	$form->addField($input);
+	
+	$input = new Bootstrap_CheckboxInput();
+	$input->setLabel('Use for login');
+	$input->setId('login');
+	$input->setValue(1);
+	$input->setDefault($this->view->login);
+	$form->addField($input);
+	
+	$input = new Bootstrap_TextInput();
+	$input->setId('token');
+	$input->setLabel('Token');
+	$input->setMaxSize(6);
+	$input->setHelp('the code from your 2FA device');
+	$input->setDefault('');
+	$form->addField($input);
+
+	$form->setButtons('
+		<input type="hidden" name="cmd" value="options"/>
+		<button id="" class="btn btn-primary type="submit">Update 2FA Option</button>
+	');
+	
+	$panel = new Bootstrap_Panel();
+	$panel->setContext('info');
+	$panel->setHeader('Two Factor Options');
+	$panel->setContent(
+		$form->render()
+	);
+	$webPage->append('
+		'.$panel->render().'
+	');
+	
+
 	$form = new Bootstrap_Form();
 	$form->setAction('/account/twoFactorAuth');
 	
@@ -23,7 +67,7 @@ if ($this->view->twoFactor) {
 
 	$input = new Bootstrap_TextInput();
 	$input->setId('password');
-	$input->setLabel('Accont Password');
+	$input->setLabel('Account Password');
 	$input->setPassword(true);
 	$input->setDefault('');
 	$form->addField($input);
@@ -36,9 +80,13 @@ if ($this->view->twoFactor) {
 	$input->setDefault('');
 	$form->addField($input);
 	
+	$panel = new Bootstrap_Panel();
+	$panel->setContext('info');
+	$panel->setHeader('Disable Two Factor Authentication');
+	$panel->setContent($form->render());
 	
 	$webPage->append('
-		'.$form->render().'
+		'.$panel->render().'
 	');
 	
 } else {
@@ -47,7 +95,7 @@ if ($this->view->twoFactor) {
 	$form->setAction('/account/twoFactorAuth');
 
 	$input = new Bootstrap_StaticInput();
-	$input->setLabel('<i class="fa fa-warning fa-2x"></i>');
+	$input->setLabel('');
 	$input->setInputSize(8);
 	$input->setDefault('
 		For extra security, you can turn on two factor authentication. In order to use 2FA, you need to scan the QR Code below or enter the key into your 2FA device.
@@ -74,7 +122,7 @@ if ($this->view->twoFactor) {
 
 	$input = new Bootstrap_TextInput();
 	$input->setId('password');
-	$input->setLabel('Accont Password');
+	$input->setLabel('Account Password');
 	$input->setPassword(true);
 	$input->setDefault('');
 	$form->addField($input);
@@ -87,17 +135,19 @@ if ($this->view->twoFactor) {
 	$input->setDefault('');
 	$form->addField($input);
 	
-	
 	$form->setButtons('
 		<input type="hidden" name="cmd" value="activate"/>
 		<button id="" class="btn btn-primary type="submit">Activate 2FA Now</button>
 	');
+
+	$panel = new Bootstrap_Panel();
+	$panel->setContext('info');
+	$panel->setHeader('Two Factor Authentication');
+	$panel->setContent($form->render());
 	
 	$webPage->append('
-		'.$form->render().'
+		'.$panel->render().'
 	');
 	
 }
-
-
 

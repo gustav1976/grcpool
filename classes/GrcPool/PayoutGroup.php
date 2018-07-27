@@ -18,9 +18,9 @@ class GrcPool_PayoutGroup {
 	public function getOwed():float {
 		$amount = 0;
 		foreach ($this->objs as $obj) {
-			$amount += $obj->getOwed()*Constants::COIN;
+			$amount += $obj->getOwed()*COIN;
 		}
-		return $amount/Constants::COIN;
+		return $amount/COIN;
 	}
 	
 	/**
@@ -48,7 +48,10 @@ class GrcPool_PayoutGroup {
 	}
 
 	public function getId():int {
-		return $this->objs[0]->getId();
+		return $this->getMemberId();
+	}
+	public function getMemberId():int {
+		return $this->objs[0]->getMemberId();
 	}
 	
 	public function getUsername():string {

@@ -13,6 +13,11 @@ class GrcPool_Member_Notice_OBJ extends GrcPool_Member_Notice_MODEL {
 
 class GrcPool_Member_Notice_DAO extends GrcPool_Member_Notice_MODELDAO {
 
+	public function deleteWithMemberId($memberId) {
+		$sql = 'delete from '.$this->getFullTableName().' where memberId = '.$memberId;
+		$this->executeQuery($sql);
+	}
+	
 	public function isNoticeForMembeAndId($memberId,$noticeId) {
 		 $obj = $this->fetch(array($this->where('noticeId',$noticeId),$this->where('memberId',$memberId)));
 		 return $obj!=null?true:false;

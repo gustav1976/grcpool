@@ -10,7 +10,7 @@ final class PayoutGroupTest extends TestCase {
 	public function setUp() {
 		$this->group = new GrcPool_PayoutGroup();
 		$obj = new GrcPool_View_Member_Host_Project_Credit_OBJ();
-		$obj->setId(1);
+		$obj->setMemberId(1);
 		$obj->setCreditId(1);
 		$obj->setGrcAddress('S1234567890');
 		$obj->setOwed(10.12345678);
@@ -20,7 +20,7 @@ final class PayoutGroupTest extends TestCase {
 		$this->group->add($obj);
 		
 		$obj = new GrcPool_View_Member_Host_Project_Credit_OBJ();
-		$obj->setId(1);
+		$obj->setMemberId(1);
 		$obj->setCreditId(2);
 		$obj->setGrcAddress('S1234567890');
 		$obj->setOwed(10.12345678);

@@ -9,17 +9,29 @@ class BoincApi_Rpc {
 	private $member;
 	private $host;
 	private $error;
-	private $rawName;
+	private $rawName = '';
+	private $rawDomainName = '';
 	private $log;
+	private $attachedProjects;
+	private $attachedProjectsUrl;
 
 	public function getRawName() {
 		$pos1 = strpos($this->rawXml,'<name>');
 		$pos2 = strpos($this->rawXml,'</name>');
 		$rawName = substr($this->rawXml,$pos1+6,$pos2-$pos1-6);
-		if (strlen($rawName > 50)) {
+		if (strlen($rawName) > 50) {
 			return 'unknown';
 		}
-		return $rawName;
+		return preg_replace( '/[^a-z0-9]+/', '-', strtolower( $rawName ) );
+	}
+	public function getRawDomainName() {
+		$pos1 = strpos($this->rawXml,'<domain_name>');
+		$pos2 = strpos($this->rawXml,'</domain_name>');
+		$rawDomainName = substr($this->rawXml,$pos1+13,$pos2-$pos1-13);
+		if (strlen($rawDomainName) > 50) {
+			$rawDomainName = substr($rawDomainName,0,50);
+		}
+		return preg_replace( '/[^a-z0-9]+/', '-', strtolower( $rawDomainName ) );
 	}
 		
 	public function getName() {
@@ -33,6 +45,9 @@ class BoincApi_Rpc {
 		$this->log = $log;
 		$this->error = '';
 		$this->rawName = $this->getRawName();
+		$this->rawDomainName = $this->getRawDomainName();
+		$this->attachedProjects = array();
+		$this->attachedProjectsUrl = array();
 		try {
 			libxml_use_internal_errors(true);	
 			$this->xml = simplexml_load_string($xml);
@@ -57,7 +72,7 @@ class BoincApi_Rpc {
 	 					}
 	 					$this->error = 'BOINC may be submitting invalid data. [1]';
 	 					if ($log) {
-	 	    				file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.error.in.xml',$error."\n\n".'----------------------------'.$xml.'-------------------------------');
+	 						$this->logIt($error."\n\n".'----------------------------'.$xml.'-------------------------------','error.in',true);
 	 					}
  					}
  				}
@@ -65,11 +80,27 @@ class BoincApi_Rpc {
 		} catch (Throwable $t) {
 			$this->error = 'BOINC may be submitting invalid data. [2]';
 			if ($log) {
-				file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.error.in.xml',$xml);
+				$this->logIt($xml,'error.in');
 			}
 		}
 		if ($log) {
-			file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.in.xml',$xml);
+			$this->logIt($xml,'in');
+		}
+	}
+	
+	private function logIt($message,$req = 'in') {
+		try {
+			if (trim($this->rawName) == '') {
+				return;
+			}
+			$subDir = substr($this->rawName,0,1);
+			if (!is_dir(Constants::BOINC_XML_LOG_DIR.'/'.$subDir)) {
+				mkdir(Constants::BOINC_XML_LOG_DIR.'/'.$subDir);
+			}
+			$dir = 	Constants::BOINC_XML_LOG_DIR.'/'.$subDir.'/'.$this->rawName.'.'.time().'.'.$this->rawDomainName.'.'.$req.'.xml';
+			file_put_contents($dir,$message);
+		} catch (Throwable $t) {
+			error_log($t);
 		}
 	}
 	
@@ -81,26 +112,15 @@ class BoincApi_Rpc {
 		$accountDao = new GrcPool_Boinc_Account_DAO();
 		$dao = new GrcPool_Member_DAO();
 		$hostProjectDao = new GrcPool_Member_Host_Project_DAO();
-		$this->member = $dao->initWithUsername((String)$this->xml->name);
+		$urlDao = new GrcPool_Boinc_Account_Url_DAO();
+		$creditDao = new GrcPool_Member_Host_Credit_DAO();
+		$keyDao = new GrcPool_Boinc_Account_Key_DAO();
+		if (trim((String)$this->xml->name) != '') {
+			$this->member = $dao->initWithUsername((String)$this->xml->name);
+		}
 		$this->memberValid = $this->member==null?false:$this->member->getPasswordHash()==(String)$this->xml->password_hash;
 		
 		if ($this->memberValid) {
-			
-			// log last XML request in Database
-			if ((String)$this->xml->opaque->hostId) {
-				// cannot trust host actually in log
-				$xmlDao = new GrcPool_Member_Host_Xml_DAO();
-				$xmlObj = $xmlDao->getWithMemberIdAndHostId($this->member->getId(),(String)$this->xml->opaque->hostId);
-				if ($xmlObj == null) {
-					$xmlObj = new GrcPool_Member_Host_Xml_OBJ();
-				}
-				$xmlObj->setMemberId($this->member->getId());
-				$xmlObj->setHostId((String)$this->xml->opaque->hostId);
-				$xmlObj->setThetime(time());
-				$xmlObj->setXml(gzcompress($this->rawXml));
-				$xmlDao->save($xmlObj);
-				if ($echo) echo "LOGGED XML IN DATABASE\n";
-			}
 			
 			$hostDao = new GrcPool_Member_Host_DAO();
 
@@ -122,10 +142,12 @@ class BoincApi_Rpc {
 			if ($this->host == null) {
 				if ($this->xml->project->hostid) {
 					$projectDao = new GrcPool_Member_Host_Project_DAO();
-					$testProj = $projectDao->getWithMemberIdAndDbidAndProjectUrl($this->member->getId(),(String)$this->xml->project->hostid,(String)$this->xml->project->url);
-					if ($testProj != null) {
-						if ($echo) echo "FOUND HOST WITH PROJECT DBID AND URL\n";
-						$this->host = $hostDao->initWithKey($testProj->getHostId());
+					$urlObj = $urlDao->initWithUrl((String)$this->xml->project->url);
+					if ($urlObj) {
+						$testProj = $projectDao->getWithMemberIdAndDbidAndAccountId($this->member->getId(),(String)$this->xml->project->hostid,$urlObj->getAccountId());
+						if ($testProj != null) {
+							$this->host = $hostDao->initWithKey($testProj->getHostId());
+						}
 					}
 				} else {
 					if ($echo) echo "NO HOST DBID\n";
@@ -154,45 +176,55 @@ class BoincApi_Rpc {
 			$numberOfCudas = 0;
 			$numberOfAmds = 0;
 			$numberOfIntel = 0;
-			if ($this->xml->host_info->p_ncpus) {
+			if (isset($this->xml->host_info->p_ncpus)) {
 				$numberOfCpus = (String)$this->xml->host_info->p_ncpus;
 			}
-			if ($this->xml->host_info->coprocs->coproc_intel_gpu) {
+			if (isset($this->xml->host_info->coprocs->coproc_intel_gpu)) {
 				$numberOfIntel = (String)$this->xml->host_info->coprocs->coproc_intel_gpu->count;
 			}
-			if ($this->xml->host_info->coprocs->coproc_cuda) {
+			if (isset($this->xml->host_info->coprocs->coproc_cuda)) {
 				$numberOfCudas = (String)$this->xml->host_info->coprocs->coproc_cuda->count;
 			}
-			if ($this->xml->host_info->coprocs->coproc_ati) {
+			if (isset($this->xml->host_info->coprocs->coproc_ati)) {
 				$numberOfAmds = (String)$this->xml->host_info->coprocs->coproc_ati->count;
 			}
 
-			$this->host->setNumberOfCpus($numberOfCpus);
-			$this->host->setNumberOfCudas($numberOfCudas);
-			$this->host->setNumberOfAmds($numberOfAmds);
-			$this->host->setNumberOfIntels($numberOfIntel);
+			$this->host->setNumberOfCpus(htmlspecialchars($numberOfCpus));
+			$this->host->setNumberOfCudas(htmlspecialchars($numberOfCudas));
+			$this->host->setNumberOfAmds(htmlspecialchars($numberOfAmds));
+			$this->host->setNumberOfIntels(htmlspecialchars($numberOfIntel));
 
 			$this->host->setLastContact(time());
-			$this->host->setClientVersion((String)$this->xml->client_version);
-			$this->host->setCpId(((String)$this->xml->host_cpid));
-			$this->host->setHostName((String)$this->xml->domain_name);
+			$this->host->setClientVersion(htmlspecialchars((String)$this->xml->client_version));
+			$this->host->setCpId(htmlspecialchars((String)$this->xml->host_cpid));
+			$this->host->setHostName(htmlspecialchars((String)$this->xml->domain_name));
 			$this->host->setMemberId($this->member->getId());
-			$this->host->setModel((String)$this->xml->host_info->p_model);
-			$this->host->setOsName((String)$this->xml->host_info->os_name);
-			$this->host->setOsVersion((String)$this->xml->host_info->os_version);
-			$this->host->setProductName((String)$this->xml->host_info->product_name);
-			$this->host->setVirtualBoxVersion((String)$this->xml->host_info->virtualbox_version);
+			$this->host->setModel(htmlspecialchars((String)$this->xml->host_info->p_model));
+			$this->host->setOsName(htmlspecialchars((String)$this->xml->host_info->os_name));
+			$this->host->setOsVersion(htmlspecialchars((String)$this->xml->host_info->os_version));
+			$this->host->setProductName(htmlspecialchars((String)$this->xml->host_info->product_name));
+			$this->host->setVirtualBoxVersion(htmlspecialchars((String)$this->xml->host_info->virtualbox_version));
 			$hostDao->save($this->host);
 			
  			foreach ($this->xml->project as $project) {
- 				$account = $accountDao->initWithUrl((String)$project->url);
- 				if ($account != null && $account->getId() != 0 && (String)$project->account_key == $account->getWeakKey()) { // key indicates if using pool account
+ 				$urlObj = $urlDao->initWithUrl((String)$project->url);
+ 				$account = null;
+ 				if ($urlObj) {
+ 					$account = $accountDao->initWithKey($urlObj->getAccountId());
+ 				}
+ 				$weakKey = '';
+ 				if ($account) {
+ 					$keyObj = $keyDao->getWithAccountAndPool($account->getId(), $this->member->getPoolId());
+ 					if ($keyObj) {
+ 						$weakKey = $keyObj->getWeak();
+ 					}
+ 				}
+ 				if ($account != null && $account->getId() != 0 && (String)$project->account_key != "" && (String)$project->account_key == $weakKey) { // key indicates if using pool account
 	 				$dbid = (String)$project->hostid;
 	 				$cpid = (String)$this->xml->host_cpid;
-	 				$projectUrl = (String)$project->url;
-	 				$obj = $hostProjectDao->getWithMemberIdAndDbidAndProjectUrl($this->member->getId(),$dbid,$projectUrl);
+	 				$obj = $hostProjectDao->getWithMemberIdAndDbidAndAccountId($this->member->getId(),$dbid,$account->getId());
 	 				if ($obj == null) {
-	 					$obj = $hostProjectDao->getWithMemberIdAndCpidAndProjectUrl($this->member->getId(),$cpid,$projectUrl);
+	 					$obj = $hostProjectDao->getWithMemberIdAndCpidAndAccountIdAndPoolId($this->member->getId(),$cpid,$account->getId(),$this->member->getPoolId());
 	 					if ($obj == null) {
 	 						//$obj = new GrcPool_Member_Host_Project_OBJ();
 	 						//$obj->setAttached(1);
@@ -200,21 +232,56 @@ class BoincApi_Rpc {
 	 						//$obj->setResourceShare(100);
 	 						// I would have liked to add the project if they sere using the weak key here, but could open up security problems if any dbid was accpeted
 	 						// so lets restrict projects being added only from account pages
-	 						$this->error .= $projectUrl.' is currently not in your account, please login to the pool and add it first.';
+	 						$this->error .= $account->getName().' is not in your pool account, but was found in your client.';
 	 						continue;
-	 						if ($echo) echo "CREATED NEW PROJECT FOR HOST\n";
 	 					} else {
-	 						if ($echo) echo "FOUND PROJECT WITH CPID\n";
+	 						if ($dbid == 0) {
+	 							$this->error .= $account->getName().' does not have a valid ID from the project site. Please try updating the project in your BOINC client.';
+	 							continue;
+	 						}
+	 						if ($obj->getHostDbid() != 0) {
+	 							$testDbid = $hostProjectDao->getWithHostDbIdAndAccountId($dbid,$account->getId());
+	 							if ($testDbid && count($testDbid) > 0) {
+	 								$this->error .= $account->getName().'  appears to already have a host in the pool. Usually this is a MAC address problem. You may need to contact support '.Constants::ADMIN_EMAIL_ADDRESS.' for help.';
+	 							} else {
+	 								$this->error .= $account->getName().'  You may have a new ID from the project. You can try deleting the project from the pool and adding it back in. Contact support '.Constants::ADMIN_EMAIL_ADDRESS.' for more help.';
+	 							}
+	 							continue;	
+	 						}
 	 					}
 	 				} else {
-	 					if ($echo) echo "FOUND PROJECT WITH DBID\n";
+	 					$this->attachedProjects[$account->getId()] = 1;
+	 					$this->attachedProjectsUrl[$account->getId()] = $urlObj;
 	 				}
 	 				if ($obj->getHostDbid() != $dbid) {
 	 					// dbid changing, so lets validate it is not duplicate
-	 					$testObj = $hostProjectDao->getWithHostDbIdAndProjectUrl($dbid, $projectUrl);
+	 					$testObj = $hostProjectDao->getWithHostDbIdAndAccountId($dbid, $account->getId());
 	 					if (count($testObj)) {
-	 						$this->error .= $projectUrl.' appears to already be in the pool. Please remove the prior project before trying to add with this host.';
+	 						$this->error .= $account->getName().' host already exists in the pool. You may need to contact support '.Constants::ADMIN_EMAIL_ADDRESS.' for help.';
 	 						continue;
+	 					}
+	 					$blackListDao = new GrcPool_Boinc_Host_Blacklist_DAO();
+	 					$blackList = $blackListDao->initWithAccountIdAndDbid($account->getId(),$dbid);
+	 					if ($blackList) {
+	 						// this will cause the project dbid to stay zero, so warning message will persist on site
+	 						$blackList->setBlockMemberId($this->member->getId());
+	 						$blackListDao->save($blackList);
+	 						$this->error .= $account->getName().' host has been blacklisted, please contact '.Constants::ADMIN_EMAIL_ADDRESS.' for support.';
+	 						continue;
+	 					}
+	 					// if changing a non zero hostdbid, the prevoius dbid should be blacklisted
+	 					if ($obj->getHostDbid() != 0) {
+	 						// lets black list this id
+	 						$creditObj = $creditDao->initWithAccountIdAndDbid($account->getId(),$obj->getHostDbid());
+	 						$blackListObj = new GrcPool_Boinc_Host_Blacklist_OBJ();
+	 						$blackListObj->setAccountId($account->getId());
+	 						$blackListObj->setHostDbid($obj->getHostDbid());
+	 						$blackListObj->setMemberId($this->member->getId());
+	 						$blackListObj->setThetime(time());
+	 						if ($creditObj) {
+	 							$blackListObj->setOwed($creditObj->getOwed());
+	 						}
+	 						$blackListDao->save($blackListObj);
 	 					}
 	 				}
 	 				$obj->setHostDbid((String)$project->hostid);
@@ -222,6 +289,9 @@ class BoincApi_Rpc {
 	 				//$obj->setMemberId($this->member->getId());
 	 				//$obj->setProjectUrl((String)$project->url);
 	 				$hostProjectDao->save($obj);
+ 				} else if ($account != null && $account->getId() != 0) {
+ 					// attached using a personal account
+ 					$this->attachedProjects[$account->getId()] = 0;
  				}
  			}
 		}
@@ -241,12 +311,12 @@ class BoincApi_Rpc {
 		$xml = '<?xml version="1.0" encoding="UTF-8" ?>';
 		$xml .= '<acct_mgr_reply>
 			<name>'.$config->getName().'</name>
-			<signing_key>'.URL_SIGNING_KEY.'</signing_key>
+			<signing_key>'.Constants::URL_SIGNING_KEY.'</signing_key>
 			<global_preferences></global_preferences>
 			<message>'.$msg.'</message><error>'.$msg.'</error>
 			</acct_mgr_reply>';
 		if ($this->log) {
-			file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.error.out.xml',$xml);
+			$this->logIt($xml,'error.out');
 		}
 		return $xml;
 	}
@@ -261,8 +331,10 @@ class BoincApi_Rpc {
 		$xml = '<?xml version="1.0" encoding="UTF-8" ?>';
 		$xml .= '<acct_mgr_reply>
 			<name>'.$config->getName().'</name>
-			<signing_key>'.URL_SIGNING_KEY.'</signing_key>
-			<global_preferences></global_preferences>
+			<signing_key>'.Constants::URL_SIGNING_KEY.'</signing_key>
+			<global_preferences>
+				<mod_time>0.000000</mod_time>
+			</global_preferences>
 		';
 		if ($this->host) {
 			$xml .= '<opaque><hostId>'.$this->host->getId().'</hostId></opaque>';
@@ -270,29 +342,60 @@ class BoincApi_Rpc {
 		if ($this->memberValid) {
 			$accountsDao = new GrcPool_Boinc_Account_DAO();
 			$hostProjectDao = new GrcPool_Member_Host_Project_DAO();
+			$keyDao = new GrcPool_Boinc_Account_Key_DAO();
+			$urlDao = new GrcPool_Boinc_Account_Url_DAO();
 			$hostProjects = $hostProjectDao->getWithMemberIdAndHostCpid($this->member->getId(),$this->xml->host_cpid);
 			foreach ($hostProjects as $hostProject) {
-				$account = $accountsDao->initWithUrl($hostProject->getProjectUrl());
-				$acct = new BoincApi_Account();
-				$acct->setUrl($hostProject->getProjectUrl());
-				$acct->setNo_ati($hostProject->getNoAtiGpu()|null);
-				$acct->setNo_cpu($hostProject->getNoCpu()|null);
-				$acct->setNo_cuda($hostProject->getNoNvidiaGpu()|null);
-				$acct->setNo_intel($hostProject->getNoIntelGpu()|null);
-				$acct->setResource_share($hostProject->getResourceShare());
-				$acct->setUrl_signature($account->getSignature());
-				$acct->setAuthenticator($account->getWeakKey());
-				if ($hostProject->getAttached()==0) {
-					$acct->setDetach(1);
+				if ($hostProject->getPoolId() != $this->member->getPoolId()) {continue;} // don't send it because it is on wrong pool
+				if ($hostProject->getAttached() == 2) {continue;} // special case, orphaned project
+				$account = $accountsDao->initWithKey($hostProject->getAccountId());
+				if ($account) {
+					$weakKey = '';
+					$key = $keyDao->getWithAccountAndPool($account->getId(),$this->member->getPoolId());
+					if ($key) {
+						$weakKey = $key->getWeak();
+					}
+					$attachedFlag = isset($this->attachedProjects[$hostProject->getAccountId()])?$this->attachedProjects[$hostProject->getAccountId()]:null;
+					
+					if ( // writing this out for legibility
+						($hostProject->getAttached() == 0 && $attachedFlag === null) || // pool detach, not in client 
+						($hostProject->getAttached() == 0 && $attachedFlag === 0) || // pool detach, in client incorrectly
+						($hostProject->getAttached() == 1 && $attachedFlag === 0) // pool attach, in client incorrectly
+					) { continue; }
+
+// 					if ($hostProject->getAttached()==0 && !isset($this->attachedProjects[$hostProject->getProjectUrl()])) {
+// 						// if project detached in pool but isnt in boinc, skip it, might cause BIONC crashes
+// 						continue;
+// 					}
+					
+					$acct = new BoincApi_Account();
+					
+					$urlObj = null;
+					if (isset($this->attachedProjectsUrl[$account->getId()])) {
+						$urlObj = $this->attachedProjectsUrl[$account->getId()]; // use what is already in client
+					} else {
+						$urlObj = $urlDao->initWithKey($account->getUrlId());
+					}
+					$acct->setUrl($urlObj->getUrl());
+					$acct->setNo_ati($hostProject->getNoAtiGpu()|null);
+					$acct->setNo_cpu($hostProject->getNoCpu()|null);
+					$acct->setNo_cuda($hostProject->getNoNvidiaGpu()|null);
+					$acct->setNo_intel($hostProject->getNoIntelGpu()|null);
+					$acct->setResource_share($hostProject->getResourceShare());
+					$acct->setUrl_signature($urlObj->getSignature());
+					$acct->setAuthenticator($weakKey);
+					if ($hostProject->getAttached()==0) {
+						$acct->setDetach(1);
+					}
+					$xml .= $acct->toXml();
 				}
-				$xml .= $acct->toXml();
 			}
 		} else {
 			$xml .= '<message>Authorization Failed</message><error>Authorization Failed</error>';			
 		}
-		$xml .= '</acct_mgr_reply>';
+		$xml .= '</acct_mgr_reply>';		
 		if ($this->log) {
-			file_put_contents('/backup/poolLogs/'.$this->rawName.'.'.time().'.out.xml',$xml);
+			$this->logIt($xml,'out');
 		}
 		return $xml;
 	}

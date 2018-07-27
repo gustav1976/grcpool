@@ -62,7 +62,7 @@ abstract class TableDAO extends DAO {
     			$sql .= ' limit '.$limit.' ';	
     		}
     	}    	 	
-       	//if (Utils_Server::isDevelopment()) {echo '<div style="width:400px;font-size:11px;background-color:lightyellow;padding:5px;border-bottom:1px solid black;">'.$sql.'</div>';}       	
+       	//echo '<div style="width:400px;font-size:11px;background-color:lightyellow;padding:5px;border-bottom:1px solid black;">'.$sql.'</div>';       	
     	$statement = $this->getDb()->prepare($sql);  
     	$this->getWhereBind($statement,$wheres);
    		$this->execute($statement);
@@ -288,6 +288,22 @@ abstract class TableDAO extends DAO {
     	$statement = $this->getDb()->prepare($sql);
     	$this->execute($statement);
 		return $this->initWithRows($statement->fetchAll(PDO::FETCH_ASSOC));    	
+    }
+    
+    public function fetchObj($objs,$where) {
+    	foreach ($objs as $obj) {
+    		$match = true;
+    		foreach ($where as $w) {
+    			if (call_user_func_array(array($obj,'get'.$w['field']), array()) !== $w['value']) {
+    				$match = false;
+    				break;
+    			}
+    		}
+    		if ($match) {
+    			return $obj;
+    		}
+    	}
+    	return null;
     }
     
     public function truncate() {

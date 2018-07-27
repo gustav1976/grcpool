@@ -2,7 +2,7 @@
 class GrcPool_WebPage {
 	public $title;
 	public $metaKeywords = 'gridcoin, pool, mining, boinc, science, research, cryptocurrency';
-	public $metaDescription = 'This is a Gridcoin Research Mining Pool. Join the pool, research, and earn Gridcoin!';
+	public $metaDescription = 'This is a Gridcoin Research Mining Pool. Join the pool, crunch, and earn Gridcoin!';
 	public $pageTitle;
 
 	private $head = '';
@@ -11,6 +11,7 @@ class GrcPool_WebPage {
 	private $secondaryNav = '';
 	private $homeBody = '';
 	private $isHome = false;
+	private $breadcrumbs = array();
 
 	public function setHome($b) {$this->isHome = $b;}
 	public function appendHomeBody($str) {$this->homeBody .= $str;}
@@ -29,14 +30,28 @@ class GrcPool_WebPage {
 	public function setPageTitle($str) {
 		$this->pageTitle = $str;
 	}
-
+	public function addBreadcrumb($title,$icon = '',$href='') {
+		array_push($this->breadcrumbs,array('title'=>$title,'link'=>$href,'icon'=>$icon));
+	}
 	private function renderPageTitle() {
 		return $this->pageTitle?'<div class="page-header rowpad" style="margin-top:10px;"><h1>'.$this->pageTitle.'</h1></div>':'';
 	}
-
+	private function renderBreadcrumb() {
+		$result = '';
+		if ($this->breadcrumbs) {
+			$result .= '<ol class="rounded breadcrumb hidden-xs" style="margin-bottom:20px;">';
+			$result .= '<li><a href="/"><i class="fa fa-home"></i> Home</a></li>';
+			foreach ($this->breadcrumbs as $idx => $crumb) {
+				$result .= '<li style="'.($crumb['link']!=""?'':'color:gray;').'" class="'.($idx+1 == count($this->breadcrumbs)?'':'').'">'.($crumb['link']!=""?'<a href="'.$crumb['link'].'">':'').''.($crumb['icon']!=""?'<i class="fa fa-'.$crumb['icon'].'"></i> ':'').$crumb['title'].''.($crumb['link']!=""?'</a>':'').'</li>';
+			}
+			$result .= '</ol>';
+		}
+		return $result;
+	}
 	private function getUserBar() {
 		global $USER;
 		$cache = new Cache();
+		$blockData = new BlockData($cache->get(Constants::CACHE_BLOCK_DATA));
 		$dao = new GrcPool_View_Member_Host_Project_Credit_DAO();
 		$owed = '';
 		if ($USER->getId() != 0) {
@@ -45,9 +60,7 @@ class GrcPool_WebPage {
 		return '
 			<div class="container" style="padding-top:20px;">
 				<div class="pull-right rowpadsmall">
-					<div class="fb-follow" data-href="https://www.facebook.com/gridcoinpool" data-layout="button_count" data-size="small" data-show-faces="false"></div>
-						&nbsp;|&nbsp;
-				'.($USER->getId() == 0?'
+					'.($USER->getId() == 0?'
 						<a href="/login"><i class="fa fa-power-off"></i> login</a>
 						&nbsp;|&nbsp;
 						<a href="/signup"><i class="fa fa-edit"></i> sign up</a>
@@ -62,11 +75,12 @@ class GrcPool_WebPage {
 						').'
  						'.($USER->getUsername()).'</a>
 						|
-						Owed: <a href="/account/payouts">'.number_format($owed,3,'.','').'</a>
+						Owed: <a href="/account/owed">'.number_format($owed,3,'.','').'</a>
 					').'
 				</div>
 				<div>
 					<small>
+						<a href="/content/block" style="color:black;text-decoration:underline;"><span id="blockHeight">'.$blockData->block.'</span></a> | 
 						grc: <i class="fa fa-bitcoin"></i><span id="btc_grc">'.$cache->get(Constants::CACHE_POLONIEX_GRC_VALUE).'</span>
 						|
 						btc: <i class="fa fa-dollar"></i><span id="btc_usd">'.$cache->get(Constants::CACHE_COINBASE_BTC_VALUE).'</span>
@@ -77,19 +91,45 @@ class GrcPool_WebPage {
 	}
 
 	private function getTestBanner() {
-		if (getenv("SERVER_NAME") == 'test.grcpool.com') {
-			$PROPERTY = new Property(dirname(__FILE__).'/../../../properties/grcpool.props.json');
-			if ($PROPERTY->get('test')) {
-				return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">This is the TEST System - All coins are testnet coins</div>';
+		if (getenv("SERVER_NAME") == 'test.grcpool.com' || PROPERTY::getValueFor('test')) {
+			return '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">This is the TEST System - All coins are testnet coins</div>';
+		} else {
+			$settingsDao = new GrcPool_Settings_DAO();
+			$online = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_ONLINE);
+			$return = '';
+			if (!$online) {
+				$return .= '<div style="padding:10px;color:white;font-weight:bold;background-color:darkred;text-align:center;">'.$settingsDao->getValueWithName(Constants::SETTINGS_GRC_CLIENT_MESSAGE).'</div>';
 			}
+			$message = $settingsDao->getValueWithName(Constants::SETTINGS_GRC_MESSAGE);
+			if ($message != '') {
+				$return .= '<div style="padding:11px;color:white;font-weight:bold;background-color:#333;text-align:center;">'.$message.'</div>';
+			}
+			return $return;
 		}
 	}
 	
 	public function display() {
+		global $USER;
+		$numberOfPolls = 0;
+		$pollDao = new GrcPool_Poll_Question_DAO();
+		$polls = $pollDao->getActivePolls();
+		$numberOfPolls = count($polls);
+		if ($USER->getId() != 0) {
+			$voteDao = new GrcPool_Poll_Vote_DAO();
+			$ids = $voteDao->getPollsVotedIn($USER->getId());
+			foreach ($polls as $poll) {
+				if (array_search($poll->getId(),$ids) !== false) {
+					$numberOfPolls--;
+				}
+			}
+		}
+		if ($numberOfPolls < 0) {
+			$numberOfPolls = 0;
+		}
 		echo '<!DOCTYPE html>
  		<html>
  			<head>
- 				<title>Gridcoin Research Pool '.$this->title.'</title>
+ 				<title>Gridcoin Pool '.$this->title.'</title>
  				<meta name="keywords" content="'.htmlspecialchars($this->metaKeywords).'"/>
  				<meta name="description" content="'.htmlspecialchars($this->metaDescription).'"/>
  				<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -98,7 +138,7 @@ class GrcPool_WebPage {
 				<link rel="icon" href="/favicon.ico?20170214" type="image/x-icon"> 
 				<link rel="stylesheet" href="/assets/libs/bootstrap/3.3.5/css/bootstrap.min.css"/>
 				<link rel="stylesheet" href="/assets/libs/fontAwesome/4.6.3/css/font-awesome.min.css"/>
-				<link rel="stylesheet" href="/assets/css/grcpool.css?20170207"/>	
+				<link rel="stylesheet" href="/assets/css/grcpool.css?20170714"/>	
 				<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 				<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
 				<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -115,20 +155,13 @@ class GrcPool_WebPage {
 				<!--<meta property="fb:admins" content=""/>-->
 				<meta property="og:image" content="https://www.grcpool.com/assets/images/gpLogo1200.png"/>
  				'.$this->head.'
+				<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css" />
  			</head>
- 			<body style="margin-top:0px;">
+ 			<body>
 				'.$this->getTestBanner().'
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1836912156576334";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, \'script\', \'facebook-jssdk\'));</script> 			
 				'.($this->isHome?'<div style="background-repeat:no-repeat;background-image:url(/assets/images/pool.jpg)">':'').'
 	 				'.$this->getUserBar().'
-		 			<div class="container">
+		 			<div class="container" style="margin-bottom:20px;">
 						<nav class="navbar navbar-inverse" style="margin-bottom:10px;">
 			  				<div class="container-fluid">
 			    				<div class="navbar-header">
@@ -150,15 +183,38 @@ class GrcPool_WebPage {
 			          						<ul class="dropdown-menu">
 			            						<li><a href="/about/fees">Fees and Donations</a></li>
 		 										<li><a href="/about/calculations">Calculations</a></li>
-		 										<li><a href="/about/hotWallet">Pool Hot Wallet</a></li>
-			         							</ul>
+		 										<li><a href="/about/hotWallet">Pool Staking Wallet</a></li>
+												<li><a href="/about/sparc">SPARC Network</a></li>
+		 										<li><a href="/about/system">System Status</a></li>
+			         						</ul>
 								        </li>
-		 								<li class=""><a href="/report">Reports</a></li>
-		 								<li class=""><a href="/project">Projects</a></li>
-		        						<li class=""><a href="/payout">Payouts</a></li>
+		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/project')?'active':'').'">
+			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
+			          						<ul class="dropdown-menu">
+			            						<li><a href="/project/choose">Choosing a Project</a></li>
+		 										<li><a href="/project/poolStats">Pool Status</a></li>
+		         							</ul>
+								        </li>		 								
+		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/polls')?'active':'').'">
+			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Polls '.($numberOfPolls?'<span class="badge">'.$numberOfPolls.'</span>':'').'<span class="caret"></span></a>
+			          						<ul class="dropdown-menu">
+			            						<li><a href="/polls/index">Current Polls</a></li>
+		 										<li><a href="/polls/complete">Completed Polls</a></li>
+		         							</ul>
+								        </li>		 								
+		 								<li class="'.(strstr($_SERVER['REQUEST_URI'],'/report')?'active':'').'"><a href="/report">Reports</a></li>	 								
+		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/payout')?'active':'').'">
+			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Payouts <span class="caret"></span></a>
+			          						<ul class="dropdown-menu">
+												<li><a href="/payout/grc">Gridcoin</a></li>
+			            						<li><a href="/payout/sparc">SPARC</a></li>
+		         							</ul>
+								        </li>
+
 		 								<li class="dropdown '.(strstr($_SERVER['REQUEST_URI'],'/help')?'active':'').'">
 			          						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Help <span class="caret"></span></a>
 			          						<ul class="dropdown-menu">
+												<li><a href="/help/calculators">Calculators</a></li>
 			            						<li><a href="/help/chooseProject">Choosing a Project</a></li>
 		 										<li><a href="/help/android">Pool on Android</a></li>
 		         							</ul>
@@ -167,9 +223,21 @@ class GrcPool_WebPage {
 			    				</div>
 			  				</div>
 						</nav>
+						<div>
+							<div class="pull-right" style="margin-left:5px;">
+								<div class="g-ytsubscribe" data-channelid="UC7HniwuUMx4EXlB2OXG89BA" data-layout="default" data-count="default"></div>
+							</div>
+							<div class="pull-right"  style="margin-left:5px;height:24px;border-radius:3px;">
+								<a style="" href="https://twitter.com/grcpool" class="twitter-follow-button" data-show-count="false">Follow @grcpool</a>
+							</div>
+							<div class="pull-right" style="height:24px;border-radius:3px;">
+								<div style="" class="fb-follow" data-href="https://www.facebook.com/gridcoinpool" data-layout="button_count" data-size="small" data-show-faces="false"></div>
+							</div>
+						</div>
+						<br clear="all"/>
 		 			</div>
-	 	
 	 				<div class="container">
+						'.$this->renderBreadcrumb().'
 	 					'.$this->renderSecondaryNav().'
 	 					'.$this->renderPageTitle().'
 	 					'.($this->isHome?$this->homeBody:$this->body).'
@@ -179,15 +247,11 @@ class GrcPool_WebPage {
 	 			<div class="container">
 					'.($this->isHome?$this->body:'').'
 	 					<hr/>
-						<span>This project is currently in beta testing. Features may change frequently.
-							<a href="/content/devlog">View the development log.</a>
-						</span>
-	 					<div class="pull-right"><a href="mailto:admin@grcpool.com">admin@grcpool.com</a></div>
-	 					<br/><br/>
-	 					<a href="http://www.gridcoin.us/">Gridcoin Website</a> |
-	 					<a href="http://www.gridresearchcorp.com/gridcoin/">Gridcoin Block Explorer</a> |
-	 					<a href="https://kiwiirc.com/client/irc.freenode.net:6667/#gridcoin-help">Gridcoin Help Chat</a> |
-	 					<a href="http://cryptocointalk.com/topic/1331-new-coin-launch-announcement-grc-gridcoin/?view=getnewpost">Gridcoin Forum</a>
+	 					<div class="pull-right" style="margin-left:50px;"><a href="mailto:admin@grcpool.com">admin@grcpool.com</a></div>
+	 					<span style="white-space: nowrap;"><a href="https://www.gridcoin.us/">Gridcoin Website</a> |</span>
+	 					<span style="white-space: nowrap;"><a href="http://www.gridresearchcorp.com/gridcoin/">Gridcoin Block Explorer</a> |</span>
+	 					<span style="white-space: nowrap;"><a href="http://teamgridcoin.slack.com">Gridcoin Slack</a> |</span>
+	 					<span style="white-space: nowrap;"><a href="https://cryptocurrencytalk.com/topic/1331-new-coin-launch-announcement-grc-gridcoin/?view=getnewpost">Gridcoin Forum</a></span>
 	 					<br/><br/><br/><br/><br/><br/><br/><br/>
 	 				</div>
 	 	
@@ -199,6 +263,10 @@ class GrcPool_WebPage {
                     var socket = io.connect("https://'.getenv("SERVER_NAME").'/");
                     socket.on("connect", function() {
 						connected = true;
+					});
+					socket.on("updateBlock",function(data) {
+						let json = jQuery.parseJSON(data);
+						$("#blockHeight").animate({"opacity": 0}, 1000, function () {$(this).text(json.block);}).animate({"opacity": 1}, 1000);
 					});
 					socket.on("updateTicker",function(data) {
                     	let json = jQuery.parseJSON(data);
@@ -215,8 +283,33 @@ class GrcPool_WebPage {
 				  ga(\'create\', \'UA-91641882-1\', \'auto\');
 				  ga(\'send\', \'pageview\');
 				</script>
+				<div id="fb-root"></div>
+				<script>(function(d, s, id) {
+				  var js, fjs = d.getElementsByTagName(s)[0];
+				  if (d.getElementById(id)) return;
+				  js = d.createElement(s); js.id = id;
+				  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1836912156576334";
+				  fjs.parentNode.insertBefore(js, fjs);
+				}(document, \'script\', \'facebook-jssdk\'));</script>
+				<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+				<script src="https://apis.google.com/js/platform.js"></script>
+				<script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+				<script>
+				window.addEventListener("load", function(){
+				window.cookieconsent.initialise({
+				  "palette": {
+				    "popup": {
+				      "background": "#252e39"
+				    },
+				    "button": {
+				      "background": "#14a7d0"
+				    }
+				  },
+				  "theme": "edgeless"
+				})});
+				</script>
+
 			</body>
  		</html>';
 	}
-
 }

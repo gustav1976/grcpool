@@ -1,14 +1,19 @@
 <?php
+/* ***********************************************************************
+THIS FILE WAS CREATED AUTOMATICALLY BY PHP MODEL/OBJECT CREATOR
+MANUAL MODIFICATIONS WILL BE AUTOMATICALLY OVERWRITTEN
+************************************************************************ */
 abstract class GrcPool_Member_Host_Project_MODEL {
 
 	public function __construct() { }
 
 	private $_id = 0;
 	private $_memberId = 0;
+	private $_poolId = 1;
 	private $_hostId = 0;
 	private $_hostCpid = '';
 	private $_hostDbid = 0;
-	private $_projectUrl = '';
+	private $_accountId = 0;
 	private $_noCpu = 0;
 	private $_noNvidiaGpu = 0;
 	private $_noAtiGpu = 0;
@@ -19,14 +24,16 @@ abstract class GrcPool_Member_Host_Project_MODEL {
 	public function getId():int {return $this->_id;}
 	public function setMemberId(int $int) {$this->_memberId=$int;}
 	public function getMemberId():int {return $this->_memberId;}
+	public function setPoolId(int $int) {$this->_poolId=$int;}
+	public function getPoolId():int {return $this->_poolId;}
 	public function setHostId(int $int) {$this->_hostId=$int;}
 	public function getHostId():int {return $this->_hostId;}
 	public function setHostCpid(string $string) {$this->_hostCpid=$string;}
 	public function getHostCpid():string {return $this->_hostCpid;}
 	public function setHostDbid(int $int) {$this->_hostDbid=$int;}
 	public function getHostDbid():int {return $this->_hostDbid;}
-	public function setProjectUrl(string $string) {$this->_projectUrl=$string;}
-	public function getProjectUrl():string {return $this->_projectUrl;}
+	public function setAccountId(int $int) {$this->_accountId=$int;}
+	public function getAccountId():int {return $this->_accountId;}
 	public function setNoCpu(int $int) {$this->_noCpu=$int;}
 	public function getNoCpu():int {return $this->_noCpu;}
 	public function setNoNvidiaGpu(int $int) {$this->_noNvidiaGpu=$int;}
@@ -42,17 +49,18 @@ abstract class GrcPool_Member_Host_Project_MODEL {
 }
 
 abstract class GrcPool_Member_Host_Project_MODELDAO extends TableDAO {
-	protected $_database = 'grcpool';
+	protected $_database = Constants::DATABASE_NAME;
 	protected $_table = 'member_host_project';
 	protected $_model = 'GrcPool_Member_Host_Project_OBJ';
 	protected $_primaryKey = 'id';
 	protected $_fields = array(
 		'id' => array('type'=>'INT','dbType'=>'int(11)'),
 		'memberId' => array('type'=>'INT','dbType'=>'int(11)'),
+		'poolId' => array('type'=>'INT','dbType'=>'smallint(3)'),
 		'hostId' => array('type'=>'INT','dbType'=>'int(11)'),
 		'hostCpid' => array('type'=>'STRING','dbType'=>'varchar(50)'),
 		'hostDbid' => array('type'=>'INT','dbType'=>'int(11)'),
-		'projectUrl' => array('type'=>'STRING','dbType'=>'varchar(50)'),
+		'accountId' => array('type'=>'INT','dbType'=>'smallint(5)'),
 		'noCpu' => array('type'=>'INT','dbType'=>'int(1)'),
 		'noNvidiaGpu' => array('type'=>'INT','dbType'=>'int(1)'),
 		'noAtiGpu' => array('type'=>'INT','dbType'=>'int(1)'),

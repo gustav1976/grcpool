@@ -17,6 +17,16 @@ class GrcPool_Member_OBJ extends GrcPool_Member_MODEL {
 }
 
 class GrcPool_Member_DAO extends GrcPool_Member_MODELDAO {
+	
+	/**
+	 * 
+	 * @param string $key
+	 * @return NULL|GrcPool_Member_OBJ
+	 */
+	public function getWithApiKey($key) {
+		return $this->fetch(array($this->where('apiKey',$key)));
+	}
+	
 	/**
 	 *
 	 * @param string $username
@@ -24,6 +34,24 @@ class GrcPool_Member_DAO extends GrcPool_Member_MODELDAO {
 	 */
 	public function initWithUsername($username) {
 		return $this->fetch(array($this->where('username',$username)));
+	}
+	
+	/**
+	 *
+	 * @return GrcPool_Member_OBJ[]
+	 */
+	public function getWithEmailLike($email) {
+		$sql = 'select * from '.$this->getFullTableName().' where email like \''.$email.'%\' order by email';
+		return $this->queryObjects($sql);		
+	}
+	
+	/**
+	 *
+	 * @return GrcPool_Member_OBJ[]
+	 */
+	public function getWithEmailOrUsernameLike($email) {
+		$sql = 'select * from '.$this->getFullTableName().' where email like \''.$email.'%\' or username like \''.$email.'%\' order by email';
+		return $this->queryObjects($sql);
 	}
 	
 	/**
@@ -50,10 +78,11 @@ class GrcPool_Member_DAO extends GrcPool_Member_MODELDAO {
 	 * @return GrcPool_Member_OBJ
 	 */
 	public function initWithSession() {
-		if (isset($_COOKIE[SESSION_COOKIE_NAME])) {
+		if (isset($_COOKIE[Constants::SESSION_COOKIE_NAME])) {
 			$sessionDao = new GrcPool_Session_DAO();
 			$session = $sessionDao->fetch(array(
-					$sessionDao->where('session',$_COOKIE[SESSION_COOKIE_NAME])
+					$sessionDao->where('session',$_COOKIE[Constants::SESSION_COOKIE_NAME]),
+					$sessionDao->where('disable',0)
 			));
 			if ($session) {
 				$session->setLastUsed(time());

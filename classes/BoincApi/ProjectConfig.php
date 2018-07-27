@@ -1,7 +1,6 @@
 <?php
 class BoincApi_ProjectConfig {
-	
-	private $name = 'grcpool.com';
+	private $name = Constants::BOINC_POOL_NAME;
 	private $min_passwd_length = 8;
 
 	public function getName() {

@@ -22,11 +22,14 @@ class SuperBlockData {
 	public $grcOwnerUnknown;
 	public $magUnit;
 	public $version;
+	public $projects;
+	//public $netWeight;
 	
 	public function __construct($json = null) {
 		if ($json) {
 			$data = json_decode($json,true);
 			$this->version = $data['version'];
+			//$this->netWeight = $data['netWeight'];
 			$this->grcNoAddress = $data['grcNoAddress'];
 			$this->whiteListCount = $data['whiteListCount'];
 			$this->timestamp = $data['timestamp'];
@@ -47,12 +50,17 @@ class SuperBlockData {
 			$this->fulfillment = $data['fulfillment'];
 			$this->grcOwnerUnknown = $data['grcOwnerUnknown'];
 			$this->magUnit = $data['magUnit'];
+			$this->projects = $data['projects'];
+		} else {
+			$this->mag = array();
+			$this->projects = array();
 		}
 	}
 	
 	public function toJson() {
 		$json = array();
 		$json['version'] = $this->version;
+		//$json['netWeight'] = $this->netWeight;
 		$json['grcNoAddress'] = $this->grcNoAddress;
 		$json['timestamp'] = $this->timestamp;
 		$json['age'] = $this->age;
@@ -73,6 +81,7 @@ class SuperBlockData {
 		$json['fulfillment'] = $this->fulfillment;
 		$json['grcOwnerUnknown'] = $this->grcOwnerUnknown;
 		$json['magUnit'] = $this->magUnit;
+		$json['projects'] = $this->projects;
 		return json_encode($json);
 	}
 	

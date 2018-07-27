@@ -1,6 +1,5 @@
 <?php
-$webPage->setPageTitle('Fees and Donations');
-
+$webPage->appendTitle('Feed and Donations');
 $webPage->append('
 	<div class="panel panel-default rowpad">
 		<div class="panel-heading">

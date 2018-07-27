@@ -27,10 +27,14 @@ abstract class DAO {
     		$this->_error = '';
     	}
     }
+    public function isTransactionError() {
+    	return $this->_tranError;
+    }
     public function getLastInsertId() {
 	    return $this->getDb()->lastInsertId();
     }
     public function endTransaction() {
+    	$this->_inTransaction = false;
     	if ($this->_tranError) {
     		$this->rollback();	
     		return false;
@@ -43,8 +47,7 @@ abstract class DAO {
     	$this->_db->commit();	
     	$this->_inTransaction = false;
     }
-	private function rollback() {
-		
+    public function rollback() {
     	$this->_db->rollBack();	
     	$this->_inTransaction = false;
     }
@@ -58,6 +61,7 @@ abstract class DAO {
     	try {
     		$statement->execute();
     	} catch (Exception $e) {
+    		error_log($e);
     		if ($this->_inTransaction) {
     			$this->_tranError = true;	
     		}
